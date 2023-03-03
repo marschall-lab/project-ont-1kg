@@ -44,6 +44,28 @@ def parse_tag(s):
     else:
         assert False
 
+def parse_gfa(gfa_filename):
+    nodes = {}
+    edges = defaultdict(list)
+
+    for nr, line in enumerate(open(gfa_filename)):
+        fields = line.split('\t')
+        if fields[0] == 'S':
+            name = fields[1]
+            tags = dict(parse_tag(s) for s in fields[3:])
+            nodes[name] = Node(name,tags)
+        elif fields[0] == 'L':
+            from_node = fields[1]
+            from_dir = fields[2]
+            to_node = fields[3]
+            to_dir = fields[4]
+            overlap = fields[5]
+            tags = dict(parse_tag(s) for s in fields[6:])
+            e = Edge(from_node,from_dir,to_node,to_dir,overlap, tags)
+            edges[(from_node,to_node)].append(e)
+
+    return nodes, edges
+
 
 def decompose_and_order(nodes, edges, node_subset, bubble_order_start=0):
     print('  Input graph: {} nodes'.format(len(node_subset)))
@@ -142,7 +164,6 @@ def component_names(nodes, connected_components):
         d[representative_node] = component_name
     return d
 
-
 def add_arguments(parser):
     arg = parser.add_argument
     arg('--chromosome_order', default=default_chromosome_order,
@@ -160,24 +181,7 @@ if __name__ == "__main__":
 
     print('Reading', gfa_filename)
 
-    nodes = {}
-    edges = defaultdict(list)
-
-    for nr, line in enumerate(open(gfa_filename)):
-        fields = line.split('\t')
-        if fields[0] == 'S':
-            name = fields[1]
-            tags = dict(parse_tag(s) for s in fields[3:])
-            nodes[name] = Node(name,tags)
-        elif fields[0] == 'L':
-            from_node = fields[1]
-            from_dir = fields[2]
-            to_node = fields[3]
-            to_dir = fields[4]
-            overlap = fields[5]
-            tags = dict(parse_tag(s) for s in fields[6:])
-            e = Edge(from_node,from_dir,to_node,to_dir,overlap, tags)
-            edges[(from_node,to_node)].append(e)
+    nodes, edges = parse_gfa(gfa_filename)
 
     print('Nodes:', len(nodes))
     print('Edges:', len(edges))
