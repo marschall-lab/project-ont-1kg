@@ -1,1 +1,3 @@
 chm13-90c.r518*
+snakemake_pipelines/*/.snakemake/
+snakemake_pipelines/*/log/
