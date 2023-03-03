@@ -2,7 +2,6 @@
 import sys
 from collections import namedtuple, defaultdict
 from whatshap.graph import ComponentFinder
-import json
 import networkx as nx
 
 chromosome_order = ['chr1','chr2','chr3','chr4','chr5','chr6','chr7','chr8','chr9','chr10','chr11','chr12','chr13','chr14','chr15','chr16','chr17','chr18','chr19','chr20','chr21','chr22','chrX','chrY','chrM']
@@ -52,31 +51,6 @@ def parse_tag(s):
     else:
         assert False
 
-def bubble_chain_to_node_roles(bubble_chains):
-    node_roles = defaultdict(set)
-    for key in sorted(bubble_chains.keys()):
-        chain = bubble_chains[key]
-        if 'parent_chain' in chain:
-            continue
-        for node in chain['ends']:
-            node_roles[node].add('chain_end')
-        for bubble in chain['bubbles']:
-            for node in bubble['ends']:
-                node_roles[node].add('bubble_end')
-            for node in bubble['inside']:
-                node_roles[node].add('inside')
-    return node_roles
-
-def node_roles_to_colors(node_roles):
-    d = dict()
-    for node, node_role in node_roles.items():
-        if 'inside' in node_role:
-            d[node] = 'blue'
-        if 'bubble_end' in node_role:
-            d[node] = 'orange'
-        if 'chain_end' in node_role:
-            d[node] = 'red'
-    return d
 
 def decompose_and_order(nodes, edges, node_subset, bubble_order_start=0):
     print('  Input graph: {} nodes'.format(len(node_subset)))
@@ -159,10 +133,6 @@ def decompose_and_order(nodes, edges, node_subset, bubble_order_start=0):
 
     return scaffold_nodes, inside_nodes, node_order, bo, len(bubbles)
 
-
-bubble_chains = json.load(open('chm13-90c.r518.noseq.bubbles.json'))
-node_roles = bubble_chain_to_node_roles(bubble_chains)
-node_colors = node_roles_to_colors(node_roles)
 
 for nr, line in enumerate(open(gfa_filename)):
     fields = line.split('\t')
