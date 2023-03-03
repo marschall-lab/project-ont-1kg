@@ -3,9 +3,9 @@ import sys
 from collections import namedtuple, defaultdict
 from whatshap.graph import ComponentFinder
 import networkx as nx
+from argparse import ArgumentParser
 
-chromosome_order = ['chr1','chr2','chr3','chr4','chr5','chr6','chr7','chr8','chr9','chr10','chr11','chr12','chr13','chr14','chr15','chr16','chr17','chr18','chr19','chr20','chr21','chr22','chrX','chrY','chrM']
-#chromosome_order = ['chr17']
+default_chromosome_order = 'chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX,chrY,chrM'
 
 def tag_to_str(tag):
     name, value = tag
@@ -33,13 +33,6 @@ class Edge:
         self.tags = tags
     def to_line(self):
         return '\t'.join(['L', self.from_node, self.from_dir, self.to_node, self.to_dir, self.overlap,] + [tag_to_str(t) for t in self.tags.items()])
-
-gfa_filename = 'chm13-90c.r518.noseq.gfa'
-#gfa_filename = 'chm13-90c.r518.noseq-chr17.gfa'
-#gfa_filename = 'test.gfa'
-
-nodes = {}
-edges = defaultdict(list)
 
 def parse_tag(s):
     name, type_id, value = s.split(':')
@@ -134,39 +127,6 @@ def decompose_and_order(nodes, edges, node_subset, bubble_order_start=0):
     return scaffold_nodes, inside_nodes, node_order, bo, len(bubbles)
 
 
-for nr, line in enumerate(open(gfa_filename)):
-    fields = line.split('\t')
-    if fields[0] == 'S':
-        #if len(nodes) > 10:
-            #continue
-        name = fields[1]
-        tags = dict(parse_tag(s) for s in fields[3:])
-        nodes[name] = Node(name,tags)
-        #print(name, tags)
-    elif fields[0] == 'L':
-        #if len(edges) > 10:
-            #continue
-        from_node = fields[1]
-        from_dir = fields[2]
-        to_node = fields[3]
-        to_dir = fields[4]
-        overlap = fields[5]
-        tags = dict(parse_tag(s) for s in fields[6:])
-        e = Edge(from_node,from_dir,to_node,to_dir,overlap, tags)
-        edges[(from_node,to_node)].append(e)
-
-#print(nodes)
-
-print('Nodes:', len(nodes))
-print('Edges:', len(edges))
-
-cf = ComponentFinder(nodes.keys())
-for (from_node,to_node),e in edges.items():
-    cf.merge(from_node,to_node)
-
-connected_components = set((cf.find(node) for node in nodes.keys()))
-print('Connected components:', len(connected_components))
-
 def component_names(nodes, connected_components):
     """
     Returns dictionary mapping names of representative nodes to
@@ -182,57 +142,105 @@ def component_names(nodes, connected_components):
         d[representative_node] = component_name
     return d
 
-name_to_component = dict((name,component) for (component,name) in component_names(nodes, connected_components).items())
-if set(name_to_component.keys()) == set(chromosome_order):
-    print('Found one connected component per expected chromosome.')
-else:
-    print('Chromsome set mismatch:')
-    print('  Expected:', ','.join(chromosome_order))
-    print('  Found:', ','.join(sorted(name_to_component.keys())))
-    sys.exit(1)
 
-# running index for the bubble index (BO) already used
-bo = 0
-total_bubbles = 0
-for chromosome in chromosome_order:
-    print('Processing', chromosome)
-    representative_node = name_to_component[chromosome]
+def add_arguments(parser):
+    arg = parser.add_argument
+    arg('--chromosome_order', default=default_chromosome_order,
+        help='Order in which to arrange chromosomes in terms of BO sorting. '
+        'Expecting comma-separated list. Default: chr1,...,chr22,chrX,chrY,chrM')
+    arg('graph', metavar='GRAPH', help='Input GFA file')
 
-    # Initialize files
-    f_gfa = open('out/'+gfa_filename[:-4]+'-'+chromosome+'.gfa', 'w')
-    f_colors = open('out/'+gfa_filename[:-4]+'-'+chromosome+'.csv', 'w')
-    f_colors.write('Name,Color,SN,SO,BO,NO\n')
+if __name__ == "__main__":
+    parser = ArgumentParser()
+    add_arguments(parser)
+    args = parser.parse_args()
 
-    component_nodes = set()
-    for node_name in sorted(nodes.keys()):
-        if cf.find(node_name) == representative_node:
-            component_nodes.add(node_name)
+    chromosome_order = args.chromosome_order.split(sep=',')
+    gfa_filename = args.graph
 
-    scaffold_nodes, inside_nodes, node_order, bo, bubble_count = decompose_and_order(nodes, edges, component_nodes, bo)
-    total_bubbles += bubble_count
+    print('Reading', gfa_filename)
 
-    for node_name in sorted(component_nodes):
-        node = nodes[node_name]
-        bo_tag, no_tag = node_order[node_name]
-        node.tags['BO'] = bo_tag
-        node.tags['NO'] = no_tag
-        f_gfa.write(node.to_line() + '\n')
+    nodes = {}
+    edges = defaultdict(list)
 
-        if node_name in scaffold_nodes:
-            color = 'orange'
-        elif node_name in inside_nodes:
-            color = 'blue'
-        else:
-            color = 'gray'
-        f_colors.write('{},{},{},{},{},{}\n'.format(node_name,color,node.tags['SN'], node.tags['SO'], bo_tag, no_tag))
+    for nr, line in enumerate(open(gfa_filename)):
+        fields = line.split('\t')
+        if fields[0] == 'S':
+            name = fields[1]
+            tags = dict(parse_tag(s) for s in fields[3:])
+            nodes[name] = Node(name,tags)
+        elif fields[0] == 'L':
+            from_node = fields[1]
+            from_dir = fields[2]
+            to_node = fields[3]
+            to_dir = fields[4]
+            overlap = fields[5]
+            tags = dict(parse_tag(s) for s in fields[6:])
+            e = Edge(from_node,from_dir,to_node,to_dir,overlap, tags)
+            edges[(from_node,to_node)].append(e)
 
-    for edge_key in sorted(edges.keys()):
-        from_node, to_node = edge_key
-        if cf.find(from_node) == representative_node:
-            for edge in edges[edge_key]:
-                f_gfa.write(edge.to_line() + '\n')
+    print('Nodes:', len(nodes))
+    print('Edges:', len(edges))
 
-    f_gfa.close()
-    f_colors.close()
+    cf = ComponentFinder(nodes.keys())
+    for (from_node,to_node),e in edges.items():
+        cf.merge(from_node,to_node)
 
-print('Total bubbles:', total_bubbles)
+    connected_components = set((cf.find(node) for node in nodes.keys()))
+    print('Connected components:', len(connected_components))
+
+
+    name_to_component = dict((name,component) for (component,name) in component_names(nodes, connected_components).items())
+    if set(name_to_component.keys()) == set(chromosome_order):
+        print('Found one connected component per expected chromosome.')
+    else:
+        print('Chromsome set mismatch:')
+        print('  Expected:', ','.join(chromosome_order))
+        print('  Found:', ','.join(sorted(name_to_component.keys())))
+        sys.exit(1)
+
+    # running index for the bubble index (BO) already used
+    bo = 0
+    total_bubbles = 0
+    for chromosome in chromosome_order:
+        print('Processing', chromosome)
+        representative_node = name_to_component[chromosome]
+
+        # Initialize files
+        f_gfa = open('out/'+gfa_filename[:-4]+'-'+chromosome+'.gfa', 'w')
+        f_colors = open('out/'+gfa_filename[:-4]+'-'+chromosome+'.csv', 'w')
+        f_colors.write('Name,Color,SN,SO,BO,NO\n')
+
+        component_nodes = set()
+        for node_name in sorted(nodes.keys()):
+            if cf.find(node_name) == representative_node:
+                component_nodes.add(node_name)
+
+        scaffold_nodes, inside_nodes, node_order, bo, bubble_count = decompose_and_order(nodes, edges, component_nodes, bo)
+        total_bubbles += bubble_count
+
+        for node_name in sorted(component_nodes):
+            node = nodes[node_name]
+            bo_tag, no_tag = node_order[node_name]
+            node.tags['BO'] = bo_tag
+            node.tags['NO'] = no_tag
+            f_gfa.write(node.to_line() + '\n')
+
+            if node_name in scaffold_nodes:
+                color = 'orange'
+            elif node_name in inside_nodes:
+                color = 'blue'
+            else:
+                color = 'gray'
+            f_colors.write('{},{},{},{},{},{}\n'.format(node_name,color,node.tags['SN'], node.tags['SO'], bo_tag, no_tag))
+
+        for edge_key in sorted(edges.keys()):
+            from_node, to_node = edge_key
+            if cf.find(from_node) == representative_node:
+                for edge in edges[edge_key]:
+                    f_gfa.write(edge.to_line() + '\n')
+
+        f_gfa.close()
+        f_colors.close()
+
+    print('Total bubbles:', total_bubbles)
