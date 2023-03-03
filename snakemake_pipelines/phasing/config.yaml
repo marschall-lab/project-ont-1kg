@@ -1,0 +1,62 @@
+chromosome:
+  - chr1
+  - chr2
+  - chr3
+  - chr4
+  - chr5
+  - chr6
+  - chr7
+  - chr8
+  - chr9
+  - chr10
+  - chr11
+  - chr12
+  - chr13
+  - chr14
+  - chr15
+  - chr16
+  - chr17
+  - chr18
+  - chr19
+  - chr20
+  - chr21
+  - chr22
+  # - chrX
+  # - chrY
+  # - others
+
+samples:
+  - HG00096
+  - HG00171
+  - HG00268
+  - HG00513
+  - HG00731
+  - HG01596
+  - HG02554
+  - HG02953
+  - HG03009
+  - NA12878
+  - NA18989
+  - NA19129
+  - NA19238
+  - NA19331
+  - NA19347
+  - NA20847
+
+families:
+  - HG00096
+  - HG00171
+  - HG00268
+  - HG00512_HG00513_HG00514
+  - HG00731_HG00732_HG00733
+  - HG01596
+  - HG02554
+  - HG02952_HG02953_HG02954
+  - HG03009
+  - NA12878_NA12891_NA12892
+  - NA18989
+  - NA19127_NA19128_NA19129
+  - NA18912_NA18913_NA18914_NA19238_NA19239_NA19240
+  - NA19331
+  - NA19347
+  - NA20847

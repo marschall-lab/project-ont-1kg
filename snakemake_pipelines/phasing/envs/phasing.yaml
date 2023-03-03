@@ -1,0 +1,5 @@
+channels:
+  - http://conda.repo.test.hhu.de/bioconda
+
+dependencies:
+  - whatshap=1.6

@@ -1,0 +1,481 @@
+"""
+Need to make a lot of changes to this pipeline when running it again:
+
+extract_base_vcf:
+Dont remove the INFO field
+
+compress_vcf and index_vcf:
+Dont need it.
+Just take the vcfs from the genotype rule and merge them. Index the merged vcf
+
+Make changes to the het_hom and hwe calculation rules so that they can process the merged vcf.
+"""
+
+
+configfile: './config.yaml'
+
+experiments=['longread', 'trio_phase', 'longread_trio_phase']
+varianttype=['snp']
+flag_indel={'snp': '', 'indel': '--indels'}
+wh_compare_flag={'snp': '--only-snvs', 'indel': ''}
+
+# These are the samples from the VCF that Jana created from the GFA file using vg and vcfbub.
+# This has 44 samples. But the VCF file that is present in the Amazon AWS server has a VCF file which has 45 samples.
+# That file has been downloaded and kept in the same directory as 'cactus_filtered_ids.vcf.gz'.
+graph_samples=['HG00438','HG00621','HG00673','HG00733','HG00735','HG00741','HG01071','HG01106','HG01109','HG01123','HG01175','HG01243','HG01258','HG01358','HG01361','HG01891','HG01928','HG01952','HG01978','HG02055','HG02080','HG02109','HG02145','HG02148','HG02257','HG02486','HG02559','HG02572','HG02622','HG02630','HG02717','HG02723','HG02818','HG02886','HG03098','HG03453','HG03486','HG03492','HG03516','HG03540','HG03579','NA18906','NA20129','NA21309']
+
+import subprocess
+import re
+
+#Finding sample list used for 1000GP project by us
+path='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/GRCh38/'
+ls_command = 'ls '+path
+process = subprocess.Popen(ls_command.split(), stdout=subprocess.PIPE)
+ls_out, ls_err = process.communicate()
+sample_re = re.compile('(?:NA|HG)\d{5}')
+
+wh_sample_list = [s for s in ls_out.decode('utf-8').split('\n') if sample_re.match(s)]
+
+#Finding sample list used by Jana
+path='/gpfs/project/projects/medbioinf/users/ebler/hprc/hprc-experiments/genotyping-experiments-rerun/results/population-typing/cactus-100000/genotyping/'
+ls_command = 'ls '+path
+process = subprocess.Popen(ls_command.split(), stdout=subprocess.PIPE)
+ls_out, ls_err = process.communicate()
+sample_re = re.compile('(?:NA|HG)\d{5}')
+
+pg_sample_list = [s for s in ls_out.decode('utf-8').split('\n') if sample_re.match(s)]
+pg_sample_list = [s[:7] for s in pg_sample_list if ("_genotyping_bi_all.vcf.gz" in s and "tbi" not in s)]
+
+wh_pg_common_samples = list(set(wh_sample_list).intersection(pg_sample_list))
+
+
+common_samples = list(set(graph_samples).intersection(wh_sample_list))
+
+# Variant Categories for Analysis (Genotype Concordance)
+
+variant_type = [
+    'all',
+    'snp',
+    'small-deletion',
+    'small-insertion',
+    'midsize-deletion',
+    'midsize-insertion',
+    'large-deletion',
+    'large-insertion'
+    ]
+
+# Test Variant Category
+# variant_type = ['midsize-insertion']
+
+##########################################################
+##### Making regions to merge the single sample VCFs #####
+##########################################################
+
+chromosomes = ['chr{}'.format(i) for i in range(1,23)] + ['chrX', 'chrY']
+
+chromosome_lengths = dict()
+for line in open('./resources/chr-lengths.tsv'):
+	fields = line.split()
+	chromosome, length = fields[0], int(fields[1])
+	chromosome_lengths[chromosome] = length
+
+regions = []
+step_size = 1000000
+for chromosome in sorted(chromosomes):
+	pos = 1
+	while pos < chromosome_lengths[chromosome]:
+		end_pos = min(pos+step_size-1, chromosome_lengths[chromosome])
+		regions.append('{}:{}-{}'.format(chromosome, pos, end_pos))
+		pos = pos + step_size
+
+#############################
+##### Rule Definitions: #####
+#############################
+
+rule all:
+    input:
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_biallelic.vcf.gz',sample = wh_sample_list),
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/multisample/all_bi.vcf.gz',
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/genotype_concordance/pangenie_compare/{sample}_{vtype}.pkl', vtype = variant_type, sample=wh_pg_common_samples)
+
+
+##########################
+##### Pre-Processing #####
+##########################
+# Change the rule so that the INFO field is not deleted. Need that for the genotype concordance calculation.        
+rule extract_base_vcf:
+    input:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/HPRC/cactus_filtered_ids.vcf.gz'
+    output:
+        vcf=temp('/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/HPRC/temp/{sample}.vcf')
+    conda:
+        'envs/preprocessing.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 512 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 512 * attempt
+    shell:
+        '''
+        bcftools view -G {input.vcf} | bcftools annotate -x INFO,FORMAT | awk -F'\t' 'BEGIN {{OFS = FS}} {{if (substr($0,0,2)=="##") {{print $0}} if (substr($0,0,2)=="#C") {{print $0,"FORMAT" ,"{wildcards.sample}"}} if (substr($0,0,1)!="#") {{print $0,"GT" , "./."}} }}' > {output.vcf}
+        '''
+
+############################
+##### Running Genotype #####
+############################
+
+rule genotype:
+    input:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/HPRC/temp/{sample}.vcf',
+        bam='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/GRCh38/{sample}/alignments/{sample}.cram',
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
+    output:
+        vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}.vcf'),
+        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/outfiles/{sample}.out'
+    conda:
+        'envs/whatshap.yaml'
+    wildcard_constraints:
+        sample='(?:NA|HG)\d{5}'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 96 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 24000 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 24000 * attempt
+    shell:
+        '''
+        whatshap --version
+        whatshap genotype -r {input.ref} -o {output.vcf} --no-priors {input.vcf} {input.bam} 2>&1 | tee {output.out}
+        '''
+
+###########################
+##### Post-Processing #####
+###########################
+
+rule compress_vcf:
+    input:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}.vcf'
+    output:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}.vcf.gz'
+    conda:
+        'envs/preprocessing.yaml'
+    wildcard_constraints:
+        sample='(?:NA|HG)\d{5}'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 256 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 256 * attempt
+    shell:
+        '''
+        bgzip --stdout {input.vcf} > {output.vcf}
+        '''
+
+rule index_vcf:
+    input:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}.vcf.gz'
+    output:
+        index=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}.vcf.gz.csi')
+    conda:
+        'envs/preprocessing.yaml'
+    wildcard_constraints:
+        sample='(?:NA|HG)\d{5}'
+    resources:
+        runtime_hrs=0,
+        runtime_min=10,
+        mem_total_mb=lambda wildcards, attempt: 2048 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 2048 * attempt
+    shell:
+        '''
+        bcftools index -o {output.index} {input.vcf}
+        '''
+
+
+############################################
+##### Rewriting INFO field (Temporary) #####
+############################################
+
+# This is a temporary rule. This has only been written since INFO field was deleted from the input VCF.
+rule rewrite_INFO:
+    input:
+        callset_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}.vcf.gz',
+        main_vcf='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/HPRC/cactus_filtered_ids.vcf.gz',
+        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/adding_info_back.py'
+    output:
+        vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_info_added.vcf')
+    conda:
+        'envs/analysis.yaml'
+    wildcard_constraints:
+        sample='(?:NA|HG)\d{5}'
+    resources:
+        runtime_hrs=0,
+        runtime_min=lambda wildcards, attempt: 30 * attempt,
+        mem_total_mb=lambda wildcards, attempt: 512 * attempt
+    shell:
+        '''
+        python {input.script} {input.callset_vcf} {input.main_vcf}
+        '''
+
+
+#############################################################
+##### Converting the whatshap callset to biallelic form #####
+#############################################################
+
+rule convert_whatshap_callset_to_biallelic:
+    input:
+        vcf_wh='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_info_added.vcf',
+        vcf_bi='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/HPRC/cactus_filtered_ids_biallelic.vcf',
+        convert_to_biallelic_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/convert-to-biallelic.py'
+    output:
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_biallelic.vcf')
+    conda:
+        'envs/analysis.yaml'
+    log:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/log/{sample}_biallelic.log'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 12 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 16000 * attempt
+    shell:
+        '''
+        cat {input.vcf_wh} | python {input.convert_to_biallelic_script} {input.vcf_bi} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n "}}' > {output}
+        '''
+
+rule index_biallelic_vcf:
+    input:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_biallelic.vcf'
+    output:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_biallelic.vcf.gz',
+        ind='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_biallelic.vcf.gz.csi'
+    conda:
+        'envs/preprocessing.yaml'
+    wildcard_constraints:
+        sample='(?:NA|HG)\d{5}'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 1 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 256 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 256 * attempt
+    shell:
+        '''
+        bgzip --stdout {input} > {output.vcf}
+        bcftools index {output.vcf}
+        '''
+
+
+######################################
+##### Merging Single Sample VCFs #####
+######################################
+
+rule create_path_list:
+    input:
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_biallelic.vcf.gz', sample=wh_sample_list)
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/multisample/path_list.txt'
+    wildcard_constraints:
+        sample='(?:NA|HG)\d{5}'
+    resources:
+        runtime_hrs=0,
+        runtime_min=10,
+        mem_total_mb=lambda wildcards, attempt: 2048 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 2048 * attempt
+    run:
+        f = open(output[0], 'w')
+        for name in input:
+            print(name, file=f)
+        f.close()
+
+mem_total_mb_merge_vcf_by_region = [2.5, 5, 9.6]
+rule merge_vcf_by_region:
+    input:
+        path_list='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/multisample/path_list.txt'
+    output:
+        vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/multisample/all_bi_{region}.vcf.gz')
+    conda:
+        'envs/preprocessing.yaml'
+    resources:
+        runtime_hrs=10,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 10000 * mem_total_mb_merge_vcf_by_region[attempt - 1]
+    wildcard_constraints:
+        sample='(?:NA|HG)\d{5}',
+        region="chr[0-9A-Z]+:[0-9]+-[0-9]+"
+    shell:
+        '''
+        bcftools merge -r {wildcards.region} -l {input.path_list} -Oz -o {output.vcf}
+        '''
+
+rule create_region_vcf_file_list:
+    input:
+        vcfs=expand("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/multisample/all_bi_{region}.vcf.gz", region=regions),
+    output:
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/multisample/concat_region_vcf_file_list.txt')
+    wildcard_constraints:
+        region="chr[0-9A-Z]+:[0-9]+-[0-9]+"
+    run:
+        f = open(output[0], 'w')
+        for name in input.vcfs:
+            print(name, file=f)
+        f.close()
+
+rule concat_region_vcf_file:
+    input:
+        file_list='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/multisample/concat_region_vcf_file_list.txt',
+        multisample_region_vcf=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/multisample/all_bi_{region}.vcf.gz', region=regions),
+    output:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/multisample/all_bi.vcf.gz',
+        ind='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/multisample/all_bi.vcf.gz.csi'
+    log:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/multisample/all_bi.log'
+    conda:
+        'envs/preprocessing.yaml'
+    wildcard_constraints:
+        sample='(?:NA|HG)\d{5}',
+        region="chr[0-9A-Z]+:[0-9]+-[0-9]+"
+    resources:
+        runtime_hrs=5,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 2048 * attempt
+    wildcard_constraints:
+        region="chr[0-9A-Z]+:[0-9]+-[0-9]+"
+    shell:
+        '''
+        bcftools concat -o {output.vcf} -O z -f {input.file_list} &> {log}
+        bcftools index {output.vcf}
+        '''
+        
+########################################
+##### Analysis of Genotype Results #####
+########################################
+
+rule het_hom_ratio_calculation:
+    input:
+        vcf_paths='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/path_list.txt',
+        group_path='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/1k_ont_data_overview-samples_and_sequencing.tsv',
+        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/python_scripts/genotyping_analysis/het_hom_ratio.py'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/het_hom_ratio.pkl'
+    conda:
+        'envs/analysis.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 30 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 30000 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 30000 * attempt
+    shell:
+        '''
+        python {input.script} {input.vcf_paths} {input.group_path} {output}
+        '''
+    
+rule hwe_calculation:
+    input:
+        vcf_paths='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/path_list.txt',
+        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/python_scripts/genotyping_analysis/mendel.py'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/mendel.pkl'
+    conda:
+        'envs/analysis.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 30 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 30000 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 30000 * attempt
+    shell:
+        '''
+        python {input.script} {input.vcf_paths} {output}
+        '''
+
+
+
+##########################################
+##### Calculate Genotype Concordance #####
+##########################################
+
+rule whatshap_callset_extract_variant_type:
+    input:
+        vcf_bi='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_biallelic.vcf.gz',
+        extract_variant_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/extract-varianttype.py'
+    output:
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_{vtype}.vcf.gz')
+    conda:
+        'envs/analysis.yaml'
+    wildcard_constraints:
+        vtype='(snp|all)|((small|midsize|large)-(insertion|deletion))',
+        sample='(?:NA|HG)\d{5}'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 1 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 256 * attempt
+    shell:
+        '''
+        zcat {input.vcf_bi} | python {input.extract_variant_script} {wildcards.vtype} | bgzip > {output}
+        '''
+
+rule pangenie_callset_extract_variant_type:
+    input:
+        vcf_bi='/gpfs/project/projects/medbioinf/users/ebler/hprc/hprc-experiments/genotyping-experiments-rerun/results/population-typing/cactus-100000/genotyping/{sample}_genotyping_bi_all.vcf.gz',
+        extract_variant_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/extract-varianttype.py'
+    output:
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/pangenie_vcf/{sample}_{vtype}.vcf.gz')
+    conda:
+        'envs/analysis.yaml'
+    wildcard_constraints:
+        vtype='(snp|all)|((small|midsize|large)-(insertion|deletion))'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 5 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 256 * attempt
+    shell:
+        '''
+        zcat {input.vcf_bi} | python {input.extract_variant_script} {wildcards.vtype} | bgzip > {output}
+        '''
+
+rule prepare_genotyped_ids:
+    input:
+        vcf_bi='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/HPRC/cactus_filtered_ids_biallelic.vcf',
+        extract_variant_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/extract-varianttype.py',
+        get_ids_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/get_ids.py'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/genotyped_ids/{vtype}_ids.tsv'
+    conda:
+        'envs/analysis.yaml'
+    log:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/genotyped_ids/{vtype}_ids.log'
+    wildcard_constraints:
+        vtype='(snp|all)|((small|midsize|large)-(insertion|deletion))',
+        sample='(?:NA|HG)\d{5}'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 1 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 256 * attempt
+    shell:
+        '''
+        cat {input.vcf_bi} | python {input.extract_variant_script} {wildcards.vtype} | python {input.get_ids_script} > {output}
+        '''
+
+rule compute_genotype_concordance:
+    input:
+        pg='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/pangenie_vcf/{sample}_{vtype}.vcf.gz',
+        wh='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_{vtype}.vcf.gz',
+        ids='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/genotyped_ids/{vtype}_ids.tsv',
+        genotype_evaluation_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/genotype-evaluation.py'
+    output:
+        gc_dict='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/genotype_concordance/pangenie_compare/{sample}_{vtype}.pkl',
+        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/genotype_concordance/pangenie_compare/{sample}_{vtype}.out'
+    conda:
+        'envs/analysis.yaml'
+    log:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/genotype_concordance/pangenie_compare/{sample}_{vtype}.log'
+    wildcard_constraints:
+        vtype='(snp|all)|((small|midsize|large)-(insertion|deletion))',
+        sample='(?:NA|HG)\d{5}'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 2 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 8000 * attempt
+    shell:
+        '''
+        python {input.genotype_evaluation_script} {input.pg} {input.wh} {input.ids} {output.gc_dict} 2> {log} 1> {output.out}
+        '''
+
+
+#python spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/multisample-genotype-evaluation.py spani/results/1000GP/genotyping-results/whatshap/vcf/pangenie_snp.vcf.gz spani/results/1000GP/genotyping-results/whatshap/vcf/multisample_snp.vcf.gz spani/results/1000GP/genotyping-results/whatshap/vcf/snp_ids.tsv spani/results/1000GP/genotyping-results/whatshap/genotype_concordance/pangenie_compare/snp.pkl
