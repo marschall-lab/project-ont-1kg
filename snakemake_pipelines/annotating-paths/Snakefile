@@ -49,7 +49,7 @@ rule align_assemblies_to_chm13_minigraph:
 rule call_rGFA_bubbles:
     input:
         ref='/gpfs/project/projects/medbioinf/users/spani/files/gfa/HengLi/chm13-90c.r518.gfa',
-        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/annotating-paths/scripts/gfa_tag.py'
+        #script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/annotating-paths/scripts/gfa_tag.py'
         out_dir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging'
     output:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518-{chr}.gfa', chr=chromosomes),

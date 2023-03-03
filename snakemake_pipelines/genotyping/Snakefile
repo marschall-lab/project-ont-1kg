@@ -199,7 +199,7 @@ rule rewrite_INFO:
     input:
         callset_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}.vcf.gz',
         main_vcf='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/HPRC/cactus_filtered_ids.vcf.gz',
-        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/adding_info_back.py'
+        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/genotyping/scripts/genotyping_analysis/adding_info_back.py'
     output:
         vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_info_added.vcf')
     conda:
@@ -224,7 +224,7 @@ rule convert_whatshap_callset_to_biallelic:
     input:
         vcf_wh='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_info_added.vcf',
         vcf_bi='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/HPRC/cactus_filtered_ids_biallelic.vcf',
-        convert_to_biallelic_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/convert-to-biallelic.py'
+        convert_to_biallelic_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/genotyping/scripts/genotyping_analysis/genotype_concordance/convert-to-biallelic.py'
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_biallelic.vcf')
     conda:
@@ -351,7 +351,7 @@ rule het_hom_ratio_calculation:
     input:
         vcf_paths='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/path_list.txt',
         group_path='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/1k_ont_data_overview-samples_and_sequencing.tsv',
-        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/python_scripts/genotyping_analysis/het_hom_ratio.py'
+        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/genotyping/scripts/genotyping_analysis/het_hom_ratio.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/het_hom_ratio.pkl'
     conda:
@@ -369,7 +369,7 @@ rule het_hom_ratio_calculation:
 rule hwe_calculation:
     input:
         vcf_paths='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/path_list.txt',
-        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/python_scripts/genotyping_analysis/mendel.py'
+        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/genotypign/scripts/genotyping_analysis/mendel.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/mendel.pkl'
     conda:
@@ -393,7 +393,7 @@ rule hwe_calculation:
 rule whatshap_callset_extract_variant_type:
     input:
         vcf_bi='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_biallelic.vcf.gz',
-        extract_variant_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/extract-varianttype.py'
+        extract_variant_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/genotyping/scripts/genotyping_analysis/genotype_concordance/extract-varianttype.py'
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_{vtype}.vcf.gz')
     conda:
@@ -413,7 +413,7 @@ rule whatshap_callset_extract_variant_type:
 rule pangenie_callset_extract_variant_type:
     input:
         vcf_bi='/gpfs/project/projects/medbioinf/users/ebler/hprc/hprc-experiments/genotyping-experiments-rerun/results/population-typing/cactus-100000/genotyping/{sample}_genotyping_bi_all.vcf.gz',
-        extract_variant_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/extract-varianttype.py'
+        extract_variant_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/genotyping/scripts/genotyping_analysis/genotype_concordance/extract-varianttype.py'
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/pangenie_vcf/{sample}_{vtype}.vcf.gz')
     conda:
@@ -432,8 +432,8 @@ rule pangenie_callset_extract_variant_type:
 rule prepare_genotyped_ids:
     input:
         vcf_bi='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/HPRC/cactus_filtered_ids_biallelic.vcf',
-        extract_variant_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/extract-varianttype.py',
-        get_ids_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/get_ids.py'
+        extract_variant_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/genotyping/scripts/genotyping_analysis/genotype_concordance/extract-varianttype.py',
+        get_ids_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/genotyping/scripts/genotyping_analysis/genotype_concordance/get_ids.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/genotyped_ids/{vtype}_ids.tsv'
     conda:
@@ -457,7 +457,7 @@ rule compute_genotype_concordance:
         pg='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/pangenie_vcf/{sample}_{vtype}.vcf.gz',
         wh='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}_{vtype}.vcf.gz',
         ids='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/genotyped_ids/{vtype}_ids.tsv',
-        genotype_evaluation_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/genotype-evaluation.py'
+        genotype_evaluation_script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/genotyping/scripts/genotyping_analysis/genotype_concordance/genotype-evaluation.py'
     output:
         gc_dict='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/genotype_concordance/pangenie_compare/{sample}_{vtype}.pkl',
         out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/genotype_concordance/pangenie_compare/{sample}_{vtype}.out'
@@ -476,6 +476,3 @@ rule compute_genotype_concordance:
         '''
         python {input.genotype_evaluation_script} {input.pg} {input.wh} {input.ids} {output.gc_dict} 2> {log} 1> {output.out}
         '''
-
-
-#python spani/scripts/1000g-ont/smk_scripts/genotyping/scripts/genotyping_analysis/genotype_concordance/multisample-genotype-evaluation.py spani/results/1000GP/genotyping-results/whatshap/vcf/pangenie_snp.vcf.gz spani/results/1000GP/genotyping-results/whatshap/vcf/multisample_snp.vcf.gz spani/results/1000GP/genotyping-results/whatshap/vcf/snp_ids.tsv spani/results/1000GP/genotyping-results/whatshap/genotype_concordance/pangenie_compare/snp.pkl
