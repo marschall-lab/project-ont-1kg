@@ -170,6 +170,7 @@ def add_arguments(parser):
         help='Order in which to arrange chromosomes in terms of BO sorting. '
         'Expecting comma-separated list. Default: chr1,...,chr22,chrX,chrY,chrM')
     arg('graph', metavar='GRAPH', help='Input GFA file')
+    arg('--outdir', default="./out", help='Output Directory to store all the GFA and CSV files. Default location is a "out" folder from the directory of execution.')
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -178,6 +179,7 @@ if __name__ == "__main__":
 
     chromosome_order = args.chromosome_order.split(sep=',')
     gfa_filename = args.graph
+    out_dir = args.outdir
 
     print('Reading', gfa_filename)
 
@@ -211,8 +213,8 @@ if __name__ == "__main__":
         representative_node = name_to_component[chromosome]
 
         # Initialize files
-        f_gfa = open('out/'+gfa_filename[:-4]+'-'+chromosome+'.gfa', 'w')
-        f_colors = open('out/'+gfa_filename[:-4]+'-'+chromosome+'.csv', 'w')
+        f_gfa = open(out_dir+'/'+gfa_filename[:-4]+'-'+chromosome+'.gfa', 'w')
+        f_colors = open(out_dir+'/'+gfa_filename[:-4]+'-'+chromosome+'.csv', 'w')
         f_colors.write('Name,Color,SN,SO,BO,NO\n')
 
         component_nodes = set()
