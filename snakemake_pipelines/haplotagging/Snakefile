@@ -6,6 +6,7 @@ configfile: './config.yaml'
 import subprocess
 import re
 import gzip
+import pandas as pd
 
 #Finding sample list used for 1000GP project by us
 path='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/GRCh38/'
@@ -25,7 +26,27 @@ with gzip.open("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/hapl
         break
 
 common_samples = list(set(cram_sample_list).intersection(vcf_sample_list))
-#common_samples = ['HG01258', 'NA12878', 'NA18989', 'NA19129', 'NA19238', 'NA19331', 'NA20847', 'HG00731', 'HG00513', 'HG00171', 'HG03009', 'HG00096', 'HG01596', 'HG00268', 'HG02554', 'HG02953', 'HG01890', 'NA19347']
+
+master_list = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/1k_ont_data_overview-samples_and_sequencing.tsv"
+df = pd.read_csv(master_list, sep="\t")
+df = df[["SAMPLE","SEX"]].to_numpy()
+female_samples = []
+male_samples = []
+for sample,sex in df:
+    if sex == "Female":
+        female_samples.append(sample)
+    if sex == "Male":
+        male_samples.append(sample)
+    else:
+        raise RuntimeError("Sample %s not designated as 'Male' or 'Female'"(sample))
+
+female_samples = list(set(common_samples).intersection(female_samples))
+male_samples = list(set(common_samples).intersection(male_samples))
+
+hgsvc_hprc_common_samples = ['HG01258', 'NA12878', 'NA18989', 'NA19129', 'NA19238', 'NA19331', 'NA20847', 'HG00731', 'HG00513', 'HG00171', 'HG03009', 'HG00096', 'HG01596', 'HG00268', 'HG02554', 'HG02953', 'HG01890', 'NA19347']
+
+sample_list = female_samples
+
 wildcard_constraints:
     sample='(?:NA|HG)\d{5}',
     chr="chr[0-9A-Z]"
@@ -37,11 +58,11 @@ wildcard_constraints:
 rule all:
     input:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/nygc-merged.vcf.gz',
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}.vcf.gz', sample=common_samples),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}.vcf.gz.csi', sample=common_samples),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}_read_tags.tsv', sample=common_samples),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.cram', sample=common_samples),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.cram.crai', sample=common_samples)
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}.vcf.gz', sample=sample_list),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}.vcf.gz.csi', sample=sample_list),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}_read_tags.tsv', sample=sample_list),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.cram', sample=sample_list),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.cram.crai', sample=sample_list)
         
 
 ############################
