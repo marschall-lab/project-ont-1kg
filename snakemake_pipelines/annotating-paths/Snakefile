@@ -37,36 +37,67 @@ rule align_assemblies_to_chm13_minigraph:
         mem_total_mb=lambda wildcards, attempt: 100000 * attempt
     threads: 24
     shell:
-        '''
-        /gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr {input.ref} {input.assembly} -t {threads} > {output}
-        '''
+        '/gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr {input.ref} {input.assembly} -t {threads} > {output}''
+        
 
-################################################
-##### Calling bubbles on the reference GFA #####
-################################################
+############################################
+##### Pre-processing GFA and GAF files #####
+############################################
 
-# conda environment should have networkx and whatshap
+# conda environment should have networkx and whatshap. In this version, the tagged GFA does not have sequence info.
 rule call_rGFA_bubbles:
     input:
         ref='/gpfs/project/projects/medbioinf/users/spani/files/gfa/HengLi/chm13-90c.r518.gfa',
-        #script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/annotating-paths/scripts/gfa_tag.py'
+        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/order_gfa.py'
         out_dir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging'
     output:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518-{chr}.gfa', chr=chromosomes),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518-{chr}.csv', chr=chromosomes)
     conda:
-        'bubblecalling.yaml'
+        'preprocessing.yaml'
     resources:
-        runtime_hrs=10,
-        runtime_min=0,
+        runtime_hrs=0,
+        runtime_min=30,
         mem_total_mb=lambda wildcards, attempt: 2048 * attempt
     shell:
-        '''
-        python {input.script} --gfa {input.ref} --output {input.out_dir} 
-        '''
+        'python {input.script} --outdir {input.out_dir} {input.ref}'
+
+#Concat the chromsome-wise tagged GFA produced
+rule concat_tagged_GFA:
+    input:
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518-{chr}.gfa', chr=chromosomes)
+    output:
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518_tagged_noseq.gfa')
+    shell:
+        'cat {input} > {output}'
 
 # Sorting GAF generated from Assembly Alignment
+rule bubble_sort_GAF:
+    input:
+        gfa='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518_tagged_noseq.gfa',
+        gaf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/{sample}.{haplotype}.gaf',
+        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/annotating-paths/scripts/bubble-sort.py'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/{sample}.{haplotype}_sorted.gaf'
+    log:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/log/assembly_mappings/{sample}.{haplotype}_sorted.log'
+    conda:
+        'preprocessing.yaml'
+    resources:
+        runtime_hrs=1,
+        runtime_min=0,
+        mem_total_mb=20000
+    shell:
+        'python {input.script} --gfa {input.gfa} --gaf {input.gaf} --output {output} 2> {log}'
+    
+
+#########################################################
+##### Annotating the GFA and producing the VCF file #####
+#########################################################
 
 # Introduce P and W line using the sorted GAF (Can produce VCFs also)
+#rule annotate_gfa:
+
+
 
 # Retagging the GFA file with the new NO tags (based on allele traversals)
