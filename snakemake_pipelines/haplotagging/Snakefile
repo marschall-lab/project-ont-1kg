@@ -32,16 +32,18 @@ df = pd.read_csv(master_list, sep="\t")
 df = df[["SAMPLE","SEX"]].to_numpy()
 female_samples = []
 male_samples = []
+unspecified_samples = []
 for sample,sex in df:
     if sex == "Female":
         female_samples.append(sample)
-    if sex == "Male":
+    elif sex == "Male":
         male_samples.append(sample)
     else:
-        raise RuntimeError("Sample %s not designated as 'Male' or 'Female'"(sample))
+        unspecified_samples.append(sample) #HG03895 sex is not known.
 
 female_samples = list(set(common_samples).intersection(female_samples))
 male_samples = list(set(common_samples).intersection(male_samples))
+unspecified_samples = list(set(common_samples).intersection(unspecified_samples))
 
 hgsvc_hprc_common_samples = ['HG01258', 'NA12878', 'NA18989', 'NA19129', 'NA19238', 'NA19331', 'NA20847', 'HG00731', 'HG00513', 'HG00171', 'HG03009', 'HG00096', 'HG01596', 'HG00268', 'HG02554', 'HG02953', 'HG01890', 'NA19347']
 
@@ -155,7 +157,7 @@ rule haplotag:
     conda:
         'envs/whatshap.yaml'
     resources:
-        runtime_hrs=lambda wildcards, attempt: 4 * attempt,
+        runtime_hrs=lambda wildcards, attempt: 8 * attempt,
         runtime_min=0,
         mem_total_mb=lambda wildcards, attempt: 40000 * attempt
     shell:
