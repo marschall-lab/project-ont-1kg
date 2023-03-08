@@ -49,18 +49,19 @@ rule call_rGFA_bubbles:
     input:
         ref='/gpfs/project/projects/medbioinf/users/spani/files/gfa/HengLi/chm13-90c.r518.gfa',
         script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/order_gfa.py'
+    params:
         out_dir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging'
     output:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518-{chr}.gfa', chr=chromosomes),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518-{chr}.csv', chr=chromosomes)
     conda:
-        'preprocessing.yaml'
+        'envs/preprocessing.yaml'
     resources:
         runtime_hrs=0,
         runtime_min=30,
         mem_total_mb=lambda wildcards, attempt: 2048 * attempt
     shell:
-        'python {input.script} --outdir {input.out_dir} {input.ref}'
+        'python {input.script} --outdir {params.out_dir} {input.ref}'
 
 #Concat the chromsome-wise tagged GFA produced
 rule concat_tagged_GFA:
