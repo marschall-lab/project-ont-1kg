@@ -37,7 +37,7 @@ rule align_assemblies_to_chm13_minigraph:
         mem_total_mb=lambda wildcards, attempt: 100000 * attempt
     threads: 24
     shell:
-        '/gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr {input.ref} {input.assembly} -t {threads} > {output}''
+        '/gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr {input.ref} {input.assembly} -t {threads} > {output}'
         
 
 ############################################
