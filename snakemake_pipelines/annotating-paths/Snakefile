@@ -17,7 +17,7 @@ wildcard_constraints:
 
 rule all:
     input:
-        ''
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518_tagged_noseq.gfa'
 
 ################################################
 ##### Aligning the Assemblies to the Graph #####
@@ -67,7 +67,7 @@ rule concat_tagged_GFA:
     input:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518-{chr}.gfa', chr=chromosomes)
     output:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518_tagged_noseq.gfa')
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518_tagged_noseq.gfa'
     shell:
         'cat {input} > {output}'
 
