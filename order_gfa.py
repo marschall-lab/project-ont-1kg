@@ -213,8 +213,8 @@ if __name__ == "__main__":
         representative_node = name_to_component[chromosome]
 
         # Initialize files
-        f_gfa = open(out_dir+'/'+gfa_filename[:-4]+'-'+chromosome+'.gfa', 'w')
-        f_colors = open(out_dir+'/'+gfa_filename[:-4]+'-'+chromosome+'.csv', 'w')
+        f_gfa = open(out_dir+'/'+gfa_filename.split("/")[-1][:-4]+'-'+chromosome+'.gfa', 'w')
+        f_colors = open(out_dir+'/'+gfa_filename.split("/")[-1][:-4]+'-'+chromosome+'.csv', 'w')
         f_colors.write('Name,Color,SN,SO,BO,NO\n')
 
         component_nodes = set()
