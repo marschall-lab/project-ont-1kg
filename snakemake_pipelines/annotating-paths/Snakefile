@@ -61,7 +61,13 @@ rule call_rGFA_bubbles:
         runtime_min=30,
         mem_total_mb=lambda wildcards, attempt: 2048 * attempt
     shell:
-        'python {input.script} --outdir {params.out_dir} {input.ref}'
+        '''
+        if [ ! -d {params.out_dir} ]
+        then
+            mkdir {params.out_dir}
+        fi
+        python {input.script} --outdir {params.out_dir} {input.ref}
+        '''
 
 #Concat the chromsome-wise tagged GFA produced
 rule concat_tagged_GFA:
