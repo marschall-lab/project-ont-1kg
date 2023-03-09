@@ -37,11 +37,11 @@ def main():
     logger.info("\nMemory Information")
     logger.info("  Maximum memory usage: %.3f GB", memory_kb / 1e6)
     logger.info("\nTime Summary:")
-    logger.info("  Time to parse GFA file: %.3f%", timers.elapsed("read_gfa"))
-    logger.info("  Total time to sort GAF file: %.3f%", timers.elapsed("total_sort"))
-    logger.info("    Time to parse GAF file: %.3f%", timers.elapsed("read_gaf"))
-    logger.info("    Time to sort GAF file: %.3f%", timers.elapsed("sort_gaf"))
-    logger.info("    Time to write GAF file: %.3f%", timers.elapsed("write_gaf"))
+    logger.info("  Time to parse GFA file: %.3f"%(timers.elapsed("read_gfa")))
+    logger.info("  Total time to sort GAF file: %.3f"%(timers.elapsed("total_sort")))
+    logger.info("    Time to parse GAF file: %.3f"%(timers.elapsed("read_gaf")))
+    logger.info("    Time to sort GAF file: %.3f"%(timers.elapsed("sort_gaf")))
+    logger.info("    Time to write GAF file: %.3f"%(timers.elapsed("write_gaf")))
     
 
 def bubble_sort(options):
