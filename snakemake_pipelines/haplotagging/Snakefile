@@ -62,9 +62,13 @@ rule all:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/nygc-merged.vcf.gz',
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}.vcf.gz', sample=sample_list),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}.vcf.gz.csi', sample=sample_list),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}_read_tags.tsv', sample=sample_list),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.cram', sample=sample_list),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.cram.crai', sample=sample_list)
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}_PAR_only.vcf.gz', sample=male_samples),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}_PAR_only.vcf.gz.csi', sample=male_samples),
+        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/males/{sample}/{sample}_init.cram', sample=male_samples),
+        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/males/{sample}/{sample}_read_tags_init.tsv', sample=male_samples),
+        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}_read_tags.tsv', sample=sample_list),
+        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.cram', sample=sample_list),
+        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.cram.crai', sample=sample_list)
         
 
 ############################
@@ -138,12 +142,45 @@ rule index_phased_vcf:
         bcftools index {input}
         '''
 
+rule extract_PAR:
+    input:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}.vcf.gz',
+        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/haplotagging/scripts/extract_PAR.py'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}_PAR_only.vcf.gz'
+    conda:
+        'envs/preprocessing.yaml'
+    resources:
+        runtime_hrs=1,
+        runtime_min=20,
+        mem_total_mb=lambda wildcards, attempt: 256 * attempt
+    shell:
+        '''
+        python {script} --bgzip --vcf {input.vcf} --output {output}
+        '''
+
+rule index_PARonly_vcf:
+    input:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}_PAR_only.vcf.gz'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}_PAR_only.vcf.gz.csi'
+    conda:
+        'envs/preprocessing.yaml'
+    resources:
+        runtime_hrs=0,
+        runtime_min=20,
+        mem_total_mb=lambda wildcards, attempt: 256 * attempt
+    shell:
+        '''
+        bcftools index {input}
+        '''
+
+
 ##############################
 ##### Haplotagging Reads #####
 ##############################
 
-# For now, the output BAM file is being sent to /dev/null. Change it for later.
-rule haplotag:
+rule haplotag_females:
     input:
         reads='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/GRCh38/{sample}/alignments/{sample}.cram',
         vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}.vcf.gz',
@@ -153,7 +190,32 @@ rule haplotag:
         tagged_cram='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.cram',
         haplotag_list='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}_read_tags.tsv'
     log:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/whatshap/{sample}/output.log'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/log/female/{sample}/output.log'
+    conda:
+        'envs/whatshap.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 8 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 60000 * attempt
+    shell:
+        '''
+        seq_cache_populate.pl -root /gpfs/project/projects/medbioinf/users/spani/files/ref /gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta
+        export REF_PATH=/gpfs/project/projects/medbioinf/users/spani/files/ref/%2s/%2s/%s:http://www.ebi.ac.uk/ena/cram/md5/%s
+        export REF_CACHE=/gpfs/project/projects/medbioinf/users/spani/files/ref/%2s/%2s/%s
+        whatshap haplotag --reference {input.ref} --sample {wildcards.sample} --skip-missing-contigs --output-haplotag-list {output.haplotag_list} --output {output.tagged_cram} {input.vcf} {input.reads}
+        '''
+
+rule haplotag_males:
+    input:
+        reads='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/GRCh38/{sample}/alignments/{sample}.cram',
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}_PAR_only.vcf.gz',
+        vcf_ind='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}_PAR_only.vcf.gz.csi',
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
+    output:
+        tagged_cram=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/males/{sample}/{sample}_init.cram'),
+        haplotag_list=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/males/{sample}/{sample}_read_tags_init.tsv')
+    log:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/log/male/{sample}/output.log'
     conda:
         'envs/whatshap.yaml'
     resources:
