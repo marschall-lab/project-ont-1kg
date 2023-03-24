@@ -17,11 +17,12 @@ def tag_to_str(tag):
         assert False
 
 class Node:
-    def __init__(self, name, tags):
+    def __init__(self, name, tags, sequence=None):
         self.name = name
         self.tags = tags
+        self.sequence = sequence
     def to_line(self):
-        return '\t'.join(['S', self.name, '*'] + [tag_to_str(t) for t in self.tags.items()])
+        return '\t'.join(['S', self.name, '*' if self.sequence is None else self.sequence] + [tag_to_str(t) for t in self.tags.items()])
 
 class Edge:
     def __init__(self, from_node, from_dir, to_node, to_dir, overlap, tags):
@@ -44,7 +45,7 @@ def parse_tag(s):
     else:
         assert False
 
-def parse_gfa(gfa_filename):
+def parse_gfa(gfa_filename, with_sequence=False):
     nodes = {}
     edges = defaultdict(list)
 
@@ -53,7 +54,10 @@ def parse_gfa(gfa_filename):
         if fields[0] == 'S':
             name = fields[1]
             tags = dict(parse_tag(s) for s in fields[3:])
-            nodes[name] = Node(name,tags)
+            sequence = None
+            if with_sequence and (fields[2] != '*'):
+                sequence = fields[2]
+            nodes[name] = Node(name,tags,sequence)
         elif fields[0] == 'L':
             from_node = fields[1]
             from_dir = fields[2]
@@ -169,6 +173,8 @@ def add_arguments(parser):
     arg('--chromosome_order', default=default_chromosome_order,
         help='Order in which to arrange chromosomes in terms of BO sorting. '
         'Expecting comma-separated list. Default: chr1,...,chr22,chrX,chrY,chrM')
+    arg('--with-sequence', default=False, action='store_true',
+        help='Retain sequences in output (default is to strip sequences)')
     arg('graph', metavar='GRAPH', help='Input GFA file')
     arg('--outdir', default="./out", help='Output Directory to store all the GFA and CSV files. Default location is a "out" folder from the directory of execution.')
 
@@ -183,7 +189,7 @@ if __name__ == "__main__":
 
     print('Reading', gfa_filename)
 
-    nodes, edges = parse_gfa(gfa_filename)
+    nodes, edges = parse_gfa(gfa_filename, args.with_sequence)
 
     print('Nodes:', len(nodes))
     print('Edges:', len(edges))
