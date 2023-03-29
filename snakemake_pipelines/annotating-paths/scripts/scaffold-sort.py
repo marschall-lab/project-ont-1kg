@@ -153,7 +153,6 @@ def process_alignment(line, nodes, offset):
     bo = None
     no = None
     start = None
-    scaffold_list = []
     orient_list = []
     confused = False
     for n in path:
@@ -165,7 +164,6 @@ def process_alignment(line, nodes, offset):
             continue
         if nodes[n][1] != 0:
             continue
-        scaffold_list.append((orient, n))
         orient_list.append(orient)
     if orient_list.count('>') !=0 and orient_list.count('<') != 0:
         confused = True
