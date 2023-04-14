@@ -64,8 +64,8 @@ def get_stats(gaf, out):
         seq_name = alignment[0]
         q_len = int(alignment[1])
         q_start = int(alignment[2])
-        total_alignment_len += abs(q_start-q_end)
         q_end = int(alignment[3])
+        total_alignment_len += abs(q_start-q_end)
         percentage_aligned = abs(q_start-q_end)/q_len
         num_res_match = int(alignment[9])
         block_len = int(alignment[10])
