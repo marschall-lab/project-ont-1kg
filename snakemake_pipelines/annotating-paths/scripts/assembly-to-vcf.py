@@ -390,7 +390,7 @@ def write_header(writer, contigs, haplotypes, options):
     writer.write("##phased=True")
     
     #Writing INFO Header
-    writer.write('##INFO=<ID=CONFLICT,Number=.,Type=String,Description="Sample names for which there are multiple paths in the graph with conflicting alleles">')
+    writer.write('##INFO=<ID=CONFLICT,Number=.,Type=String,Description="Assembly names for which there are multiple conflicting allele traversals">')
     writer.write('##INFO=<ID=AC,Number=A,Type=Integer,Description="Total number of alternate alleles in called genotypes">')
     writer.write('##INFO=<ID=AF,Number=A,Type=Float,Description="Estimated allele frequency in the range (0,1]">')
     writer.write('##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of samples with data">')
