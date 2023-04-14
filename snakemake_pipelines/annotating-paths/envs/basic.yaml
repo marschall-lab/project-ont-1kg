@@ -10,3 +10,4 @@ dependencies:
   - pandas
   - matplotlib
   - cyvcf2
+  - whatshap
