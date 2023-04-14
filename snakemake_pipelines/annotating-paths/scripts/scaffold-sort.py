@@ -1,3 +1,13 @@
+'''
+Scaffold Sort:
+
+The basis of the script is the BO and NO tags defined by Tobias Marschall in his order_gfa.py script. The script defines scaffold nodes as nodes whose removal increases total number of connected components.
+Using this definition of scaffold nodes, the sorting has been done.
+
+The main difference between this sorting and the bubble-sort.py script is that here the the entire alignment is processed and used to determine whether the alignment is reveresed.
+Here inversions are not taken into account.
+'''
+
 import sys
 import argparse
 import logging
@@ -45,15 +55,6 @@ def main():
     
 
 def bubble_sort(options):
-    """
-    The sorting algorithm follows this general principle:
-    1. Parse the alignment and check the overall orientation of the alignment (is it forward with respect to the underlying graph).
-       This I check using the scaffold node orientation. I have an extra check to see if the scaffold node I am checking is part of the sample bubble or not.
-    2. After checking the orientation, the first node of the alignment is determined. If it is reversed, then the first node is the last node of the given path.
-    3. Extract the BO tag, NO tag, start position (in corrected orientation) and the offset of the GAF alignment line. This is stored as a namedtuple
-    4. The sorting happens using these 4 values in the priority BO > NO > start > offset. The sorting is done in the list using functools.
-    5. The sorted GAF is written using the offset values extracted from the original file.
-    """
     
     if options.output == None:
         writer = sys.stdout
