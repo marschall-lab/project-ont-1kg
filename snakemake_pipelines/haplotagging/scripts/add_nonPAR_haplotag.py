@@ -1,11 +1,12 @@
 import gzip
 import argparse
 import pysam
+import sys
+from collections import defaultdict
 
 def main():
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("--debug", action="store_true", default=False, help="Print debug messages")
     parser.add_argument("--tag-list", required=True, help="Provide read tag list given as whatshap haplotag output.")
     parser.add_argument("--bam", required=True, help="Provide the tagged BAM/CRAM given as whatshap haplotag output/ BAM file used for tagging.")
     parser.add_argument("--output", help="Output path to store the output tagged list with the non-PAR region reads tagged. Default: sys.stdout")
@@ -21,9 +22,6 @@ def main():
     bam_reader = pysam.AlignmentFile(bam, "rb")
     nonPAR_iter = bam_reader.fetch("chrX", 2781479, 155701383)
 
-    out = options.output
-    writer = None
-    
     for read in nonPAR_iter:
         start = read.reference_start
         end = read.reference_end
@@ -32,10 +30,27 @@ def main():
         elif end > 155701383:
             continue
         readname = read.query_name
-        print(read_tags[readname])
+        try:
+            tags = read_tags[readname]
+            read_tags[readname][0] = 'H2'
+            read_tags[readname][1] = '0'
+        except KeyError:
+            pass
+    
+    writer = None
+    if options.output:
+        writer = open(options.output, "w")
+    else:
+        writer = sys.stdout
+    
+    writer.write("#readname\thaplotype\tphaseset\tchromosome\n")
+    for readname, tags in read_tags.items():
+        line = "%s\t%s\t%s\t%s\n"%(readname, tags[0], tags[1], tags[2])
+        writer.write(line)
+    
+    if options.output:
+        writer.close()
 
-        exit()
-        pass
 
 def read_tag_list(file, read):
     
