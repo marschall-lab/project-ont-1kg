@@ -41,15 +41,16 @@ for sample,sex in df:
     else:
         unspecified_samples.append(sample) #HG03895 sex is not known.
 
-female_samples = list(set(common_samples).intersection(female_samples))
-male_samples = list(set(common_samples).intersection(male_samples))
-male_samples_test = ['HG02277', 'NA19207', 'NA19729', 'NA20538']
-#male_samples_test = male_samples[0:5]
-unspecified_samples = list(set(common_samples).intersection(unspecified_samples))
+if config['mode'] == 'pilot':
+    pilot_samples = config['HGSVC'] + config['HPRC']
+    female_samples = list(set(pilot_samples).intersection(female_samples))
+    male_samples = list(set(pilot_samples).intersection(male_samples))
+    unspecified_samples = list(set(pilot_samples).intersection(unspecified_samples))
+elif config['mode'] == 'all':
+    female_samples = list(set(common_samples).intersection(female_samples))
+    male_samples = list(set(common_samples).intersection(male_samples))
+    unspecified_samples = list(set(common_samples).intersection(unspecified_samples))
 
-hgsvc_hprc_common_samples = ['HG01258', 'NA12878', 'NA18989', 'NA19129', 'NA19238', 'NA19331', 'NA20847', 'HG00731', 'HG00513', 'HG00171', 'HG03009', 'HG00096', 'HG01596', 'HG00268', 'HG02554', 'HG02953', 'HG01890', 'NA19347']
-
-sample_list = female_samples
 
 wildcard_constraints:
     sample='(?:NA|HG)\d{5}',
@@ -61,13 +62,10 @@ wildcard_constraints:
 
 rule all:
     input:
-        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38/males/{sample}_read_tags.tsv', sample=male_samples),
-        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38/males/{sample}_read_tags.tsv', sample=unspecified_samples),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/female/{sample}/{sample}_read_tags.tsv', sample=female_samples),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/male/{sample}/{sample}_read_tags.tsv', sample=male_samples),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/male/{sample}/{sample}_read_tags.tsv', sample=unspecified_samples),
-        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.cram', sample=sample_list),
-        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.cram.crai', sample=sample_list)
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=female_samples),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=male_samples),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=unspecified_samples),
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/sample_sex.tsv'
         
 
 ############################
@@ -98,7 +96,7 @@ rule concat_nygc_vcf:
     resources:
         runtime_hrs=5,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 2048 * attempt
+        mem_total_mb=lambda wildcards, attempt: 2000 * attempt
     shell:
         '''
         bcftools concat -o {output.vcf} -Oz -f {input.file_list} &> {log}
@@ -119,7 +117,7 @@ rule split_phased_vcf:
     resources:
         runtime_hrs=8,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 512 * attempt
+        mem_total_mb=lambda wildcards, attempt: 2000 * attempt
     shell:
         '''
         bcftools view -Oz -s {wildcards.sample} -o {output} {input}
@@ -135,7 +133,7 @@ rule index_phased_vcf:
     resources:
         runtime_hrs=0,
         runtime_min=20,
-        mem_total_mb=lambda wildcards, attempt: 256 * attempt
+        mem_total_mb=lambda wildcards, attempt: 2000 * attempt
     shell:
         '''
         bcftools index {input}
@@ -152,7 +150,7 @@ rule extract_PAR:
     resources:
         runtime_hrs=1,
         runtime_min=20,
-        mem_total_mb=lambda wildcards, attempt: 256 * attempt
+        mem_total_mb=lambda wildcards, attempt: 2000 * attempt
     shell:
         '''
         python {input.script} --bgzip --vcf {input.vcf} --output {output}
@@ -168,7 +166,7 @@ rule index_PARonly_vcf:
     resources:
         runtime_hrs=0,
         runtime_min=20,
-        mem_total_mb=lambda wildcards, attempt: 256 * attempt
+        mem_total_mb=lambda wildcards, attempt: 2000 * attempt
     shell:
         '''
         bcftools index {input}
@@ -179,6 +177,7 @@ rule index_PARonly_vcf:
 ##### Haplotagging Reads #####
 ##############################
 
+# converting CRAMs to BAMs (since the CRAMs were creating some issues)
 rule convert_cram_to_bam:
     input:
         reads='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/GRCh38/{sample}/alignments/{sample}.cram',
@@ -191,7 +190,7 @@ rule convert_cram_to_bam:
     resources:
         runtime_hrs=lambda wildcards, attempt: 10 * attempt,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 3072 * attempt
+        mem_total_mb=lambda wildcards, attempt: 5000 * attempt
     shell:
         '''
         seq_cache_populate.pl -root /gpfs/project/projects/medbioinf/users/spani/files/ref /gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta
@@ -201,7 +200,7 @@ rule convert_cram_to_bam:
         samtools index -b {output.bam}
         '''
 
-
+# haplotagging females separately (since they dont have PAR regions)
 rule haplotag_females:
     input:
         reads='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38_BAM/{sample}.bam',
@@ -210,23 +209,24 @@ rule haplotag_females:
         vcf_ind='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/{sample}.vcf.gz.csi',
         ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
     output:
-        haplotag_list='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/female/{sample}/{sample}_read_tags.tsv'
+        haplotag_list='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv'
     log:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/log/female/{sample}/output.log'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/output.log'
     conda:
         'envs/whatshap.yaml'
     resources:
-        runtime_hrs=lambda wildcards, attempt: 12 * attempt,
+        runtime_hrs=lambda wildcards, attempt: 24 * attempt,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 70000 * attempt
+        mem_total_mb=lambda wildcards, attempt: 80000 * attempt
     shell:
         '''
         seq_cache_populate.pl -root /gpfs/project/projects/medbioinf/users/spani/files/ref /gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta
         export REF_PATH=/gpfs/project/projects/medbioinf/users/spani/files/ref/%2s/%2s/%s:http://www.ebi.ac.uk/ena/cram/md5/%s
         export REF_CACHE=/gpfs/project/projects/medbioinf/users/spani/files/ref/%2s/%2s/%s
-        whatshap haplotag --reference {input.ref} --sample {wildcards.sample} --skip-missing-contigs --output-haplotag-list {output.haplotag_list} --output /dev/null {input.vcf} {input.reads}
+        whatshap haplotag --reference {input.ref} --sample {wildcards.sample}  --output-haplotag-list {output.haplotag_list} --output /dev/null {input.vcf} {input.reads}
         '''
 
+# Initial haplotagging of male samples (excluding the non-PAR regions)
 rule haplotag_males:
     input:
         reads='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38_BAM/{sample}.bam',
@@ -237,34 +237,35 @@ rule haplotag_males:
     output:
         haplotag_list='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38/males/{sample}_read_tags.tsv'
     log:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38/log/male/{sample}/output.log'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/output.log'
     conda:
         'envs/whatshap.yaml'
     resources:
-        runtime_hrs=lambda wildcards, attempt: 12 * attempt,
+        runtime_hrs=lambda wildcards, attempt: 24 * attempt,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 70000 * attempt
+        mem_total_mb=lambda wildcards, attempt: 80000 * attempt
     shell:
         '''
         seq_cache_populate.pl -root /gpfs/project/projects/medbioinf/users/spani/files/ref /gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta
         export REF_PATH=/gpfs/project/projects/medbioinf/users/spani/files/ref/%2s/%2s/%s:http://www.ebi.ac.uk/ena/cram/md5/%s
         export REF_CACHE=/gpfs/project/projects/medbioinf/users/spani/files/ref/%2s/%2s/%s
-        whatshap haplotag --reference {input.ref} --sample {wildcards.sample} --skip-missing-contigs --output-haplotag-list {output.haplotag_list} --output /dev/null {input.vcf} {input.reads}
+        whatshap haplotag --reference {input.ref} --sample {wildcards.sample} --output-haplotag-list {output.haplotag_list} --output /dev/null {input.vcf} {input.reads}
         '''
 
+# adding the reads mapping to nonPAR regions of the X.
 rule add_nonPAR_haplotag_males:
     input:
         haplotag_list='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38/males/{sample}_read_tags.tsv',
         reads='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/GRCh38/{sample}/alignments/{sample}.cram',
         script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/haplotagging/scripts/add_nonPAR_haplotag.py'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/male/{sample}/{sample}_read_tags.tsv'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv'
     conda:
         'envs/basic.yaml'        
     resources:
         runtime_hrs=2,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 1024*25 * attempt
+        mem_total_mb=lambda wildcards, attempt: 40000 * attempt
     shell:
         '''
         seq_cache_populate.pl -root /gpfs/project/projects/medbioinf/users/spani/files/ref /gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta
@@ -273,6 +274,26 @@ rule add_nonPAR_haplotag_males:
         python {input.script} --bam {input.reads} --tag-list {input.haplotag_list} --output {output}
         '''
 
+# creating YAML file which contains the list of male and female samples.
+rule haplotag_sex_yaml_file:
 
-
+rule create_region_vcf_file_list:
+    input:
+        male = expand(male_samples),
+        female = expand(female_samples),
+        unspecified = expand(unspecified_samples)
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/sample_sex.tsv'
+    run:
+        f = open(output[0], 'w')
+        print('male:', file=f)
+        for name in input.male:
+            print("\t- ", name, file=f)
+        print('female:', file=f)
+        for name in input.female:
+            print("\t- ", name, file=f)
+        print('unspecified:', file=f)
+        for name in input.unspecified:
+            print("\t- ", name, file=f)
+        f.close()
 

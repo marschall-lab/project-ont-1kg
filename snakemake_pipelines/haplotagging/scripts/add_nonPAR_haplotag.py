@@ -35,7 +35,7 @@ def main():
             read_tags[readname][0] = 'H2'
             read_tags[readname][1] = '0'
         except KeyError:
-            pass
+            read_tags[readname] = ['H2', '0', 'chrX']
     
     writer = None
     if options.output:

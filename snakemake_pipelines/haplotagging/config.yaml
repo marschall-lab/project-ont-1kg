@@ -1,24 +1,24 @@
-chromosome:
-  - chr1
-  - chr2
-  - chr3
-  - chr4
-  - chr5
-  - chr6
-  - chr7
-  - chr8
-  - chr9
-  - chr10
-  - chr11
-  - chr12
-  - chr13
-  - chr14
-  - chr15
-  - chr16
-  - chr17
-  - chr18
-  - chr19
-  - chr20
-  - chr21
-  - chr22
-  - chrX
+HGSVC:
+  - HG01258
+  - NA12878
+  - NA18989
+  - NA19129
+  - NA19238
+  - NA19331
+  - NA20847
+  - HG00731
+  - HG00513
+  - HG00171
+  - HG03009
+  - HG00096
+  - HG01596
+  - HG00268
+  - HG02554
+  - HG02953
+  - HG01890
+  - NA19347
+
+HPRC:
+  - HG01258
+
+mode: pilot
