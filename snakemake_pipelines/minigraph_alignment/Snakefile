@@ -1,7 +1,6 @@
 """
-Haplotagging all the reads in the CRAM files against the Phased NYGC VCFs.
+Minigraph alignments and post-processing GAFs
 """
-configfile: './config.yaml'
 
 import subprocess
 import re
@@ -14,11 +13,16 @@ ls_command = 'ls '+path
 process = subprocess.Popen(ls_command.split(), stdout=subprocess.PIPE)
 ls_out, ls_err = process.communicate()
 
-fasta_samples = {}
+fasta_samples = set()
+fasta_files = {}
 for f in ls_out.decode('utf-8').split('\n'):
     if f[-2:] != "gz":
         continue
     fasta_samples.add(f[0:7])
+    try:
+        fasta_files[f[0:7]].append(f)
+    except:
+        fasta_files[f[0:7]] = [f]
 
 vcf_sample_list = None
 with gzip.open("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/nygc-merged.vcf.gz", "rt") as f:
@@ -29,7 +33,7 @@ with gzip.open("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/hapl
         break
 
 common_samples = list(fasta_samples.intersection(vcf_sample_list))
-print(common_samples)
+
 samples = ['HG00096', 'HG00171']
 
 wildcard_constraints:
@@ -38,6 +42,7 @@ wildcard_constraints:
 
 rule all:
     input:
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}_merged.fasta.gz', sample=samples),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.gaf', sample=samples),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.tagged.gaf', sample=samples),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.tagged.sorted.gaf.gz', sample=samples),
@@ -47,23 +52,17 @@ rule all:
 # Merge FASTA files
 rule merge_fasta:
     input:
-        '/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/fasta/{sample}_*'
+        lambda wildcards: ['/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/fasta/{}'.format(fname) for fname in fasta_files[wildcards.sample]]
     output:
-        fasta = temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}_merged.fasta.gz'),
-        fai = temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}_merged.fasta.gz.fai'),
-        gzi = temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}_merged.fasta.gz.gzi'),
-
+        fasta = temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}_merged.fasta.gz')
     conda:
         'envs/basic.yaml'
     resources:
-        runtime_hrs=2,
+        runtime_hrs=12,
         runtime_min=0,
         mem_total_mb=lambda wildcards, attempt: 5120 * attempt
     shell:
-        '''
-        cat {input} | gzip -d | bgzip -c > {output}
-        samtools faidx {output}
-        '''
+        'cat {input} | gzip -d | bgzip -c > {output.fasta}'
 
 # Run minigraph alignment
 rule minigraph_alignment:
@@ -75,9 +74,9 @@ rule minigraph_alignment:
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/minigraph_alignment.log'
     resources:
-        runtime_hrs=12,
+        runtime_hrs=24,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 80000 * attempt
+        mem_total_mb=lambda wildcards, attempt: 30000 * attempt
     threads: 32
     shell:
         '/gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr {input.ref} {input.fasta} -t {threads} > {output}'
@@ -95,7 +94,7 @@ rule gaftools_phase:
     resources:
         runtime_hrs=1,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 2000 * attempt
+        mem_total_mb=lambda wildcards, attempt: 5000 * attempt
     shell:
         '''
         set +u
@@ -108,22 +107,22 @@ rule gaftools_phase:
 # Sorting GAF
 rule gaftools_sort:
     input:
-        gaf = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.gaf',
+        gaf = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.tagged.gaf',
         gfa = '/gpfs/project/projects/medbioinf/users/spani/files/gfa/HengLi/chm13-90c.r518_tagged.gfa'
     output:
-        sorted_gaf = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.tagged.sorted.gaf.gz'
+        sorted_gaf = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.tagged.sorted.gaf.gz',
         index = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.tagged.sorted.gaf.gz.gai'
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/gaftools_sort.log'
     resources:
         runtime_hrs=1,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 2000 * attempt
+        mem_total_mb=lambda wildcards, attempt: 5000 * attempt
     shell:
         '''
         set +u
         source ~/.bashrc
         conda activate gaftools-dev
         set -u
-        gaftools sort --bgzip --outgaf {output.sorted_gaf} {input.gaf} {input.read_tag}
+        gaftools sort --bgzip --outgaf {output.sorted_gaf} {input.gaf} {input.gfa}
         '''
