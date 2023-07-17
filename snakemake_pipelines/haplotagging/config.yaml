@@ -46,4 +46,4 @@ HGSVC:
 HPRC:
   - HG01258
 
-mode: pilot']
+mode: "pilot"
