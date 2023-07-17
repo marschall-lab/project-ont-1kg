@@ -276,8 +276,6 @@ rule add_nonPAR_haplotag_males:
 
 # creating YAML file which contains the list of male and female samples.
 rule haplotag_sex_yaml_file:
-
-rule create_region_vcf_file_list:
     input:
         male = expand(male_samples),
         female = expand(female_samples),
