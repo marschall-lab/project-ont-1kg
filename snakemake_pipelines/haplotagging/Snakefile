@@ -53,7 +53,6 @@ elif config['mode'] == 'all':
 
 
 wildcard_constraints:
-    sample='(?:NA|HG)\d{5}',
     chr="chr[0-9A-Z]"
 
 #############################
@@ -212,6 +211,8 @@ rule haplotag_females:
         haplotag_list='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv'
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/output.log'
+    wildcard_constraints:
+        sample = "|".join(female_samples)
     conda:
         'envs/whatshap.yaml'
     resources:
@@ -238,6 +239,8 @@ rule haplotag_males:
         haplotag_list='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38/males/{sample}_read_tags.tsv'
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/output.log'
+    wildcard_constraints:
+        sample = "|".join(male_samples)
     conda:
         'envs/whatshap.yaml'
     resources:
@@ -260,6 +263,8 @@ rule add_nonPAR_haplotag_males:
         script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/haplotagging/scripts/add_nonPAR_haplotag.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv'
+    wildcard_constraints:
+        sample = "|".join(male_samples)
     conda:
         'envs/basic.yaml'        
     resources:
