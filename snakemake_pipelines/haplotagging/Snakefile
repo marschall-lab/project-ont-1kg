@@ -292,7 +292,7 @@ rule add_nonPAR_haplotag_males:
 
 # creating YAML file which contains the list of male and female samples.
 rule haplotag_sex_yaml_file:
-    input:
+    params:
         male = expand(male_samples),
         female = expand(female_samples),
         unspecified = expand(unspecified_samples)
@@ -301,13 +301,13 @@ rule haplotag_sex_yaml_file:
     run:
         f = open(output[0], 'w')
         print('male:', file=f)
-        for name in input.male:
+        for name in params.male:
             print("\t- ", name, file=f)
         print('female:', file=f)
-        for name in input.female:
+        for name in params.female:
             print("\t- ", name, file=f)
         print('unspecified:', file=f)
-        for name in input.unspecified:
+        for name in params.unspecified:
             print("\t- ", name, file=f)
         f.close()
 
