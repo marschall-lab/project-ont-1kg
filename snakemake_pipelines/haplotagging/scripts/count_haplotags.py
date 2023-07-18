@@ -28,7 +28,8 @@ def main():
             out = options.output+"/%s.txt"%(sample)
             with open(out, 'w') as f:
                 for read in intersection_reads:
-                    print(read, file=f)
+                    f.write(read)
+                    f.write("\n")
 
 
 def extract_tsv_count(path, sample, output):
