@@ -331,7 +331,7 @@ rule cram_to_fasta:
     resources:
         runtime_hrs=lambda wildcards, attempt: 10 * attempt,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 5000 * attempt
+        mem_total_mb=lambda wildcards, attempt: 20000 * attempt
     shell:
         '''
         seq_cache_populate.pl -root /gpfs/project/projects/medbioinf/users/spani/files/ref /gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta
@@ -342,8 +342,8 @@ rule cram_to_fasta:
 
 rule count_haplotags:
     input:
-        fasta = expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/fasta/{sample}.fasta', sample=all_samples)
-        tags = expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=all_samples)
+        fasta = expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/fasta/{sample}.fasta', sample=all_samples),
+        tags = expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=all_samples),
         script = '/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/haplotagging/scripts/count_haplotags.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/summary.tsv'
