@@ -65,7 +65,8 @@ rule all:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=female_samples),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=male_samples),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=unspecified_samples),
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/sample_sex.tsv'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/sample_sex.tsv',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/summary.tsv'
         
 
 ############################
@@ -235,7 +236,7 @@ rule haplotag_females:
         seq_cache_populate.pl -root /gpfs/project/projects/medbioinf/users/spani/files/ref /gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta
         export REF_PATH=/gpfs/project/projects/medbioinf/users/spani/files/ref/%2s/%2s/%s:http://www.ebi.ac.uk/ena/cram/md5/%s
         export REF_CACHE=/gpfs/project/projects/medbioinf/users/spani/files/ref/%2s/%2s/%s
-        whatshap haplotag --reference {input.ref} --sample {wildcards.sample}  --output-haplotag-list {output.haplotag_list} --output /dev/null {input.vcf} {input.reads}
+        whatshap haplotag --skip-missing-contigs --reference {input.ref} --sample {wildcards.sample}  --output-haplotag-list {output.haplotag_list} --output /dev/null {input.vcf} {input.reads}
         '''
 
 # Initial haplotagging of male samples (excluding the non-PAR regions)
@@ -263,7 +264,7 @@ rule haplotag_males:
         seq_cache_populate.pl -root /gpfs/project/projects/medbioinf/users/spani/files/ref /gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta
         export REF_PATH=/gpfs/project/projects/medbioinf/users/spani/files/ref/%2s/%2s/%s:http://www.ebi.ac.uk/ena/cram/md5/%s
         export REF_CACHE=/gpfs/project/projects/medbioinf/users/spani/files/ref/%2s/%2s/%s
-        whatshap haplotag --reference {input.ref} --sample {wildcards.sample} --output-haplotag-list {output.haplotag_list} --output /dev/null {input.vcf} {input.reads}
+        whatshap haplotag --skip-missing-contigs --reference {input.ref} --sample {wildcards.sample} --output-haplotag-list {output.haplotag_list} --output /dev/null {input.vcf} {input.reads}
         '''
 
 # adding the reads mapping to nonPAR regions of the X.
@@ -310,4 +311,55 @@ rule haplotag_sex_yaml_file:
         for name in params.unspecified:
             print("\t- ", name, file=f)
         f.close()
+
+
+#######################################
+########### QC on Haplotags ###########
+#######################################
+
+# Need to get the fasta to count the total reads.
+rule cram_to_fasta:
+    input:
+        reads='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/GRCh38/{sample}/alignments/{sample}.cram',
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
+    output:
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/fasta/{sample}.fasta')
+    wildcard_constraints:
+        sample = "|".join(all_samples)
+    conda:
+        'envs/preprocessing.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 10 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 5000 * attempt
+    shell:
+        '''
+        seq_cache_populate.pl -root /gpfs/project/projects/medbioinf/users/spani/files/ref /gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta
+        export REF_PATH=/gpfs/project/projects/medbioinf/users/spani/files/ref/%2s/%2s/%s:http://www.ebi.ac.uk/ena/cram/md5/%s
+        export REF_CACHE=/gpfs/project/projects/medbioinf/users/spani/files/ref/%2s/%2s/%s
+        samtools fasta {input.reads} > {output}
+        '''
+
+rule count_haplotags:
+    input:
+        fasta = expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/fasta/{sample}.fasta', sample=all_samples)
+        tags = expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=all_samples)
+        script = '/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/haplotagging/scripts/count_haplotags.py'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/summary.tsv'
+    params:
+        samples = ','.join(all_samples),
+        fasta = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/fasta/',
+        tsv = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/',
+        output = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/'
+    wildcard_constraints:
+        sample = '|'.join(all_samples)
+    conda:
+        'envs/preprocessing.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 10 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 20000 * attempt
+    shell:
+        'python {input.script} --samples {params.samples} --tsv {params.tsv} --fasta {params.fasta} --output {params.output} > {output}'
 
