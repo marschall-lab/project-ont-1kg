@@ -4,5 +4,5 @@ channels:
   - http://conda.repo.test.hhu.de/main
 
 dependencies:
-  - whatshap =1.6
+  - whatshap=2.0
   - samtools
