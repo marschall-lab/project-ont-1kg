@@ -24,7 +24,6 @@ chromosome:
   - chrX
 
 HGSVC:
-  - HG01258
   - NA12878
   - NA18989
   - NA19129
@@ -46,4 +45,4 @@ HGSVC:
 HPRC:
   - HG01258
 
-mode: "pilot"
+mode: "HPRC"

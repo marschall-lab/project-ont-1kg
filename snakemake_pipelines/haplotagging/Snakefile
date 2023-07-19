@@ -43,14 +43,14 @@ for sample,sex in df:
 
 if config['mode'] == 'pilot':
     all_samples = config['HGSVC'] + config['HPRC']
-    female_samples = list(set(all_samples).intersection(female_samples))
-    male_samples = list(set(all_samples).intersection(male_samples))
-    unspecified_samples = list(set(all_samples).intersection(unspecified_samples))
 elif config['mode'] == 'all':
     all_samples = common_samples
-    female_samples = list(set(common_samples).intersection(female_samples))
-    male_samples = list(set(common_samples).intersection(male_samples))
-    unspecified_samples = list(set(common_samples).intersection(unspecified_samples))
+elif config['mode'] == 'HPRC':
+    all_samples = config['HPRC']
+
+female_samples = list(set(all_samples).intersection(female_samples))
+male_samples = list(set(all_samples).intersection(male_samples))
+unspecified_samples = list(set(all_samples).intersection(unspecified_samples))
 
 
 wildcard_constraints:
@@ -192,8 +192,8 @@ rule convert_cram_to_bam:
         reads='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/GRCh38/{sample}/alignments/{sample}.cram',
         ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
     output:
-        bam=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38_BAM/{sample}.bam'),
-        ind=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38_BAM/{sample}.bam.bai')
+        bam='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38_BAM/{sample}.bam',
+        ind='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38_BAM/{sample}.bam.bai'
     wildcard_constraints:
         sample = "|".join(all_samples)
     conda:
