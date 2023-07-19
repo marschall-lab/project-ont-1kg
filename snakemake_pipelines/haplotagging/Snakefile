@@ -42,7 +42,7 @@ for sample,sex in df:
         unspecified_samples.append(sample) #HG03895 sex is not known.
 
 if config['mode'] == 'pilot':
-    all_samples = config['HGSVC'] + config['HPRC']
+    all_samples = ['HG02604'] + config['HGSVC'] + config['HPRC']
 elif config['mode'] == 'all':
     all_samples = common_samples
 elif config['mode'] == 'HPRC':
@@ -67,6 +67,7 @@ rule all:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=unspecified_samples),
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/sample_sex.tsv',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/summary.tsv'
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/{sample}_absent-read-stats.tsv', sample=all_samples)
         
 
 ############################
@@ -340,20 +341,21 @@ rule cram_to_fasta:
         samtools fasta {input.reads} > {output}
         '''
 
+# count the absent reads and report summary and list of reads
 rule count_haplotags:
     input:
-        fasta = expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/fasta/{sample}.fasta', sample=all_samples),
-        tags = expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=all_samples),
-        script = '/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/haplotagging/scripts/count_haplotags.py'
+        fasta=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/fasta/{sample}.fasta', sample=all_samples),
+        tags=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=all_samples),
+        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/haplotagging/scripts/count_haplotags.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/summary.tsv'
     params:
-        samples = ','.join(all_samples),
-        fasta = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/fasta/',
-        tsv = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/',
-        output = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/'
+        samples=','.join(all_samples),
+        fasta='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/fasta/',
+        tsv='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/',
+        output='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/'
     wildcard_constraints:
-        sample = '|'.join(all_samples)
+        sample='|'.join(all_samples)
     conda:
         'envs/preprocessing.yaml'
     resources:
@@ -363,3 +365,27 @@ rule count_haplotags:
     shell:
         'python {input.script} --samples {params.samples} --tsv {params.tsv} --fasta {params.fasta} --output {params.output} > {output}'
 
+
+rule absent_reads_stats:
+    input:
+        read_list='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/{sample}.txt',
+        bam='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38_BAM/{sample}.bam',
+        ind='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38_BAM/{sample}.bam.bai',
+        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/haplotagging/scripts/absent_read_stats.py'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/{sample}_absent-read-stats.tsv',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/{sample}_absent-read-unmapped.txt',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/{sample}_absent-read-chromosomal.txt',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/{sample}_absent-read-extra-chromosomal.txt'
+    params:
+        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/'
+    wildcard_constraints:
+        sample='|'.join(all_samples)
+    conda:
+        'envs/basic.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 10 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 20000 * attempt
+    shell:
+        'python {input.script} --absent-reads {input.read_list} --bam {input.bam} --output {params.out} --sample {wildcards.sample}'
