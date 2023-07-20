@@ -39,7 +39,7 @@ def main():
                 reads_extra.append(alignment.query_name)
                 reads.remove(alignment.query_name)
             else:
-                assert alignment.query_name in reads_extra
+                assert alignment.query_name in reads_extra or alignment.reference_name == 'chrY'
     # Whatever reads are left in the list `reads` must have aligned to the chromosomes.
 
     # writing the summary stats
