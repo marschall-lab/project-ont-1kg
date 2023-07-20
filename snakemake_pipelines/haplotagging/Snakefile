@@ -348,8 +348,8 @@ rule count_haplotags:
         tags=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=all_samples),
         script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/haplotagging/scripts/count_haplotags.py'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/summary.tsv',
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/{sample}.txt', sample=all_samples)
+        summary='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/summary.tsv',
+        ind=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/{sample}.txt', sample=all_samples)
     params:
         samples=','.join(all_samples),
         fasta='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/fasta/',
@@ -364,7 +364,7 @@ rule count_haplotags:
         runtime_min=0,
         mem_total_mb=lambda wildcards, attempt: 20000 * attempt
     shell:
-        'python {input.script} --samples {params.samples} --tsv {params.tsv} --fasta {params.fasta} --output {params.output} > {output}'
+        'python {input.script} --samples {params.samples} --tsv {params.tsv} --fasta {params.fasta} --output {params.output} > {output.summary}'
 
 
 rule absent_reads_stats:
