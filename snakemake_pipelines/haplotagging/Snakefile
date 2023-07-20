@@ -66,7 +66,7 @@ rule all:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=male_samples),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=unspecified_samples),
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/sample_sex.tsv',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/summary.tsv'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/summary.tsv',
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/{sample}_absent-read-stats.tsv', sample=all_samples)
         
 
