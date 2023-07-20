@@ -348,7 +348,8 @@ rule count_haplotags:
         tags=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=all_samples),
         script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/haplotagging/scripts/count_haplotags.py'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/summary.tsv'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/summary.tsv',
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/{sample}.txt', sample=all_samples)
     params:
         samples=','.join(all_samples),
         fasta='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/fasta/',
