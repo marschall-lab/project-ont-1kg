@@ -482,8 +482,14 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
             ac[i] = 0
         for gen in genotypes:
             g = gen.split('|')
-            ac[int(g[0])] += 1
-            ac[int(g[1])] += 1
+            try:
+                ac[int(g[0])] += 1
+            except ValueError:
+                pass
+            try:
+                ac[int(g[1])] += 1
+            except ValueError:
+                pass
         ac.pop(0)
         ac = list(ac.values)
         #Determine allele traversals
