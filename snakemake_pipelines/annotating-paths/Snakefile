@@ -138,7 +138,6 @@ rule sort_GAF:
     input:
         gfa='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518_tagged_withseq.gfa',
         gaf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/{sample}.{haplotype}.gaf',
-        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/annotating-paths/scripts/scaffold-sort.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/{sample}.{haplotype}.sorted.gaf'
     log:
@@ -150,7 +149,13 @@ rule sort_GAF:
         runtime_min=0,
         mem_total_mb=lambda wildcards, attempt: 2048 * attempt
     shell:
-        'python {input.script} --gfa {input.gfa} --gaf {input.gaf} --output {output} 2> {log}'
+        '''
+        set +u
+        source ~/.bashrc
+        conda activate gaftools-dev
+        set -u
+        gaftools sort --bgzip --outgaf {output} {input.gaf} {input.gfa} 2> {log}
+        '''
     
 
 ##################################
