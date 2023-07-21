@@ -491,7 +491,7 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
             except ValueError:
                 pass
         ac.pop(0)
-        ac = list(ac.values)
+        ac = list(ac.values())
         #Determine allele traversals
         at = []
         for key,_ in alleles.items():
