@@ -391,7 +391,7 @@ def write_header(writer, contigs, haplotypes, options):
     
     #Writing INFO Header
     writer.write('##INFO=<ID=CONFLICT,Number=.,Type=String,Description="Assembly names for which there are multiple conflicting allele traversals">')
-    writer.write('##INFO=<ID=AC,Number=1,Type=Integer,Description="Total number of alternate alleles in called genotypes">')
+    writer.write('##INFO=<ID=AC,Number=A,Type=Integer,Description="Total number of alternate alleles in called genotypes">')
     writer.write('##INFO=<ID=AF,Number=A,Type=Float,Description="Estimated allele frequency in the range (0,1]">')
     writer.write('##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of samples with data">')
     writer.write('##INFO=<ID=AT,Number=R,Type=String,Description="Allele Traversal as path in graph">')
@@ -476,10 +476,16 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
             filter = ['NS80']
         else:
             filter = ['PASS']
-        #Determine allele count
-        ac = len(allele_count)-1
-        if ac == 0:
-            continue
+        #Determine alternate allele count
+        ac = {}
+        for i in range(len(allele_count)):
+            ac[i] = 0
+        for gen in genotypes:
+            g = gen.split('|')
+            ac[int(g[0])] += 1
+            ac[int(g[1])] += 1
+        ac.pop(0)
+        ac = list(ac.values)
         #Determine allele traversals
         at = []
         for key,_ in alleles.items():
