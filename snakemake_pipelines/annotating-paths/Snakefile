@@ -178,7 +178,10 @@ rule assemblies_to_vcf:
         runtime_min=0,
         mem_total_mb=lambda wildcards, attempt: 10*1024 * attempt
     shell:
-        'python {input.script} --gfa {input.gfa} --assembly-list {input.assembly_list} --bgzip --output {output} 2> {log}'
+        '''
+        python {input.script} --gfa {input.gfa} --assembly-list {input.assembly_list} --bgzip --output {output} 2> {log}
+        bcftools index {output}
+        '''
 
 # Filter out the NS80 tagged records
 rule filtered_vcf:
@@ -193,7 +196,10 @@ rule filtered_vcf:
         runtime_min=0,
         mem_total_mb=lambda wildcards, attempt: 2*1024 * attempt
     shell:
-        'bcftools view -f "PASS" -Oz -o {output} {input}'
+        '''
+        bcftools view -f "PASS" -Oz -o {output} {input}
+        bcftools index {output}
+        '''
 
 
 

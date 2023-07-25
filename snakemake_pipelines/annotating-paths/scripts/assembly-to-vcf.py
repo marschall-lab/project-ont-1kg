@@ -497,6 +497,31 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
         for key,_ in alleles.items():
             at.append(key)
         seq = get_sequences(at, nodes)
+        #Looking for alternate alleles which has ref sequence
+        ref = seq[0]
+        dup = []
+        count = 1
+        allele_to_new = {}
+        for i, alt in enumerate(seq[1:]):
+            if ref == alt:
+                allele_to_new[i+1] = 0
+                dup.append(i+1)
+            else:
+                allele_to_new[i+1] = count
+                count += 1
+        
+        for i, gen in genotypes:
+            haps = [int(a) if a != '.' else a for a in gen.split('|')]
+            new_genotype = []
+            for h in haps:
+                if h == '.':
+                    new_genotype.append('.')
+                elif h == 0:
+                    new_genotype.append('0')
+                else:
+                    new_genotype.append(str(allele_to_new[h]))
+            genotypes[i] = '|'.join(new_genotype)
+
         #Determine allele frequencies
         #TODO: What should the denominator be? The number of available alleles or 88?
         af = []
@@ -505,9 +530,17 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
             if key == 0:
                 tot += value
                 continue
-            af.append(value)
-            tot += value
+            if key in dup:
+                tot += value
+            else:
+                af.append(value)
+                tot += value
         af = [a/tot for a in af]
+        for i in reversed(dup):
+            del seq[i]
+            del at[i]
+            del ac[i-1]
+
         nd = nodes[bub.split(">")[1]]
         chr = nd.SN
         pos = nd.SO + nd.LN
