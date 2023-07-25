@@ -510,7 +510,7 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
                 allele_to_new[i+1] = count
                 count += 1
         
-        for i, gen in genotypes:
+        for i, gen in enumerate(genotypes):
             haps = [int(a) if a != '.' else a for a in gen.split('|')]
             new_genotype = []
             for h in haps:
