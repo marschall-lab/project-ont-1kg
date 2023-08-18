@@ -1,4 +1,4 @@
-configfile: 'config/config.yaml'
+#configfile: 'config/config.yaml'
 
 include: 'rules/genotyping.smk'
 include: 'rules/discovery.smk'
@@ -10,11 +10,6 @@ samples = samples[0:10]
 wildcard_constraints:
     sample='|'.join(samples)
 
-rule all:
-    input:
-        rules.genotype_experiment.input,
-        rules.svarp_experiment.input
-
 rule genotype_experiment:
     input:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}.vcf.gz', sample=samples),
@@ -24,3 +19,8 @@ rule svarp_experiment:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/{sample}_svtigs_H1.fa', sample=samples),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/{sample}_svtigs_H2.fa', sample=samples),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/{sample}_svtigs_untagged.fa', sample=samples)
+
+rule all:
+    input:
+        rules.genotype_experiment.input,
+        rules.svarp_experiment.input
