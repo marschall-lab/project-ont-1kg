@@ -55,5 +55,5 @@ rule gaftools_sort:
         source ~/.bashrc
         conda activate gaftools-dev
         set -u
-        gaftools sort --bgzip --outgaf {output.sorted_gaf} {input.gaf} {input.read_tag}
+        gaftools sort --bgzip --outgaf {output.sorted_gaf} {input.gaf} {input.gfa}
         '''
