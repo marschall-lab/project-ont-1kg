@@ -1,3 +1,6 @@
+wildcard_constraints:
+    sample='|'.join(samples)
+
 # run genotyping
 rule giggles:
     input:

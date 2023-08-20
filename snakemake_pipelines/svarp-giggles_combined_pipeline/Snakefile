@@ -8,9 +8,6 @@ include: 'rules/get-sample-list.smk'
 if config['pilot']:
     samples = samples[0:10]
 
-wildcard_constraints:
-    sample='|'.join(samples)
-
 rule genotype_experiment:
     input:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}.vcf.gz', sample=samples),

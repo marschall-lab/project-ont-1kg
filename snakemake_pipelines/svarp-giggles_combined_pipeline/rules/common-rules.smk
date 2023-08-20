@@ -1,3 +1,6 @@
+wildcard_constraints:
+    sample='|'.join(samples)
+
 #compress vcf
 rule compress_vcf:
     input:
