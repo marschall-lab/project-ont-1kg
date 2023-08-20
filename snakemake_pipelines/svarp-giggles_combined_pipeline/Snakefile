@@ -1,11 +1,12 @@
-#configfile: 'config/config.yaml'
+configfile: 'config/config.yaml'
 
 include: 'rules/genotyping.smk'
 include: 'rules/discovery.smk'
 include: 'rules/common-rules.smk'
 include: 'rules/get-sample-list.smk'
 
-samples = samples[0:10]
+if config['pilot']:
+    samples = samples[0:10]
 
 wildcard_constraints:
     sample='|'.join(samples)
