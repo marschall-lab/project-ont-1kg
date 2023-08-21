@@ -1,5 +1,3 @@
-wildcard_constraints:
-    sample='|'.join(samples)
 
 # run svarp
 rule svarp:
