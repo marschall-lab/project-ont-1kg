@@ -1,6 +1,3 @@
-wildcard_constraints:
-    sample='|'.join(samples)
-
 #compress vcf
 rule compress_vcf:
     input:
@@ -49,7 +46,7 @@ rule gaftools_sort:
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.log'
     resources:
-        runtime_hrs=1,
+        runtime_hrs=6,
         runtime_min=0,
         mem_total_mb=lambda wildcards, attempt: 20000 * attempt
     shell:
