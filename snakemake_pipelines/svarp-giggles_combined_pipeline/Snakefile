@@ -6,7 +6,7 @@ include: 'rules/common-rules.smk'
 include: 'rules/get-sample-list.smk'
 
 if config['pilot']:
-    samples = samples[0:10]
+    samples = ['HG00128', 'HG01311', 'HG01890', 'HG02721', 'HG03761', 'NA18862', 'NA19449']
 
 wildcard_constraints:
     sample='|'.join(samples)
