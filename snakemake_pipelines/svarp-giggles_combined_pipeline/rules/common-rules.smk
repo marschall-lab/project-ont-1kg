@@ -1,3 +1,15 @@
+#extract gaf (to make gaftools sort faster(?))
+rule decompress_gaf:
+    input:
+        '/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/gaf/{sample}.gaf.gz'
+    output:
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.gaf')
+    resources:
+        runtime_hrs=2,
+        mem_total_mb=20000
+    shell:
+        'gzip -d -c {input} > {output}'
+
 #compress vcf
 rule compress_vcf:
     input:
@@ -5,7 +17,6 @@ rule compress_vcf:
     output:
         vcf = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/{filename}.vcf.gz",
         tbi = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/{filename}.vcf.gz.tbi"
-    priority: 1
     shell:
         """
         bgzip -c {input} > {output.vcf}
@@ -26,6 +37,7 @@ rule cram_to_fasta:
     resources:
         runtime_hrs=10,
         mem_total_mb=20000
+    priority: 1
     shell:
         '''
         seq_cache_populate.pl -root /gpfs/project/projects/medbioinf/users/spani/files/ref {input.ref}
@@ -38,7 +50,7 @@ rule cram_to_fasta:
 # gaf sorting
 rule gaftools_sort:
     input:
-        gaf = '/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/gaf/{sample}.gaf.gz',
+        gaf = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.gaf',
         gfa = '/gpfs/project/projects/medbioinf/users/spani/files/gfa/HengLi/chm13-90c.r518_tagged.gfa'
     output:
         sorted_gaf = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.sorted.gaf.gz',
@@ -46,9 +58,9 @@ rule gaftools_sort:
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.log'
     resources:
-        runtime_hrs=6,
+        runtime_hrs=24,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 20000 * attempt
+        mem_total_mb=10000
     shell:
         '''
         set +u
