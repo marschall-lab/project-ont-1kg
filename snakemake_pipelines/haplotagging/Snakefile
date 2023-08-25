@@ -43,7 +43,7 @@ for sample,sex in df:
     elif sex == "Male":
         male_samples.append(sample)
     else:
-        unspecified_samples.append(sample) #HG03895 sex is not known.
+        unspecified_samples.append(sample) #HG03895 sex is not known. Considering it as male.
 
 if config['mode'] == 'pilot':
     all_samples = ['HG02604'] + config['HGSVC'] + config['HPRC']
@@ -55,6 +55,7 @@ elif config['mode'] == 'HPRC':
 female_samples = list(set(all_samples).intersection(female_samples))
 male_samples = list(set(all_samples).intersection(male_samples))
 unspecified_samples = list(set(all_samples).intersection(unspecified_samples))
+male_samples = male_samples+unspecified_samples
 
 
 wildcard_constraints:
@@ -68,7 +69,6 @@ rule all:
     input:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=female_samples),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=male_samples),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv', sample=unspecified_samples),
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/sample_sex.tsv',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/summary.tsv',
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/qc/{sample}_absent-read-stats.tsv', sample=all_samples)
@@ -281,7 +281,7 @@ rule add_nonPAR_haplotag_males:
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv'
     wildcard_constraints:
-        sample = "|".join(male_samples)
+        sample = "|".join(male_samples+unspecified_samples)
     conda:
         'envs/basic.yaml'        
     resources:
