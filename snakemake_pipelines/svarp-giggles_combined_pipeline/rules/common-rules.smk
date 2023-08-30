@@ -26,7 +26,7 @@ rule compress_vcf:
 # extract fasta from cram
 rule cram_to_fasta:
     input:
-        cram = '/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/hg38/{sample}.cram',
+        cram = '/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/hg38/{sample}.hg38.cram',
         ref= '/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
     output:
         fasta = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/fasta/{sample}.fasta.gz"),
@@ -69,3 +69,18 @@ rule gaftools_sort:
         set -u
         gaftools sort --bgzip --outgaf {output.sorted_gaf} {input.gaf} {input.gfa}
         '''
+
+# prepare vcf panel
+rule prepare_vcf:
+    input:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518_filtered.vcf.gz'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/vcf/panel.vcf'
+    conda:
+        "../envs/basic.yml"
+    resources:
+        mem_total_mb=20000,
+        runtime_hrs=0,
+        runtime_min=30
+    shell:
+        "bcftools view --trim-alt-alleles -c1 {input} > {output}"
