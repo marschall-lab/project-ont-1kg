@@ -19,9 +19,13 @@ rule svarp:
     conda:
         "../envs/svarp.yml"
     resources:
-        mem_total_mb=20000,
+        mem_total_mb=96000,
         runtime_hrs=24,
         runtime_min=1
     priority: 1
     shell:
-        '/gpfs/project/projects/medbioinf/projects/1000g-ont/svarp/build/svarp -a {input.alignment} -g {input.gfa} --fasta {input.reads} -i {wildcards.sample} -d 500 -s 5 --phase {input.haplotag} --e -o {params.outdir} 2>&1 | tee {log}'
+        '''
+        module load gcc/10.2.0
+        /gpfs/project/projects/medbioinf/projects/1000g-ont/svarp/build/svarp -a {input.alignment} -g {input.gfa} --fasta {input.reads} -i {wildcards.sample} -d 500 -s 5 --phase {input.haplotag} --e -o {params.outdir} 2>&1 | tee {log}
+        module unload gcc/10.2.0
+        '''

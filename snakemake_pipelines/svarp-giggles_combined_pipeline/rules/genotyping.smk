@@ -14,7 +14,7 @@ rule giggles:
     log:
         "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/log/{sample}.log"
     resources:
-        mem_total_mb=40000,
+        mem_total_mb=960000,
         runtime_hrs=24,
         runtime_min=1
     priority: 1
