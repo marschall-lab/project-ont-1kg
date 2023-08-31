@@ -13,7 +13,7 @@ samples.remove('HG00982')
 samples.remove('HG01104') """
 
 if config['pilot']:
-    samples = sorted(samples)[0:10]
+    samples=sorted(samples)[0:10]
 
 wildcard_constraints:
     sample='|'.join(samples)
