@@ -14,6 +14,9 @@ rule svarp:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/{sample}_svtigs_untagged.fa'
     params:
         outdir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}'
+    log:
+        stdout='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/log/{sample}.stdout',
+        stderr='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/log/{sample}.stderr'
     conda:
         "../envs/svarp.yml"
     resources:
@@ -25,6 +28,6 @@ rule svarp:
         '''
         module load gcc/10.2.0
         export PATH=$PATH:/gpfs/project/projects/medbioinf/users/spani/packages/wtdbg2
-        /gpfs/project/projects/medbioinf/projects/1000g-ont/svarp/build/svarp -a {input.alignment} -g {input.gfa} --fasta {input.reads} -i {wildcards.sample} -d 500 -s 5 --phase {input.haplotag} --e -o {params.outdir}
+        /gpfs/project/projects/medbioinf/projects/1000g-ont/svarp/build/svarp -a {input.alignment} -g {input.gfa} --fasta {input.reads} -i {wildcards.sample} -d 500 -s 5 --phase {input.haplotag} --e -o {params.outdir} 2> {log.stderr} 1> {log.stdout}
         module unload gcc/10.2.0
         '''

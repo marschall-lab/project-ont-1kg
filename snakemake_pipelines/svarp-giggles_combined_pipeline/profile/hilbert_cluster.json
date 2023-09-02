@@ -4,8 +4,8 @@
     "cores": "{threads}",
     "mem_mb": "{resources.mem_total_mb}",
     "name": "{jobid}_{rule}",
-    "output": "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/log/stdout/{jobid}_{rule}.stdout",
-    "error": "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/log/stderr/{jobid}_{rule}.stderr",
+    "output": "/home/kax06tag/log/cluster_jobs/stdout/{jobid}_{rule}.stdout",
+    "error": "/home/kax06tag/log/cluster_jobs/stderr/{jobid}_{rule}.stderr",
     "account": "LongReadPanGenie",
     "run_hrs": "{resources.runtime_hrs}",
     "run_min": "{resources.runtime_min}"
