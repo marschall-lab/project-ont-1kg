@@ -53,12 +53,12 @@ rule gaftools_sort:
         gaf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.gaf',
         gfa='/gpfs/project/projects/medbioinf/users/spani/files/gfa/HengLi/chm13-90c.r518_tagged.gfa'
     output:
-        sorted_gaf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.sorted.gaf.gz',
-        index='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.sorted.gaf.gz.gai'
+        sorted_gaf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.sorted.gaf'),
+        index=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.sorted.gaf.gai')
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.log'
     resources:
-        runtime_hrs=24,
+        runtime_hrs=48,
         runtime_min=0,
         mem_total_mb=10000
     shell:
@@ -67,7 +67,7 @@ rule gaftools_sort:
         source ~/.bashrc
         conda activate gaftools-dev
         set -u
-        gaftools sort --bgzip --outgaf {output.sorted_gaf} {input.gaf} {input.gfa}
+        gaftools sort --outgaf {output.sorted_gaf} {input.gaf} {input.gfa}
         '''
 
 # prepare vcf panel

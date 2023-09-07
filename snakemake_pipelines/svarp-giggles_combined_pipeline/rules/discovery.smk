@@ -21,13 +21,19 @@ rule svarp:
         "../envs/svarp.yml"
     resources:
         mem_total_mb=96000,
-        runtime_hrs=24,
+        runtime_hrs=48,
         runtime_min=1
     priority: 1
     shell:
         '''
+        module load Python/3.11.3
+        module load Minimap2/2.17
+        module load SamTools/1.6
         module load gcc/10.2.0
         export PATH=$PATH:/gpfs/project/projects/medbioinf/users/spani/packages/wtdbg2
         /gpfs/project/projects/medbioinf/projects/1000g-ont/svarp/build/svarp -a {input.alignment} -g {input.gfa} --fasta {input.reads} -i {wildcards.sample} -d 500 -s 5 --phase {input.haplotag} --e -o {params.outdir} 2> {log.stderr} 1> {log.stdout}
         module unload gcc/10.2.0
+        module unload Minimap2/2.17
+        module unload Python/3.11.3
+        module unload SamTools/1.6
         '''

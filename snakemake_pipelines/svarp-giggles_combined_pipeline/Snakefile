@@ -5,15 +5,8 @@ include: 'rules/discovery.smk'
 include: 'rules/common-rules.smk'
 include: 'rules/get-sample-list.smk'
 
-""" # Removing the samples which exited with error during haplotagging.
-samples.remove('NA20846')
-samples.remove('NA18986')
-samples.remove('HG03780')
-samples.remove('HG00982')
-samples.remove('HG01104') """
-
 if config['pilot']:
-    samples=['HG00103']
+    samples=['HG03009']
 
 wildcard_constraints:
     sample='|'.join(samples)
