@@ -20,8 +20,8 @@ rule svarp:
     conda:
         "../envs/svarp.yml"
     resources:
-        mem_total_mb=96000,
-        runtime_hrs=48,
+        mem_total_mb=196000,
+        runtime_hrs=96,
         runtime_min=1
     priority: 1
     shell:
