@@ -67,7 +67,7 @@ rule gaftools_sort:
         source ~/.bashrc
         conda activate gaftools-dev
         set -u
-        gaftools sort --outgaf {output.sorted_gaf} {input.gaf} {input.gfa}
+        gaftools sort --outgaf {output.sorted_gaf} {input.gaf} {input.gfa} 2> {log}
         '''
 
 # prepare vcf panel
