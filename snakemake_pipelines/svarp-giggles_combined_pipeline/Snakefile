@@ -13,7 +13,7 @@ wildcard_constraints:
 
 rule genotype_experiment:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}.vcf.gz', sample=samples),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}.vcf.gz', sample=['HG03009']),
         
 rule svarp_experiment:
     input:
