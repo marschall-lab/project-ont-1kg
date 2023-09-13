@@ -29,9 +29,9 @@ rule cram_to_fasta:
         cram='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/hg38/{sample}.hg38.cram',
         ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
     output:
-        fasta="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/fasta/{sample}.fasta.gz",
-        fai="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/fasta/{sample}.fasta.gz.fai",
-        gzi="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/fasta/{sample}.fasta.gz.gzi"
+        fasta=temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/fasta/{sample}.fasta.gz"),
+        fai=temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/fasta/{sample}.fasta.gz.fai"),
+        gzi=temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/fasta/{sample}.fasta.gz.gzi")
     conda:
         "../envs/basic.yml"
     resources:
@@ -62,14 +62,8 @@ rule gaftools_sort:
         runtime_min=0,
         mem_total_mb=10000
     shell:
-        '''
-        set +u
-        source ~/.bashrc
-        conda activate gaftools-dev
-        set -u
-        gaftools sort --outgaf {output.sorted_gaf} {input.gaf} {input.gfa} 2> {log}
-        '''
-
+        'gaftools sort --outgaf {output.sorted_gaf} {input.gaf} {input.gfa} 2> {log}'
+        
 # prepare vcf panel
 rule prepare_vcf:
     input:
