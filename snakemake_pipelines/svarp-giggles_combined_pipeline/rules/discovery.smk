@@ -20,10 +20,10 @@ rule svarp:
     conda:
         "../envs/svarp.yml"
     resources:
-        mem_total_mb=196000,
-        runtime_hrs=96,
+        mem_total_mb=1024*200,
+        runtime_hrs=48,
         runtime_min=1
-    priority: 1
+    priority: 2
     shell:
         '''
         module load Python/3.11.3

@@ -19,7 +19,7 @@ rule giggles:
         mem_total_mb=50000,
         runtime_hrs=48,
         runtime_min=1
-    priority: 1
+    priority: 3
     shell:
         """
         set +u
