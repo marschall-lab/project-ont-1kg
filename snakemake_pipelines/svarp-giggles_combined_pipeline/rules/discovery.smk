@@ -1,4 +1,3 @@
-
 # run svarp
 rule svarp:
     input:
@@ -23,7 +22,7 @@ rule svarp:
         "../envs/svarp.yml"
     resources:
         mem_total_mb=1024*100,
-        runtime_hrs=48,
+        runtime_hrs=36,
         runtime_min=1
     priority: 2
     shell:
