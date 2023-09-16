@@ -62,7 +62,11 @@ rule gaftools_sort:
         runtime_min=0,
         mem_total_mb=10000
     shell:
-        'gaftools sort --bgzip --outgaf {output.sorted_gaf} {input.gaf} {input.gfa} 2> {log}'
+        '''
+        module load Python/3.11.4
+        gaftools sort --bgzip --outgaf {output.sorted_gaf} {input.gaf} {input.gfa} 2> {log}
+        module unload Python/3.11.4
+        '''
         
 # prepare vcf panel
 rule prepare_vcf:
