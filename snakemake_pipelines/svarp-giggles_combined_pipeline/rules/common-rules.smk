@@ -6,7 +6,7 @@ rule decompress_gaf:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.gaf')
     resources:
         runtime_hrs=2,
-        mem_total_mb=20000
+        mem_total_mb=lambda wildcards, attempt: 20000 * attempt
     shell:
         'gzip -d -c {input} > {output}'
 
@@ -36,7 +36,7 @@ rule cram_to_fasta:
         "../envs/basic.yml"
     resources:
         runtime_hrs=10,
-        mem_total_mb=20000
+        mem_total_mb=lambda wildcards, attempt: 20000 * attempt
     priority: 1
     shell:
         '''
@@ -60,7 +60,7 @@ rule gaftools_sort:
     resources:
         runtime_hrs=48,
         runtime_min=0,
-        mem_total_mb=10000
+        mem_total_mb=lambda wildcards, attempt: 20000 * attempt
     shell:
         '''
         module load Python/3.11.4
