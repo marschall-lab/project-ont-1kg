@@ -1,3 +1,5 @@
+include: 'rules/get-sample-list.smk'
+
 # run genotyping
 rule giggles:
     input:
