@@ -1,6 +1,6 @@
 import argparse
 import pandas
-import numpy
+import sys
 import matplotlib.pyplot as plt
 import matplotlib
 from pysam import VariantFile
@@ -19,7 +19,7 @@ if __name__ == '__main__':
     # reading vcfs and extracting genotypes
     vcfs = args.vcf.split(',')
     data = {}
-    for v in vcfs:
+    for n,v in enumerate(vcfs):
         sample=v[-14:-7]
         sample_data=metadata[metadata["Sample name"] == sample]
         d = [0, 0, sample_data["Population code"].values[0], sample_data["Superpopulation code"].values[0]]      # first element counts number of variant positions with SVs. second element counts SVs.
@@ -42,6 +42,8 @@ if __name__ == '__main__':
                 d[1] += 1
         data[sample] = d
         reader.close()
+        if (n+1)%10==0:
+            print("Read %d VCFs..."%(n+1), file=sys.stderr)
     
     # sort data by them superpopulation code
     sorted_data = dict(sorted(data.items(), key=lambda x:x[1][3]))
@@ -96,11 +98,11 @@ if __name__ == '__main__':
     for patch, color in zip(bp['boxes'], colors):
         patch.set_facecolor(color)
     for whisker in bp['whiskers']:
-        whisker.set(color ='black', linewidth = 1.5, linestyle =":")
+        whisker.set(color ='black', linewidth = 1, linestyle =":")
     for cap in bp['caps']:
-        cap.set(color ='black', linewidth = 2)
+        cap.set(color ='black', linewidth = 1)
     for median in bp['medians']:
-        median.set(color ='black', linewidth = 3)
+        median.set(color ='black', linewidth = 1)
     for flier in bp['fliers']:
         flier.set(marker ='D', color ='black', alpha = 0.5)    
     ax.set_xticklabels([x for x,_ in color_by_pop.items()])
