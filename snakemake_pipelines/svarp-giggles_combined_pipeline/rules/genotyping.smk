@@ -1,4 +1,4 @@
-include: 'rules/get-sample-list.smk'
+include: './get-sample-list.smk'
 
 # run genotyping
 rule giggles:
