@@ -41,12 +41,16 @@ rule sv_count:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/var_count_population-wise.png',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/var_count_sample-wise.png',
         plot_data='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/sv_count.tsv'
+    log:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/sv_count.log'
     params:
         inp_vcfs=lambda wildcards, input: ','.join(input.vcf),
         out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/'
     conda:
         '../envs/basic.yml'
+    resources:
+        mem_total_mb=5000,
+        runtime_hrs=24,
+        runtime_min=1
     shell:
-        '''
-        python ../scripts/sv_count.py -meta {input.metadata} -vcf {params.inp_vcfs} -output {params.out}
-        '''
+        'python ../scripts/sv_count.py -meta {input.metadata} -vcf {params.inp_vcfs} -output {params.out} 2> {log}'
