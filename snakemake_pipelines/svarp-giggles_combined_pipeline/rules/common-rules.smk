@@ -35,7 +35,7 @@ rule cram_to_fasta:
     conda:
         "../envs/basic.yml"
     resources:
-        runtime_hrs=10,
+        runtime_hrs=20,
         mem_total_mb=lambda wildcards, attempt: 20000 * attempt
     priority: 1
     shell:
