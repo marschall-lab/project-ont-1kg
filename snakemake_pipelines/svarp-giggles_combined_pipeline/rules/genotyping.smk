@@ -53,4 +53,4 @@ rule sv_count:
         runtime_hrs=24,
         runtime_min=1
     shell:
-        'python ../scripts/sv_count.py -meta {input.metadata} -vcf {params.inp_vcfs} -output {params.out} 2> {log}'
+        'python ./scripts/sv_count.py -meta {input.metadata} -vcf {params.inp_vcfs} -output {params.out} 2> {log}'
