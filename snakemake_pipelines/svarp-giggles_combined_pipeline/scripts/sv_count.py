@@ -41,6 +41,7 @@ if __name__ == '__main__':
                 d[0] += 1
                 d[1] += 1
         data[sample] = d
+        reader.close()
     
     # sort data by them superpopulation code
     sorted_data = dict(sorted(data.items(), key=lambda x:x[1][3]))
