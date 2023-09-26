@@ -12,9 +12,7 @@ rule svarp:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/{sample}_svtigs_H2.fa',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/{sample}_svtigs_untagged.fa'
     params:
-        outdir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}',
-        tmp_indir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/in',
-        tmp_outdir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/out'
+        outdir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}'
     log:
         stdout='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/log/{sample}.stdout',
         stderr='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/log/{sample}.stderr'
@@ -32,9 +30,7 @@ rule svarp:
         module load SamTools/1.6
         module load gcc/10.2.0
         export PATH=$PATH:/gpfs/project/projects/medbioinf/users/spani/packages/wtdbg2
-        /gpfs/project/projects/medbioinf/projects/1000g-ont/svarp/build/svarp -a {input.alignment} -g {input.gfa} --fasta {input.reads} -i {wildcards.sample} -d 500 -s 5 --phase {input.haplotag} --e -o {params.outdir} 2> {log.stderr} 1> {log.stdout}
-        rm -rf {params.tmp_indir}
-        rm -rf {params.tmp_outdir}
+        /gpfs/project/projects/medbioinf/projects/1000g-ont/svarp/build/svarp -a {input.alignment} -g {input.gfa} --fasta {input.reads} -i {wildcards.sample} --phase {input.haplotag} --e -o {params.outdir} 2> {log.stderr} 1> {log.stdout}
         module unload gcc/10.2.0
         module unload Minimap2/2.17
         module unload Python/3.11.3
