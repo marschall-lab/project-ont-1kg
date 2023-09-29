@@ -67,7 +67,7 @@ rule add_allele_decomposition_info:
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-multiallelic.vcf'
     shell:
-        'awk -f -F"\t" scripts/copy_columns.awk {input.panel_vcf} {input.sample_vcf} > {output}'
+        'awk -F"\t" -f scripts/copy_columns.awk {input.panel_vcf} {input.sample_vcf} > {output}'
     
 
 # get the biallelic and multiallelic VCFs for the genotypes
