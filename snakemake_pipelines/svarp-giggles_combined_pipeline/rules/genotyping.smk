@@ -17,7 +17,7 @@ rule giggles:
         stderr="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}.stderr",
         stdout="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}.stdout"
     resources:
-        mem_total_mb=50000,c1[count]=$1
+        mem_total_mb=50000,
         runtime_hrs=48,
         runtime_min=1
     priority: 3
