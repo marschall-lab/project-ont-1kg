@@ -22,7 +22,7 @@ if __name__ == '__main__':
     sv_type_to_index = {'COMPLEX': 0, 'DEL': 1, 'INS': 2}
     # Writing data into file
     writer = open(args.output+'/sv_count.tsv', 'w')
-    print("Sample\tPopulation\tSuperpopulation\tHET_COMPLEX\tHET_DEL\tHET_INS\tHOM_COMPLEX\tHOM_DEL\tHOM_INS\tNumber of Variant Positions with SVs", file=writer)
+    print("Sample\tPopulation\tSuperpopulation\tHET_COMPLEX\tHET_DEL\tHET_INS\tHOM_COMPLEX\tHOM_DEL\tHOM_INS", file=writer)
     for n,v in enumerate(vcfs):
         sample=v[-21:-14]
         sample_data=metadata[metadata["Sample name"] == sample]
@@ -44,6 +44,7 @@ if __name__ == '__main__':
                 continue
             elif gt[0] != 0 and gt[1] != 0:
                 # HOM SV
+                assert (gt[0] == 1 and gt[1] == 1)
                 d[1][sv_type_to_index[sv_type]] += 1
             else:
                 # HET SV
