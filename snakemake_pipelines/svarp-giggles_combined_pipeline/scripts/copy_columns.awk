@@ -31,9 +31,9 @@ BEGIN {
             next;
         }
         # use assert to verify that the record is same.
-        if !(c1[count2]==$1) {print "Column 1 match failed"; exit 1;}
-        if !(c2[count2]==$2) {print "Column 2 match failed"; exit 1;}
-        if !(c3[count2]==$3) {print "Column 3 match failed"; exit 1;}
+        if (!(c1[count2]==$1)) {print "Column 1 match failed"; exit 1;}
+        if (!(c2[count2]==$2)) {print "Column 2 match failed"; exit 1;}
+        if (!(c3[count2]==$3)) {print "Column 3 match failed"; exit 1;}
         tmp=$8;
         # replace 8th column
         $8=c8[count2];
