@@ -21,7 +21,7 @@ BEGIN {
     }
     # iterate over second vcf
     {
-        if (substr($0,1,1) == "##") {
+        if (substr($0,1,2) == "##") {
             print $0;
             next;
         }
