@@ -82,7 +82,7 @@ rule convert_sample_vcf_biallelic:
     resources:
         mem_total_mb=3000
     shell:
-        "cat {input.sample_vcf} | python scripts/convert-to-biallelic.py {input.biallelic} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' > {output}"
+        "cat {input.sample_vcf} | python scripts/convert-to-biallelic.py {input.biallelic_vcf} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' > {output}"
 
 # calculate SV count
 rule sv_count:
