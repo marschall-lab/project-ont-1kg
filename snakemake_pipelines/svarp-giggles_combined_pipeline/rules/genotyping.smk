@@ -70,7 +70,7 @@ rule add_allele_decomposition_info:
     shell:
         '''
         gzip -d -c {input.sample_vcf} > {output.sample_vcf_temp}
-        awk -F"\t" -f scripts/copy_columns.awk {input.panel_vcf} {output.sample_vcf_temp} > {output}
+        awk -F"\t" -f scripts/copy_columns.awk {input.panel_vcf} {output.sample_vcf_temp} > {output.output_vcf}
         '''
     
 
