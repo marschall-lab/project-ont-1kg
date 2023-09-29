@@ -66,11 +66,12 @@ rule add_allele_decomposition_info:
         panel_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/vcf/panel-multiallelic.vcf'
     output:
         sample_vcf_temp=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-tmp.vcf'),
-        sample_vcf__sorted_temp=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-tmp.sorted.vcf'),
         output_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-multiallelic.vcf'
+    resources:
+        mem_total_mb=3000
     shell:
         '''
-        gzip -d -c {input.sample_vcf} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n\"}}'> {output.sample_vcf_temp}
+        gzip -d -c {input.sample_vcf} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n\"}}' > {output.sample_vcf_temp}
         awk -F"\t" -f scripts/copy_columns.awk {input.panel_vcf} {output.sample_vcf_temp} > {output.output_vcf}
         '''
     
