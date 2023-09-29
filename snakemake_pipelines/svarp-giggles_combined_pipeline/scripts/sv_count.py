@@ -19,14 +19,22 @@ if __name__ == '__main__':
     # reading vcfs and extracting genotypes
     vcfs = args.vcf.split(',')
     data = {}
+    sv_type_to_index = {'COMPLEX': 0, 'DEL': 1, 'INS': 2}
+    # Writing data into file
+    writer = open(args.output+'/sv_count.tsv', 'w')
+    print("Sample\tPopulation\tSuperpopulation\tHET_COMPLEX\tHET_DEL\tHET_INS\tHOM_COMPLEX\tHOM_DEL\tHOM_INS\tNumber of Variant Positions with SVs", file=writer)
     for n,v in enumerate(vcfs):
-        sample=v[-14:-7]
+        sample=v[-21:-14]
         sample_data=metadata[metadata["Sample name"] == sample]
-        d = [0, 0, sample_data["Population code"].values[0], sample_data["Superpopulation code"].values[0]]      # first element counts number of variant positions with SVs. second element counts SVs.
+        d = [[0,0,0], [0,0,0], sample_data["Population code"].values[0], sample_data["Superpopulation code"].values[0]]      # first element counts number of HET SVs [COMPLEX, DEL, INS]. second element counts HOM SVs [COMPLEX, DEL, INS].
         reader = VariantFile(v)
         assert len(reader.header.samples) == 1
         assert reader.header.samples[0] == sample
         for rec in reader.fetch():
+            id = str(rec.id)
+            _,_,sv_type,_,length = id.split('-')
+            if int(length) < 50:
+                continue
             gts = [s['GT'] for s in rec.samples.values()]
             assert len(gts) == 1
             gt = gts[0]
@@ -35,32 +43,35 @@ if __name__ == '__main__':
             if gt[0] == 0  and gt[1] == 0:
                 continue
             elif gt[0] != 0 and gt[1] != 0:
-                d[0] += 1
-                d[1] += 2
+                # HOM SV
+                d[1][sv_type_to_index[sv_type]] += 1
             else:
-                d[0] += 1
-                d[1] += 1
+                # HET SV
+                d[0][sv_type_to_index[sv_type]] += 1
+        
         data[sample] = d
         reader.close()
+        print("%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d"%(sample, d[2], d[3], *d[0], *d[1]), file=writer)
         if (n+1)%10==0:
             print("Read %d VCFs..."%(n+1), file=sys.stderr)
-    
+    writer.close()
+
     # sort data by them superpopulation code
     sorted_data = dict(sorted(data.items(), key=lambda x:x[1][3]))
-    sv_count_by_pop = {'AFR': [], 'AMR': [], 'EAS': [], 'EUR': [], 'SAS': []}
-    var_count_by_pop = {'AFR': [], 'AMR': [], 'EAS': [], 'EUR': [], 'SAS': []}
+    hom_count_by_pop = {'AFR': [], 'AMR': [], 'EAS': [], 'EUR': [], 'SAS': []}
+    het_count_by_pop = {'AFR': [], 'AMR': [], 'EAS': [], 'EUR': [], 'SAS': []}
     color_by_pop = {'AFR': '#ffd845', 'AMR': '#710027', 'EAS': '#778500', 'EUR': '#018ead', 'SAS': '#c44cfd'}
     sample_list = []
     color_list = []
-    sv_count_list = []
-    var_count_list = []
+    hom_count_list = []
+    het_count_list = []
     for sample, value in sorted_data.items():
         sample_list.append(sample)
         color_list.append(color_by_pop[value[3]])
-        sv_count_list.append(value[1])
-        var_count_list.append(value[0])
-        sv_count_by_pop[value[3]].append(value[1])
-        var_count_by_pop[value[3]].append(value[0])
+        hom_count_list.append(sum(value[1]))
+        het_count_list.append(sum(value[0]))
+        hom_count_by_pop[value[3]].append(sum(value[1]))
+        het_count_by_pop[value[3]].append(sum(value[0]))
     
     # create legend
     handles = []
@@ -74,26 +85,26 @@ if __name__ == '__main__':
     
     # Plotting SV count sample-wise
     fig, ax = plt.subplots(figsize=(20,5))
-    ax.bar(sample_list, sv_count_list, color=color_list)
-    ax.set_ylabel('SV Count')
-    ax.set_title('SV Counts Sample-Wise')
+    ax.bar(sample_list, hom_count_list, color=color_list)
+    ax.set_ylabel('HOM SV Count')
+    ax.set_title('HOM SV Counts Sample-Wise')
     plt.figlegend(handles, labels, framealpha=1, frameon=True)
     plt.tight_layout()
-    plt.savefig(args.output+'/sv_count_sample-wise.png')
+    plt.savefig(args.output+'/hom_count_sample-wise.png')
     
     # Plotting Variant Count sample-wise
     fig, ax = plt.subplots(figsize=(20,5))
-    ax.bar(sample_list, var_count_list, color=color_list)
-    ax.set_ylabel('Number of Variants')
-    ax.set_title('Number of Variant Positions with an SV')
+    ax.bar(sample_list, het_count_list, color=color_list)
+    ax.set_ylabel('HET SV Count')
+    ax.set_title('HET SV Counts Sample-Wise')
     plt.figlegend(handles, labels, framealpha=1, frameon=True)
     plt.tight_layout()
-    plt.savefig(args.output+'/var_count_sample-wise.png')
+    plt.savefig(args.output+'/het_count_sample-wise.png')
     
     # Plotting SV count population-wise
     fig = plt.figure(figsize =(10, 10))
     ax = fig.add_subplot(111)
-    bp = ax.boxplot([sv_count_by_pop[x] for x in sv_count_by_pop.keys()], patch_artist = True)
+    bp = ax.boxplot([hom_count_by_pop[x] for x in hom_count_by_pop.keys()], patch_artist = True)
     colors = [v for _,v in color_by_pop.items()]
     for patch, color in zip(bp['boxes'], colors):
         patch.set_facecolor(color)
@@ -106,16 +117,16 @@ if __name__ == '__main__':
     for flier in bp['fliers']:
         flier.set(marker ='D', color ='black', alpha = 0.5)    
     ax.set_xticklabels([x for x,_ in color_by_pop.items()])
-    ax.set_ylabel('SV Count')
-    ax.set_title('SV Counts Population-Wise')
+    ax.set_ylabel('HOM SV Count')
+    ax.set_title('HOM SV Counts Population-Wise')
     plt.figlegend(handles, labels, framealpha=1, frameon=True)
     plt.tight_layout()
-    plt.savefig(args.output+'/sv_count_population-wise.png')
+    plt.savefig(args.output+'/hom_count_population-wise.png')
     
     # Plotting Variant count population-wise
     fig = plt.figure(figsize =(10, 10))
     ax = fig.add_subplot(111)
-    bp = ax.boxplot([var_count_by_pop[x] for x in sv_count_by_pop.keys()], patch_artist = True)
+    bp = ax.boxplot([het_count_by_pop[x] for x in het_count_by_pop.keys()], patch_artist = True)
     colors = [v for _,v in color_by_pop.items()]
     for patch, color in zip(bp['boxes'], colors):
         patch.set_facecolor(color)
@@ -128,15 +139,8 @@ if __name__ == '__main__':
     for flier in bp['fliers']:
         flier.set(marker='D', color='black', alpha=0.5)    
     ax.set_xticklabels([x for x,_ in color_by_pop.items()])
-    ax.set_ylabel('Number of Variants')
-    ax.set_title('Number of Variant Positions with an SV')
+    ax.set_ylabel('HET SV Count')
+    ax.set_title('HET SV Counts Population-Wise')
     plt.figlegend(handles, labels, framealpha=1, frameon=True)
     plt.tight_layout()
-    plt.savefig(args.output+'/var_count_population-wise.png')
-
-    # Writing data into file
-    writer = open(args.output+'/sv_count.tsv', 'w')
-    print("Sample\tPopulation\tSuperpopulation\tSV Count\tNumber of Variant Positions with SVs", file=writer)
-    for sample, value in sorted_data.items():
-        print("%s\t%s\t%s\t%d\t%d"%(sample, value[2], value[3], value[1], value[0]), file=writer)
-    writer.close()
+    plt.savefig(args.output+'/het_count_population-wise.png')
