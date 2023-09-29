@@ -73,7 +73,7 @@ rule add_allele_decomposition_info:
 # get the biallelic and multiallelic VCFs for the genotypes
 rule convert_sample_vcf_biallelic:
     input:
-        sample_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-multiallelic.vcf'
+        sample_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-multiallelic.vcf',
         biallelic_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/vcf/panel-biallelic.vcf.gz'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-biallelic.vcf'
