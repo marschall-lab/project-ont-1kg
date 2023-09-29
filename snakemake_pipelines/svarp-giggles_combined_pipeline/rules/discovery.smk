@@ -19,8 +19,8 @@ rule svarp:
     conda:
         "../envs/svarp.yml"
     resources:
-        mem_total_mb=1024*100,
-        runtime_hrs=36,
+        mem_total_mb=1024*300,
+        runtime_hrs=72,
         runtime_min=1
     priority: 2
     shell:
@@ -30,7 +30,7 @@ rule svarp:
         module load SamTools/1.6
         module load gcc/10.2.0
         export PATH=$PATH:/gpfs/project/projects/medbioinf/users/spani/packages/wtdbg2
-        /gpfs/project/projects/medbioinf/projects/1000g-ont/svarp/build/svarp -a {input.alignment} -g {input.gfa} --fasta {input.reads} -i {wildcards.sample} --phase {input.haplotag} --e -o {params.outdir} 2> {log.stderr} 1> {log.stdout}
+        /gpfs/project/projects/medbioinf/projects/1000g-ont/svarp/build/svarp -a {input.alignment} -g {input.gfa} --fasta {input.reads} -i {wildcards.sample} --phase {input.haplotag} -o {params.outdir} 2> {log.stderr} 1> {log.stdout}
         module unload gcc/10.2.0
         module unload Minimap2/2.17
         module unload Python/3.11.3
