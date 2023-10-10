@@ -149,6 +149,7 @@ rule sv_count:
 # collect vcf stats
 rule collect_vcf_stats:
     input:
+        metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
         panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/vcf/panel-biallelic.vcf.gz',
         callset='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-biallelic.vcf.gz'
     output:
@@ -161,7 +162,7 @@ rule collect_vcf_stats:
         mem_total_mb=5000,
         runtime_hrs=6
     shell:
-        'python scripts/collect-vcf-stats.py -panel {input.panel} -callset {input.callset} > {output} 2> {log}'
+        'python scripts/collect-vcf-stats.py -meta {input.metadata} -panel {input.panel} -callset {input.callset} > {output} 2> {log}'
 
 
 # plot statistics
