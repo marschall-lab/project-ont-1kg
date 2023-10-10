@@ -13,3 +13,7 @@ dependencies:
   - seaborn
   - rtg-tools
   - cyvcf2
+  - pandas
+  - upsetplot
+  - scipy
+  - scikit-learn
