@@ -103,7 +103,7 @@ rule merge_vcf_to_multisample:
         mem_total_mb=30000,
         runtime_hrs=24,
     shell:
-        'bcftools merge -o {output} {input}'
+        'bcftools merge --no-version -o {output} {input}'
 
 
 # get the biallelic multisample VCF
@@ -156,10 +156,24 @@ rule collect_vcf_stats:
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/callset-stats.log'
     conda:
-        '../envs/basic.yml'
+        '../envs/cyvcf2.yml'
     resources:
         mem_total_mb=5000,
         runtime_hrs=6
     shell:
         'python scripts/collect-vcf-stats.py -panel {input.panel} -callset {input.callset} > {output} 2> {log}'
 
+
+# plot statistics
+rule plot_statistics:
+    input:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/callset-stats.tsv'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hwe.png',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/panelAF_vs_callsetAF.png',
+    params:
+        outdir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/'
+    conda:
+        '../envs/cyvcf2.yml'
+    shell:
+        'python scripts/plot-vcf-stats.py -table {input} -output {params.outdir}'
