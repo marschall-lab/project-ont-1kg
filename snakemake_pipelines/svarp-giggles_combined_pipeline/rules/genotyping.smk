@@ -66,7 +66,7 @@ rule add_allele_decomposition_info:
         panel_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/vcf/panel-multiallelic.vcf'
     output:
         sample_vcf_temp=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-tmp.vcf'),
-        output_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-multiallelic.vcf'
+        output_vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-multiallelic.vcf')
     resources:
         mem_total_mb=3000
     shell:
@@ -82,13 +82,44 @@ rule convert_sample_vcf_biallelic:
         sample_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-multiallelic.vcf',
         biallelic_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/vcf/panel-biallelic.vcf.gz'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-biallelic.vcf'
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-biallelic.vcf')
     conda:
         '../envs/basic.yml'
     resources:
         mem_total_mb=3000
     shell:
         "cat {input.sample_vcf} | python scripts/convert-to-biallelic.py {input.biallelic_vcf} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' > {output}"
+
+
+# merge multiallelic records to give multisample vcf
+rule merge_vcf_to_multisample:
+    input:
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-multiallelic.vcf.gz', sample=samples)
+    output:
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-multiallelic.vcf')
+    conda:
+        '../envs/basic.yml'
+    resources:
+        mem_total_mb=30000,
+        runtime_hrs=24,
+    shell:
+        'bcftools merge -o {output} {input}'
+
+
+# get the biallelic multisample VCF
+rule convert_multisample_vcf_biallelic:
+    input:
+        sample_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-multiallelic.vcf',
+        biallelic_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/vcf/panel-biallelic.vcf.gz'
+    output:
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-biallelic.vcf')
+    conda:
+        '../envs/basic.yml'
+    resources:
+        mem_total_mb=3000
+    shell:
+        "cat {input.sample_vcf} | python scripts/convert-to-biallelic.py {input.biallelic_vcf} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' > {output}"
+
 
 # calculate SV count
 rule sv_count:
@@ -114,3 +145,21 @@ rule sv_count:
         runtime_min=1
     shell:
         'python scripts/sv_count.py -meta {input.metadata} -vcf {params.inp_vcfs} -output {params.out} 2> {log}'
+
+# collect vcf stats
+rule collect_vcf_stats:
+    input:
+        panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/vcf/panel-biallelic.vcf.gz',
+        callset='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-biallelic.vcf.gz'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/callset-stats.tsv'
+    log:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/callset-stats.log'
+    conda:
+        '../envs/basic.yml'
+    resources:
+        mem_total_mb=5000,
+        runtime_hrs=6
+    shell:
+        'python scripts/collect-vcf-stats.py -panel {input.panel} -callset {input.callset} > {output} 2> {log}'
+
