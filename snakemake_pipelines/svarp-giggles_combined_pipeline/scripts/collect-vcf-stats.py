@@ -36,43 +36,7 @@ def compute_panel_allele_statistics(record):
     af = ac / max(1.0, float(an))
     return AlleleStats(str(af), str(ac), str(an), str(unknown))
 
-def compute_allele_statistics(record, metadata=None, samples=None):
-    """
-    Compute allele related statistics.
-    """
-    an = {'all': 0, 'AFR': 0, 'AMR': 0, 'EAS': 0, 'EUR': 0, 'SAS': 0}
-    ac = {'all': 0, 'AFR': 0, 'AMR': 0, 'EAS': 0, 'EUR': 0, 'SAS': 0}
-    af = {'all': 0, 'AFR': 0, 'AMR': 0, 'EAS': 0, 'EUR': 0, 'SAS': 0}
-    unknown = {'all': 0, 'AFR': 0, 'AMR': 0, 'EAS': 0, 'EUR': 0, 'SAS': 0}
-    for genotype, sample in zip(record.genotypes, samples):
-        sample_metadata = metadata[metadata['Sample name'] ==  sample]
-        pop_code = sample_metadata["Superpopulation code"].values[0]
-        assert pop_code in ['AFR', 'AMR', 'EAS', 'EUR', 'SAS']
-        alleles = genotype[:-1]
-        assert 1 <= len(alleles) <= 2
-        if len(alleles) == 1:
-            # haploid genotype
-            alleles.append(alleles[0])
-        for a in alleles:
-            if a == -1:
-                unknown['all'] += 1
-                unknown[pop_code] += 1
-                continue
-            assert a in [0,1]
-            an['all'] += 1
-            an[pop_code] += 1
-            ac['all'] += a
-            ac[pop_code] += a
-    allele_stats = {}
-    for i in an.keys():
-        if an[i] < 1:
-            assert ac[i] < 1
-        af[i] = ac[i] / max(1.0, float(an[i]))
-        allele_stats[i] = AlleleStats(str(af[i]), str(ac[i]), str(an[i]), str(unknown[i]))
-    
-    return allele_stats 
-
-def compute_genotype_statistics(record, qualities=None, metadata=None, samples=None):
+def compute_callset_statistics(record, qualities=None, metadata=None, samples=None):
     """
     Compute genotype related statistics.
     """
@@ -82,6 +46,11 @@ def compute_genotype_statistics(record, qualities=None, metadata=None, samples=N
     hom_alt_genotypes = {'all': 0, 'AFR': 0, 'AMR': 0, 'EAS': 0, 'EUR': 0, 'SAS': 0}
     total_genotypes = {'all': 0, 'AFR': 0, 'AMR': 0, 'EAS': 0, 'EUR': 0, 'SAS': 0}
     
+    an = {'all': 0, 'AFR': 0, 'AMR': 0, 'EAS': 0, 'EUR': 0, 'SAS': 0}
+    ac = {'all': 0, 'AFR': 0, 'AMR': 0, 'EAS': 0, 'EUR': 0, 'SAS': 0}
+    af = {'all': 0, 'AFR': 0, 'AMR': 0, 'EAS': 0, 'EUR': 0, 'SAS': 0}
+    unknown = {'all': 0, 'AFR': 0, 'AMR': 0, 'EAS': 0, 'EUR': 0, 'SAS': 0}
+
     gqs = record.format('GQ') if qualities is not None else [None]*len(record.genotypes)
     for genotype, quality, sample in zip(record.genotypes, gqs, samples):
         sample_metadata = metadata[metadata['Sample name'] ==  sample]
@@ -92,6 +61,18 @@ def compute_genotype_statistics(record, qualities=None, metadata=None, samples=N
         if len(alleles) == 1:
             # haploid genotype
             alleles.append(alleles[0])
+        
+        for a in alleles:
+            if a == -1:
+                unknown['all'] += 1
+                unknown[pop_code] += 1
+                continue
+            assert a in [0, 1]
+            an['all'] += 1
+            an[pop_code] += 1
+            ac['all'] += a
+            ac[pop_code] += a
+        
         if not -1 in alleles:
             total_genotypes['all'] += 1
             total_genotypes[pop_code] += 1
@@ -117,11 +98,18 @@ def compute_genotype_statistics(record, qualities=None, metadata=None, samples=N
                         counts['all'][q] += 1
                         counts[pop_code][q] += 1
     
+    allele_stats = {}
+    for i in an.keys():
+        if an[i] < 1:
+            assert ac[i] < 1
+        af[i] = ac[i] / max(1.0, float(an[i]))
+        allele_stats[i] = AlleleStats(str(af[i]), str(ac[i]), str(an[i]), str(unknown[i]))
+
     genotype_stats = {}
     for i in het_genotypes.keys():
         genotype_stats[i] = create_GenotypeStats(hom_ref_genotypes[i], het_genotypes[i], hom_alt_genotypes[i], total_genotypes[i])
     
-    return genotype_stats, counts
+    return allele_stats, genotype_stats, counts
 
 parser = argparse.ArgumentParser(prog='collect-vcf-stats.py', description="Collects the stats from the giggles callset vcf")
 parser.add_argument('-meta', metavar='panel', help='Sample population data')
@@ -153,8 +141,7 @@ quals = [0,50,100,200]
 for variant in callset_reader:
     assert len(variant.ALT) == 1
     var_id = variant.INFO['ID']
-    allele_stats = compute_allele_statistics(variant, metadata=metadata, samples=callset_samples)
-    genotype_stats, counts = compute_genotype_statistics(variant, qualities=quals, metadata=metadata, samples=callset_samples)
+    allele_stats, genotype_stats, counts = compute_callset_statistics(variant, qualities=quals, metadata=metadata, samples=callset_samples)
     assert list(allele_stats.keys()) == ['all', 'AFR', 'AMR', 'EAS', 'EUR', 'SAS']
     assert list(genotype_stats.keys()) == ['all', 'AFR', 'AMR', 'EAS', 'EUR', 'SAS']
     assert list(counts.keys()) == ['all', 'AFR', 'AMR', 'EAS', 'EUR', 'SAS']
