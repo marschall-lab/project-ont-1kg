@@ -94,7 +94,7 @@ def compute_callset_statistics(record, qualities=None, metadata=None, samples=No
             # read GQ
             if qualities is not None:
                 for q in qualities:
-                    if int(quality) >= q:
+                    if int(quality[0]) >= q:
                         counts['all'][q] += 1
                         counts[pop_code][q] += 1
     
