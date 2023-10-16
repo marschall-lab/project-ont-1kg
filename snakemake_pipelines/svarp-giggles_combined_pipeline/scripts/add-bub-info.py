@@ -12,11 +12,11 @@ args = parser.parse_args()
 
 table = pandas.read_csv(args.table, sep='\t', header=0)
 
-panel = VCF(args.panel, 'r')
+panel = VCF(args.panel)
 
 # mapping variant IDs to bubble IDs
 var_id_to_bub = {}
-bub_id_to_allele_len = []
+bub_id_to_allele_len = {}
 for variant in panel:
     bub_id = variant.ID
     var_ids = variant.INFO['ID']
@@ -24,7 +24,10 @@ for variant in panel:
     alt_lengths = ','.join([str(len(x)) for x in variant.ALT])
     bub_id_to_allele_len[bub_id] = [ref_length, alt_lengths]
     for var_id in var_ids.split(','):
-        var_id_to_bub[var_id] = bub_id
+        for v in var_id.split(':'):
+            if v in var_id_to_bub:
+                assert bub_id == var_id_to_bub[v]
+            var_id_to_bub[v] = bub_id
 
 bub_id_list = []
 ref_len_list = []
@@ -41,9 +44,9 @@ for var_id in table['variant_id'].tolist():
         print('No bubble id found for variant ', var_id, file=sys.stderr)
 
 # renaming the columns which were incorrectly named in the previous script
-table.rename(columns={"variant type": "variant_type", "variant length": "variant_length"})
+table = table.rename(columns={"variant type": "variant_type", "variant length": "variant_length"})
 
 table.insert(3, 'bub_id', bub_id_list)
 table.insert(4, 'ref_allele_len', ref_len_list)
 table.insert(5, 'alt_allele_len', alt_len_list)
-table.to_csv(args.output, sep='\t')
+table.to_csv(args.output, sep='\t', index=False)
