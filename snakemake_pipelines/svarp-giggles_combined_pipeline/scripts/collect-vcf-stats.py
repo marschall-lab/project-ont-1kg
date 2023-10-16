@@ -112,7 +112,7 @@ def compute_callset_statistics(record, qualities=None, metadata=None, samples=No
     return allele_stats, genotype_stats, counts
 
 parser = argparse.ArgumentParser(prog='collect-vcf-stats.py', description="Collects the stats from the giggles callset vcf")
-parser.add_argument('-meta', metavar='panel', help='Sample population data')
+parser.add_argument('-meta', metavar='meta', help='Sample population data')
 parser.add_argument('-panel', metavar='panel', help='Biallelic panel VCF.')
 parser.add_argument('-callset', metavar='callset', help='Giggles multisample biallelic VCF')
 args = parser.parse_args()
@@ -136,9 +136,9 @@ for variant in panel_reader:
 
 sys.stderr.write("Completed generating panel statistics.\n")
 sys.stderr.write("Found %d variant IDs.\n"%(len(panel_stats)))
-
+sys.stderr.write("\nReading Callset VCF.\n")
 quals = [0,50,100,200]
-for variant in callset_reader:
+for n, variant in enumerate(callset_reader):
     assert len(variant.ALT) == 1
     var_id = variant.INFO['ID']
     allele_stats, genotype_stats, counts = compute_callset_statistics(variant, qualities=quals, metadata=metadata, samples=callset_samples)
@@ -146,6 +146,8 @@ for variant in callset_reader:
     assert list(genotype_stats.keys()) == ['all', 'AFR', 'AMR', 'EAS', 'EUR', 'SAS']
     assert list(counts.keys()) == ['all', 'AFR', 'AMR', 'EAS', 'EUR', 'SAS']
     callset_stats[var_id] = [allele_stats, genotype_stats, counts]
+    if (n+1)%1000 == 0:
+        sys.stderr.write("\tRead %d variant records.\n"%(n))
 
 sys.stderr.write("Completed generating callset statistics.\n")
 sys.stderr.write("Qualities used for stat generation: %s.\n"%(','.join([str(q) for q in quals])))
