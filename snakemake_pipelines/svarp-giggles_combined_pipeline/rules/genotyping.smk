@@ -153,25 +153,49 @@ rule collect_vcf_stats:
         panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/vcf/panel-biallelic.vcf.gz',
         callset='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-biallelic.vcf.gz'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/callset-stats.tsv'
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/callset-stats.tsv')
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/callset-stats.log'
     conda:
         '../envs/cyvcf2.yml'
     resources:
         mem_total_mb=5000,
-        runtime_hrs=6
+        runtime_hrs=18
     shell:
         'python scripts/collect-vcf-stats.py -meta {input.metadata} -panel {input.panel} -callset {input.callset} > {output} 2> {log}'
 
+# adding bubble ids to the vcf stats table
+rule add_bub_ids:
+    input:
+        table='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/callset-stats.tsv',
+        multi_panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/vcf/panel-multiallelic.vcf'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/variant-stats.tsv'
+    conda:
+        '../envs/cyvcf2.yml'
+    resources:
+        mem_total_mb=5000,
+        runtime_hrs=3
+    shell:
+        'python scripts/add-bub-info.py -table {input.table} -panel {input.multi_panel} -output {output}'
 
 # plot statistics
 rule plot_statistics:
     input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/callset-stats.tsv'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/variant-stats.tsv'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hwe.png',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/panelAF_vs_callsetAF.png',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/af.png',
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hwe.{pop}.png', pop=['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/af.{pop}.png', pop=['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hwe.SVonly.png',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/af.SVonly.png',
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hwe.{pop}.SVonly.png', pop=['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/af.{pop}.SVonly.png', pop=['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hwe.{vtype}.png', vtype=['INS', 'DEL', 'COMPLEX']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/af.{vtype}.png', vtype=['INS', 'DEL', 'COMPLEX']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hwe.{vtype}.SVonly.png', vtype=['INS', 'DEL', 'COMPLEX']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/af.{vtype}.SVonly.png', vtype=['INS', 'DEL', 'COMPLEX']),
     params:
         outdir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/'
     conda:
