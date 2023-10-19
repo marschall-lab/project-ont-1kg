@@ -1,10 +1,9 @@
 pilot: True
 
-'''
-{callset name}:
-  gfa: {path to the GFA}
-  pseudohaplotypes: {path to FOFN having list of pseudohaplotype FASTAs}
-'''
+#{callset name}:
+#  gfa: {path to the GFA}
+#  pseudohaplotypes: {path to FOFN having list of pseudohaplotype FASTAs}
+
 #chm13-90c.r518:
 #  gfa: '/gpfs/project/projects/medbioinf/users/spani/files/gfa/1000GP/chm13-90c.r518.gfa'
 #  pseudohaplotypes: None 
