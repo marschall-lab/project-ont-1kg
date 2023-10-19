@@ -65,7 +65,7 @@ rule list_hprc_assembly_mappings:
 
 
 # make a list of pseudo-haplotype GAFs
-rule list_hprc_assembly_mappings:
+rule list_pseudohaplotype_assembly_mappings:
     input:
         lambda wildcards: expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{{callset}}/pseudo_assembly_mappings/{name}.gaf', name=[p for p in pseudohaplotypes[wildcards.callset].keys()])
     output:

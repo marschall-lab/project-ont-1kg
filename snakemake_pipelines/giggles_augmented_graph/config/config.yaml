@@ -10,7 +10,7 @@ pilot: True
 callsets:
   chm13-augmentation-pilot:
     gfa: '/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/extend-graph-by-callsets/results-population-calls/minigraph/minigraph-extended_all.gfa'
-    pseudohaplotypes: '../resources/pseudohaplotypes/chm13-augmentation-pilot.txt'
+    pseudohaplotypes: 'resources/pseudohaplotypes/chm13-augmentation-pilot.txt'
 
 hprc_samples:
   - HG00438
