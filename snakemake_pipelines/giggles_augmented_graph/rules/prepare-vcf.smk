@@ -94,8 +94,7 @@ rule assemblies_to_vcf:
         runtime_min=0,
         mem_total_mb=lambda wildcards, attempt: 10*1024 * attempt
     shell:
-        'python scripts/assembly-to-vcf.py -gfa {input.ref} -hprc-list {input.hprc_path} -pseudo-list {input.pseudo_path} --output {output} 2> {log}''
-
+        'python scripts/assembly-to-vcf.py -gfa {input.ref} -hprc-list {input.hprc_path} -pseudo-list {input.pseudo_path} --output {output} 2> {log}'
 
 
 # filter the VCF
