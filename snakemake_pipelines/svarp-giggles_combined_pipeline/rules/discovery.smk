@@ -50,10 +50,10 @@ rule svtigs_minimap2:
         '../envs/svarp_processing.yml'
     resources:
         mem_total_mb=30000
-    threads: 32
+    threads: 2
     priority:3
     shell:
-        'minimap2 -a -x asm5 --cs -r2k -t 32 {input.ref} {input.fasta}  > {output}'
+        'minimap2 -a -x asm5 --cs -r2k -t {threads} {input.ref} {input.fasta}  > {output}'
 
 # sort aligned SAM file
 rule sort_svtig_alignment:
@@ -65,10 +65,10 @@ rule sort_svtig_alignment:
         haplotype='H1|H2'
     conda:
         '../envs/svarp_processing.yml'
-    threads: 4
+    threads: 2
     priority:3
     shell:
-        'samtools sort -m4G -@4 -o {output} {input}'
+        'samtools sort -m4G -@{threads} -o {output} {input}'
 
 # index sorted BAM
 rule index_sorted_svtig_alignment:
