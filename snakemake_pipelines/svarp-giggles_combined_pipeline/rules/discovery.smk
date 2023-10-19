@@ -49,8 +49,7 @@ rule svtigs_minimap2:
     conda:
         '../envs/svarp_processing.yml'
     resources:
-        mem_total_mb=100000,
-        runtime_hrs=24
+        mem_total_mb=30000
     threads: 32
     priority:3
     shell:
@@ -66,9 +65,6 @@ rule sort_svtig_alignment:
         haplotype='H1|H2'
     conda:
         '../envs/svarp_processing.yml'
-    resources:
-        mem_total_mb=20000,
-        runtime_hrs=12
     threads: 4
     priority:3
     shell:
@@ -84,9 +80,6 @@ rule index_sorted_svtig_alignment:
         haplotype='H1|H2'
     conda:
         '../envs/svarp_processing.yml'
-    resources:
-        mem_total_mb=10000,
-        runtime_hrs=2
     shell:
         'samtools index {input}'
 
@@ -105,9 +98,6 @@ rule run_svim_asm:
         outdir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/'
     conda:
         '../envs/svarp_processing.yml'
-    resources:
-        mem_total_mb=100000,
-        runtime_hrs=24
     priority: 3
     shell:
         'svim-asm diploid --sample {wildcards.sample} {params.outdir} {input.bam1} {input.bam2} {input.ref}'
