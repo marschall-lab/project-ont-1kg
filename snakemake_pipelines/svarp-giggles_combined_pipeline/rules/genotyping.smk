@@ -180,6 +180,7 @@ rule add_bub_ids:
         'python scripts/add-bub-info.py -table {input.table} -panel {input.multi_panel} -output {output}'
 
 # plot statistics
+# TODO: Add a separate output file for the printed numerical stats
 rule plot_statistics:
     input:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/variant-stats.tsv'
