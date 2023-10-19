@@ -15,13 +15,13 @@ class Table:
         if var_type:
             assert var_type in ['SNV', 'INS', 'DEL', 'COMPLEX']
         if var_type:
-            subtable = self._stats[self._stats['variant type'] == var_type]
+            subtable = self._stats[self._stats['variant_type'] == var_type]
         else:
             subtable = self._stats
         if is_SV:
-            subtable=subtable[subtable['variant length'] >= 50]
+            subtable=subtable[subtable['variant_length'] >= 50]
         if is_not_SV:
-            subtable=subtable[subtable['variant length'] < 50]
+            subtable=subtable[subtable['variant_length'] < 50]
         
         return subtable
 
@@ -33,10 +33,15 @@ def plot_all_hwe(data, out):
     x_name="all_allele_freq"
     y_name="all_heterozygosity"
     title=out.split('/')[-1][0:-4]
+    #g = seaborn.jointplot(data=data, x=x_name, y=y_name, kind='hex', height=10, ratio=5, ylim=(0, 1), cbar=True)
     g = seaborn.JointGrid(data=data, x=x_name, y=y_name, height=10, ratio=5, ylim=(0, 1))
     g.plot_marginals(seaborn.histplot, bins=50)
     g.plot_joint(plt.hexbin, bins='log', gridsize=50, cmap='Blues')
     g.set_axis_labels(x_name, y_name)
+    plt.subplots_adjust(left=0, right=0.8, top=1, bottom=0)  # shrink fig so cbar is visible
+    # make new ax object for the cbar
+    cbar_ax = g.fig.add_axes([.85, .1, .05, .8])  # x, y, width, height
+    plt.colorbar(cax=cbar_ax)
     g.fig.suptitle(title)
     g.savefig(out)
     plt.close()
@@ -53,6 +58,10 @@ def plot_pop_hwe(data, out, pop):
     g.plot_marginals(seaborn.histplot, bins=50)
     g.plot_joint(plt.hexbin, bins='log', gridsize=50, cmap='Blues')
     g.set_axis_labels(x_name, y_name)
+    plt.subplots_adjust(left=0, right=0.8, top=1, bottom=0)  # shrink fig so cbar is visible
+    # make new ax object for the cbar
+    cbar_ax = g.fig.add_axes([.85, .1, .05, .8])  # x, y, width, height
+    plt.colorbar(cax=cbar_ax)
     g.fig.suptitle(title)
     g.savefig(out)
     plt.close()
@@ -70,6 +79,10 @@ def plot_all_panelAF_vs_callsetAF(data, out):
     g.plot_marginals(seaborn.histplot, bins=50)
     g.plot_joint(plt.hexbin, bins='log', gridsize=50, cmap='Blues')
     g.set_axis_labels(x_name, y_name)
+    plt.subplots_adjust(left=0, right=0.8, top=1, bottom=0)  # shrink fig so cbar is visible
+    # make new ax object for the cbar
+    cbar_ax = g.fig.add_axes([.85, .1, .05, .8])  # x, y, width, height
+    plt.colorbar(cax=cbar_ax)
     g.fig.suptitle(title)
     g.savefig(out)
     plt.close()
@@ -86,13 +99,17 @@ def plot_pop_panelAF_vs_callsetAF(data, out, pop):
     g.plot_marginals(seaborn.histplot, bins=50)
     g.plot_joint(plt.hexbin, bins='log', gridsize=50, cmap='Blues')
     g.set_axis_labels(x_name, y_name)
+    plt.subplots_adjust(left=0, right=0.8, top=1, bottom=0)  # shrink fig so cbar is visible
+    # make new ax object for the cbar
+    cbar_ax = g.fig.add_axes([.85, .1, .05, .8])  # x, y, width, height
+    plt.colorbar(cax=cbar_ax)
     g.fig.suptitle(title)
     g.savefig(out)
     plt.close()
     pass
 
-def print_stats(table):
-    SVtable = table[table['variant length'] >= 50]
+def print_basic_stats(table):
+    SVtable = table[table['variant_length'] >= 50]
     print("\tNumber of variants: ", table.shape[0])
     print("\tNumber of SVs: ", table[table['variant_length'] >= 50].shape[0])
     print("\tNumber of INS: ", table[table['variant_type'] == 'INS'].shape[0])
@@ -103,16 +120,17 @@ def print_stats(table):
     print("\tNumber of COMPLEX SV: ", SVtable[SVtable['variant_type'] == 'COMPLEX'].shape[0])
     print("\tNumber of SNV: ", table[table['variant_type'] == 'SNV'].shape[0])
 
-def filtered_variant_stats(table):
-    var_ids = table['variant_id'].tolist()
-    bub_ids = set()
-    for id in var_ids:
-        _,_,_,bub_id,_ = id.split('-')
-        bub_ids.add(bub_id)
-    print("\tNumber of variants filtered out: ", len(var_ids))
+def filtered_variant_stats(table: pandas.DataFrame):
+    bub_ids = set(table['bub_id'].tolist())
+    print("\tNumber of variants filtered out: ", table.shape[0])
     print("\tNumber of bubbles involved: ", len(bub_ids))
-    exit()
-
+    alt_lengths = table[['bub_id', 'alt_allele_len']]
+    alt_lengths = alt_lengths.drop_duplicates()
+    n_alleles = []
+    for alt in alt_lengths['alt_allele_len'].tolist():
+        n_alleles.append(len(alt.split(',')))
+    
+    print(pandas.Series(n_alleles).describe())
     pass
 
 parser = argparse.ArgumentParser(prog='plot-vcf-stats.py', description="Making plots out of the VCF callset stats.")
@@ -122,14 +140,14 @@ args = parser.parse_args()
 
 table = pandas.read_csv(args.table, sep='\t', header=0)
 print('Count before filtering:')
-print_stats(table)
+print_basic_stats(table)
 
 print("\nFiltering variant records without any samples genotyped.")
 filtered_variant_stats(table[table['all_total_alleles'] == 0])
 
 table = table[table['all_total_alleles'] != 0]
 print('\nCount after filtering:')
-print_stats(table)
+print_basic_stats(table)
 
 # creating Table object for plotting
 stats = Table(table)
