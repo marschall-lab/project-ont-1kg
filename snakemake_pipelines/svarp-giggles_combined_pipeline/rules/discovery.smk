@@ -36,3 +36,79 @@ rule svarp:
         module unload Python/3.11.3
         module unload SamTools/1.6
         '''
+
+# map svtigs with minimap2
+rule svtigs_minimap2:
+    input:
+        ref='/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/data/1KG_ONT_VIENNA_hg38.fa',
+        fasta='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/{sample}_svtigs_{haplotype}.fa'
+    output:
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/{sample}_{haplotype}.sam')
+    wildcard_constraints:
+        haplotype='H1|H2'
+    conda:
+        '../envs/svarp_processing.yml'
+    resources:
+        mem_total_mb=100000,
+        runtime_hrs=24
+    threads: 32
+    priority:3
+    shell:
+        'minimap2 -a -x asm5 --cs -r2k -t 32 {input.ref} {input.fasta}  > {output}'
+
+# sort aligned SAM file
+rule sort_svtig_alignment:
+    input:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/{sample}_{haplotype}.sam'
+    output:
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/{sample}_{haplotype}.sorted.bam')
+    wildcard_constraints:
+        haplotype='H1|H2'
+    conda:
+        '../envs/svarp_processing.yml'
+    resources:
+        mem_total_mb=20000,
+        runtime_hrs=12
+    threads: 4
+    priority:3
+    shell:
+        'samtools sort -m4G -@4 -o {output} {input}'
+
+# index sorted BAM
+rule index_sorted_svtig_alignment:
+    input:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/{sample}_{haplotype}.sorted.bam'
+    output:
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/{sample}_{haplotype}.sorted.bam.bai')
+    wildcard_constraints:
+        haplotype='H1|H2'
+    conda:
+        '../envs/svarp_processing.yml'
+    resources:
+        mem_total_mb=10000,
+        runtime_hrs=2
+    shell:
+        'samtools index {input}'
+
+# run svim-asm to get the vcf
+rule run_svim_asm:
+    input:
+        ref='/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/data/1KG_ONT_VIENNA_hg38.fa',
+        bam1='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/{sample}_H1.sorted.bam',
+        bam1_index='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/{sample}_H1.sorted.bam.bai',
+        bam2='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/{sample}_H2.sorted.bam',
+        bam2_index='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/{sample}_H2.sorted.bam.bai'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/variants.vcf',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/sv-lengths.png'
+    params:
+        outdir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/'
+    conda:
+        '../envs/svarp_processing.yml'
+    resources:
+        mem_total_mb=100000,
+        runtime_hrs=24
+    priority: 3
+    shell:
+        'svim-asm diploid --sample {wildcards.sample} {params.outdir} {input.bam1} {input.bam2} {input.ref}'
+        
