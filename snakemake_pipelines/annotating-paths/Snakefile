@@ -32,7 +32,7 @@ rule all:
 
 rule align_assemblies_to_chm13_minigraph:
     input:
-        ref='/gpfs/project/projects/medbioinf/users/spani/files/gfa/HengLi/chm13-90c.r518.gfa',
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/gfa/1000GP/chm13-90c.r518.gfa',
         assembly='/gpfs/project/projects/medbioinf/users/spani/files/fasta/HPRC/Assemblies_Yr1/{sample}.{haplotype}.fa',
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/{sample}.{haplotype}.gaf'
