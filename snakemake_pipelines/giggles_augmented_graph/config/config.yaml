@@ -1,18 +1,17 @@
 pilot: True
 
-callsets:
-  #chm13-90c.r518:
-  #  gfa: '/gpfs/project/projects/medbioinf/users/spani/files/gfa/1000GP/chm13-90c.r518.gfa'
-  #  pseudohaplotypes: None
-  chm13-augmentation-pilot:
-    gfa: '/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/extend-graph-by-callsets/results-population-calls/minigraph/minigraph-extended_all.gfa'
-    pseudohaplotypes: '../resources/pseudohaplotypes/chm13-augmentation-pilot.txt'
-
 '''
 {callset name}:
   gfa: {path to the GFA}
   pseudohaplotypes: {path to FOFN having list of pseudohaplotype FASTAs}
 '''
+#chm13-90c.r518:
+#  gfa: '/gpfs/project/projects/medbioinf/users/spani/files/gfa/1000GP/chm13-90c.r518.gfa'
+#  pseudohaplotypes: None 
+callsets:
+  chm13-augmentation-pilot:
+    gfa: '/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/extend-graph-by-callsets/results-population-calls/minigraph/minigraph-extended_all.gfa'
+    pseudohaplotypes: '../resources/pseudohaplotypes/chm13-augmentation-pilot.txt'
 
 hprc_samples:
   - HG00438
