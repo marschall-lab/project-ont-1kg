@@ -19,11 +19,13 @@ for callset in config['callsets'].keys():
 rule align_hprc_assemblies:
     input:
         ref='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/bubble_calling_and_tagging/{callset}.tagged.gfa',
-        assembly='/gpfs/project/projects/medbioinf/users/spani/files/fasta/HPRC/Assemblies_Yr1/{sample}.{haplotype}.fa',
+        assembly='/gpfs/project/projects/medbioinf/users/spani/files/fasta/HPRC/Assemblies_Yr1/{sample}.{haplotype}.fa'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/hprc_assembly_mappings/{sample}.{haplotype}.gaf'
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/hprc_assembly_mappings/{sample}.{haplotype}.log'
+    wildcard_constraints:
+        sample='|'.join(config['hprc_samples'])
     resources:
         runtime_hrs=12,
         runtime_min=0,
