@@ -1,5 +1,6 @@
 pilot: True
 
+# Note: No '.' (dots) in the gfa name.
 #{callset name which should match the gfa name}:
 #  gfa: {path to the GFA}
 #  pseudohaplotypes: {path to FOFN having list of pseudohaplotype FASTAs}
