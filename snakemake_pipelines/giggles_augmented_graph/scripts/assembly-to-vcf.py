@@ -538,46 +538,40 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
             except ValueError:
                 pass
         
-        #Determine allele traversals
+        # determine allele traversals
         at = []
         for key,_ in alleles.items():
             at.append(key)
         seq = get_sequences(at, nodes)
-        #Looking for same alleles with different labels
-        dup = {}
+        
+        # looking for same alleles with different labels
         allele_to_new = {}
         for i in range(len(seq)):
             allele_to_new[i] = i
+        new_seq = []
+        for s in seq:
+            if s not in new_seq:
+                new_seq.append(s)
         for i in range(len(seq)):
-            seq1 = seq[i]
-            count = i+1
-            for j, seq2 in enumerate(seq[i+1:]):
-                if allele_to_new[j+i+1] < i+1:
-                    continue
-                if seq1 == seq2:
-                    allele_to_new[j+i+1] = i
-                else:
-                    allele_to_new[j+i+1] = count
-                    count += 1
+            allele_to_new[i] = new_seq.index(seq[i])
         new_allele_to_sequence = {}
         for old_allele, new_allele in allele_to_new.items():
             if new_allele in new_allele_to_sequence:
-                assert seq[old_allele] == new_allele_to_sequence[new_allele]
-            new_allele_to_sequence[new_allele] = seq[old_allele]
-        # Original implementation in comments for comparing ref with alts.
-        '''
-        ref = seq[0]
-        dup = []
-        count = 1
-        allele_to_new = {}
-        for i, alt in enumerate(seq[1:]):
-            if ref == alt:
-                allele_to_new[i+1] = 0
-                dup.append(i+1)
+                try:
+                    assert seq[old_allele] == new_allele_to_sequence[new_allele]
+                except AssertionError:
+                    print("Old Allele: ", old_allele)
+                    print("Old Allele Seq: ", seq[old_allele])
+                    print("New Allele: ", new_allele)
+                    print("New Allele Seq: ", new_allele_to_sequence[new_allele])
+                    print(allele_to_new)
+                    print(seq)
+                    print(new_seq)
+                    exit()
             else:
-                allele_to_new[i+1] = count
-                count += 1
-        '''
+                new_allele_to_sequence[new_allele] = seq[old_allele]
+        
+        # updating the genotypes
         for i, gen in enumerate(genotypes):
             haps = [int(a) if a != '.' else a for a in gen.split('|')]
             new_genotype = []
