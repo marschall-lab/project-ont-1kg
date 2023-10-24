@@ -30,7 +30,7 @@ rule align_hprc_assemblies:
         runtime_hrs=12,
         runtime_min=0,
         mem_total_mb=lambda wildcards, attempt: 80000 * attempt
-    threads: 24
+    threads: 8
     shell:
         '/gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr {input.ref} {input.assembly} -t {threads} > {output} 2> {log}'
 
@@ -48,7 +48,7 @@ rule align_pseudohaplotypes:
         runtime_hrs=12,
         runtime_min=0,
         mem_total_mb=lambda wildcards, attempt: 80000 * attempt
-    threads: 24
+    threads: 8
     shell:
         '/gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr {input.ref} {input.assembly} -t {threads} > {output} 2> {log}'
 
