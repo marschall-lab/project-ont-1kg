@@ -86,7 +86,10 @@ rule assemblies_to_vcf:
         hprc_path='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/hprc_assembly_mappings/pathlist.txt',
         pseudo_path='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/pseudo_assembly_mappings/pathlist.txt'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{callset}.vcf'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{callset}.vcf',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{callset}-giggles.vcf',
+    params:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/'
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{callset}.log'
     conda:
@@ -102,9 +105,9 @@ rule assemblies_to_vcf:
 # filter the VCF
 rule filter_vcf:
     input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{callset}.vcf'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{vcf}.vcf'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{callset}_filtered.vcf.gz'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{vcf}_filtered.vcf'
     conda:
         '../envs/basic.yml'
     resources:
@@ -113,6 +116,5 @@ rule filter_vcf:
         mem_total_mb=lambda wildcards, attempt: 2*1024 * attempt
     shell:
         '''
-        bcftools view -f "PASS" -Oz -o {output} {input}
-        bcftools index {output}
+        bcftools view -f "PASS" -o {output} {input}
         '''
