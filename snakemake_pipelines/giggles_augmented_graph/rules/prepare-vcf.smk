@@ -97,7 +97,7 @@ rule assemblies_to_vcf:
     resources:
         runtime_hrs=1,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 10*1024 * attempt
+        mem_total_mb=lambda wildcards, attempt: 50*1024 * attempt
     shell:
         'python scripts/assembly-to-vcf.py -gfa {input.ref} -hprc-list {input.hprc_path} -pseudo-list {input.pseudo_path} -output {params} 2> {log}'
 
