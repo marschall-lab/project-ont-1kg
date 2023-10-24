@@ -13,10 +13,10 @@ rule decompress_gaf:
 #compress vcf
 rule compress_vcf:
     input:
-        "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/{filename}.vcf"
+        "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{filename}.vcf"
     output:
-        vcf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/{filename}.vcf.gz",
-        tbi="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/{filename}.vcf.gz.tbi"
+        vcf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{filename}.vcf.gz",
+        tbi="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{filename}.vcf.gz.tbi"
     shell:
         """
         bgzip -c {input} > {output.vcf}
