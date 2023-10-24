@@ -12,13 +12,14 @@ from collections import defaultdict, namedtuple, abc
 import gzip
 import re
 import pysam
+from copy import deepcopy
 
 logger = logging.getLogger(__name__)
 VariantRecord = namedtuple('VariantRecord', ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO', 'FORMAT'])
 
 
 class VCFWriter:
-    def __init__(self, path, bgzip):
+    def __init__(self, path, bgzip=False):
         self.bgzipped = bgzip
         if bgzip:
             self.writer = pysam.libcbgzf.BGZFile(path, 'wb')
@@ -44,6 +45,13 @@ class Genotype:
     def to_string(self):
         return '%s|%s'%(self.paternal, self.maternal)
 
+class Haplotype:
+    def __init__(self):
+        self.allele = None
+        self._remove = False
+    
+    def to_string(self):
+        return '%s'%(self.allele)
 
 def setup_logging(debug):
     handler = logging.StreamHandler()
@@ -58,7 +66,7 @@ def annotate(options):
         1. gfa: Input GFA that needs to be updated.
         2. hprc_list: a file containing the list of file paths to hprc assembly-to-graph GAFs.
         3. pseudo_list: a file containing the list of file paths to pseudohaplotype assembly-to-graph GAFs.
-        4. output: path to output VCF file/
+        4. output: path to output directory for VCF files
         
     What to keep in the VCF file?
         1. ID will be the start and end node with the orientation
@@ -72,7 +80,7 @@ def annotate(options):
     nodes = defaultdict(lambda: Node())
     edges = defaultdict(lambda: Edge())
     read_gfa(options.gfa, nodes, edges)
-    
+    gfa_name = '/'+options.gfa.split('/')[-1].split('.')[0]
     scaffold_nodes = [node_id for node_id, value in sorted(nodes.items(), key=lambda item: item[1].BO) if value.NO==0]
     variants, hprc_haplotype_list, hprc_contigs = read_assemblies(options.hprc_list, scaffold_nodes, nodes)
     pseudo_variants, pseudo_haplotype_list, pseudo_contigs = read_assemblies(options.pseudo_list, scaffold_nodes, nodes)
@@ -80,14 +88,17 @@ def annotate(options):
     for bub in variants.keys():
         variants[bub].update(pseudo_variants[bub])
 
-
-    haplotype_list = list(set(hprc_haplotype_list+pseudo_haplotype_list))
+    hprc_haplotype_list.sort()
+    pseudo_haplotype_list.sort()
+    haplotype_list = hprc_haplotype_list+pseudo_haplotype_list
     contigs = list(set(hprc_contigs+pseudo_contigs))
+    contigs.sort()
     ref_alleles = get_reference_alleles(edges, list(variants.keys()))
     
-    writer = VCFWriter(options.output, options.bgzip)
+    writer = {'all': VCFWriter(options.output+gfa_name+'.vcf'), 'giggles': VCFWriter(options.output+gfa_name+'-giggles.vcf')}
     write_vcf(writer, variants, ref_alleles, haplotype_list, contigs, options, nodes)
-    writer.close()
+    writer['all'].close()
+    writer['giggles'].close()
     
 
 def read_gfa(gfa, node, edges):
@@ -346,52 +357,72 @@ def reverse_path(path):
     return new_path
 
 
-def write_vcf(writer, variants, ref_alleles, haplotypes, contigs, options, nodes):
-    write_header(writer, contigs, haplotypes, options)
-    write_records(writer, variants, ref_alleles, haplotypes, nodes)
+def write_vcf(writers, variants, ref_alleles, haplotypes, contigs, options, nodes):
+    write_header(writers, contigs, haplotypes, options)
+    write_records(writers, variants, ref_alleles, haplotypes, nodes)
     pass
 
-def write_header(writer, contigs, haplotypes, options):
-    writer.write("##fileformat=VCFv4.2")
-    writer.write("##reference=%s"%(os.path.abspath(options.gfa)))
-    writer.write("##script=%s"%(os.path.abspath(__file__)))
-    writer.write("##phased=True")
-    
-    #Writing INFO Header
-    writer.write('##INFO=<ID=CONFLICT,Number=.,Type=String,Description="Assembly names for which there are multiple conflicting allele traversals">')
-    writer.write('##INFO=<ID=AC,Number=A,Type=Integer,Description="Total number of alternate alleles in called genotypes">')
-    writer.write('##INFO=<ID=AF,Number=A,Type=Float,Description="Estimated allele frequency in the range (0,1]">')
-    writer.write('##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of samples with data">')
-    writer.write('##INFO=<ID=AT,Number=R,Type=String,Description="Allele Traversal as path in graph">')
-    
-    #Writing FILTER Header
-    writer.write('##FILTER=<ID=PASS,Description="All filters passed">')
-    writer.write('##FILTER=<ID=NS80,Description="Number of Samples with data less than 80%">')
-    
-    #Writing FOMRAT Header
-    writer.write('##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">')
+def write_header(writers, contigs, haplotypes, options):
+    hprc_samples = list(set([x.split('.')[0] for x in haplotypes if '.' in x]))
+    hprc_samples.sort()
+    pseudo_samples = list(set([x.split('.')[0] for x in haplotypes if '.' not in x]))
+    pseudo_samples.sort()
+    samples = hprc_samples+pseudo_samples
+    for key in writers.keys():
+        writer = writers[key]          
+        writer.write("##fileformat=VCFv4.2")
+        writer.write("##reference=%s"%(os.path.abspath(options.gfa)))
+        writer.write("##script=%s"%(os.path.abspath(__file__)))
+        writer.write("##phased=True")
+        
+        #Writing INFO Header
+        writer.write('##INFO=<ID=CONFLICT,Number=.,Type=String,Description="Assembly names for which there are multiple conflicting allele traversals">')
+        writer.write('##INFO=<ID=AC,Number=A,Type=Integer,Description="Total number of alternate alleles in the assembly panel">')
+        writer.write('##INFO=<ID=HPRC_AC,Number=A,Type=Integer,Description="Total number of alternate alleles in HPRC assemblies">')
+        writer.write('##INFO=<ID=PSEUDO_AC,Number=A,Type=Integer,Description="Total number of alternate alleles in pseudohaplotype assemblies">')
+        writer.write('##INFO=<ID=AF,Number=A,Type=Float,Description="Estimated allele frequency in the range (0,1] in the assembly panel">')
+        writer.write('##INFO=<ID=HPRC_AF,Number=A,Type=Float,Description="Estimated allele frequency in the range (0,1] in HPRC assemblies">')
+        writer.write('##INFO=<ID=PSEUDO_AF,Number=A,Type=Float,Description="Estimated allele frequency in the range (0,1] in pseudohaplotype assemblies">')
+        writer.write('##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of samples with data in the assembly panel">')
+        writer.write('##INFO=<ID=HPRC_NS,Number=1,Type=Integer,Description="Number of samples with data in HPRC assemblies">')
+        writer.write('##INFO=<ID=PSEUDO_NS,Number=1,Type=Integer,Description="Number of samples with data in pseudohaplotype assemblies">')
+        writer.write('##INFO=<ID=AT,Number=R,Type=String,Description="Allele Traversal as path in graph">')
+        
+        #Writing FILTER Header
+        writer.write('##FILTER=<ID=PASS,Description="All filters passed">')
+        writer.write('##FILTER=<ID=NS80,Description="Number of Samples with data less than 80%">')
+        
+        #Writing FOMRAT Header
+        writer.write('##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">')
 
-    #Writing Contig Header
-    for contig in contigs:
-        writer.write(contig_header_to_string(contig))
-    
-    samples = list(set([x.split(".")[0] for x in haplotypes]))
-    writer.write("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t%s"%('\t'.join(samples)))
+        #Writing Contig Header
+        for contig in contigs:
+            writer.write(contig_header_to_string(contig))
+        writer.write("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t%s"%('\t'.join(samples)))
 
 
 def write_records(writer, variants, ref_alleles, haplotypes, nodes):
 
-    samples = list(set([x.split(".")[0] for x in haplotypes])) 
+    hprc_samples = list(set([x.split('.')[0] for x in haplotypes if '.' in x]))
+    hprc_samples.sort()
+    pseudo_samples = list(set([x.split('.')[0] for x in haplotypes if '.' not in x]))
+    pseudo_samples.sort()
+    samples = hprc_samples+pseudo_samples
+    num_variants = {'skipped': 0, 'processed': 0}
     for bub in variants.keys():
         variant = variants[bub]
         ref_path = ref_alleles[bub]
         alleles = {ref_path: 0}
         ns = 0
+        ns_hprc = 0
+        ns_pseudo = 0
         count = 1
         allele_count = {0: 0}
         conflict = []
         genotypes = []
-        for sample in samples:
+        genotypes_giggles = []
+        # Reading the HPRC assembly information
+        for sample in hprc_samples:
             #TODO: Hardcoded the identifier for the maternal and paternal haplotypes
             mat = sample+'.2'
             pat = sample+'.1'
@@ -436,36 +467,105 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
                     allele_count[mat_anum] = 1
             gen.maternal = mat_anum
             genotypes.append(gen.to_string())
+            genotypes_giggles.append(gen.to_string())
             #Determining number of available samples and conflicting samples
             if pat_anum != '.' and mat_anum != '.':
                 ns += 1
+                ns_hprc += 1
         #Determing filter
-        if ns/len(samples) < 0.8:
+        if ns_hprc/len(hprc_samples) < 0.8:
             filter = ['NS80']
         else:
             filter = ['PASS']
+        # Reading the pseudohaplotype assembly information
+        for sample in pseudo_samples:
+            gen = Haplotype()
+            try:
+                allele = variant[sample]
+                if len(allele) > 1:
+                    allele = ['.']
+                    conflict.append(sample)
+            except KeyError:
+                allele = ['.']
+            assert len(allele) == 1
+            allele = list(allele)[0]
+            anum = '.'
+            if allele != '.':
+                try:
+                    anum = alleles[allele]
+                    allele_count[anum] += 1
+                    gen._remove = True
+                except KeyError:
+                    anum = count
+                    alleles[allele] = count
+                    count += 1
+                    allele_count[anum] = 1
+            gen.allele = anum
+            if gen.allele != '.':
+                ns += 1
+                ns_pseudo += 1
+            if gen._remove:
+                genotypes_giggles.append('.')
+            else:
+                genotypes_giggles.append(gen.to_string())
+            genotypes.append(gen.to_string())
         #Determine alternate allele count
         ac = {}
+        ac_hprc = {}
+        ac_pseudo = {}
         for i in range(len(allele_count)):
             ac[i] = 0
-        for gen in genotypes:
+            ac_hprc[i] = 0
+            ac_pseudo[i] = 0
+        # iterating through hprc assembly genotypes
+        for gen in genotypes[0:len(hprc_samples)]:
             g = gen.split('|')
             try:
                 ac[int(g[0])] += 1
+                ac_hprc[int(g[0])] += 1
             except ValueError:
                 pass
             try:
                 ac[int(g[1])] += 1
+                ac_hprc[int(g[1])] += 1
             except ValueError:
                 pass
-        ac.pop(0)
-        ac = list(ac.values())
+        # iterating through pseudohaplotype genotype
+        for gen in genotypes[len(hprc_samples):]:
+            try:
+                ac[int(gen)] += 1
+                ac_pseudo[int(gen)] += 1
+            except ValueError:
+                pass
+        
         #Determine allele traversals
         at = []
         for key,_ in alleles.items():
             at.append(key)
         seq = get_sequences(at, nodes)
-        #Looking for alternate alleles which has ref sequence
+        #Looking for same alleles with different labels
+        dup = {}
+        allele_to_new = {}
+        for i in range(len(seq)):
+            allele_to_new[i] = i
+        for i in range(len(seq)):
+            seq1 = seq[i]
+            count = i+1
+            for j, seq2 in enumerate(seq[i+1:]):
+                if allele_to_new[j+i+1] < i+1:
+                    continue
+                if seq1 == seq2:
+                    allele_to_new[j+i+1] = i
+                else:
+                    allele_to_new[j+i+1] = count
+                    count += 1
+        new_allele_to_sequence = {}
+        for old_allele, new_allele in allele_to_new.items():
+            if new_allele in new_allele_to_sequence:
+                assert seq[old_allele] == new_allele_to_sequence[new_allele]
+            new_allele_to_sequence[new_allele] = seq[old_allele]
+        # Original implementation in comments for comparing ref with alts.
+        '''
         ref = seq[0]
         dup = []
         count = 1
@@ -477,7 +577,7 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
             else:
                 allele_to_new[i+1] = count
                 count += 1
-        
+        '''
         for i, gen in enumerate(genotypes):
             haps = [int(a) if a != '.' else a for a in gen.split('|')]
             new_genotype = []
@@ -489,25 +589,59 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
                 else:
                     new_genotype.append(str(allele_to_new[h]))
             genotypes[i] = '|'.join(new_genotype)
+        for i, gen in enumerate(genotypes_giggles):
+            haps = [int(a) if a != '.' else a for a in gen.split('|')]
+            new_genotype = []
+            for h in haps:
+                if h == '.':
+                    new_genotype.append('.')
+                elif h == 0:
+                    new_genotype.append('0')
+                else:
+                    new_genotype.append(str(allele_to_new[h]))
+            genotypes_giggles[i] = '|'.join(new_genotype)
+        
+        # remapping allele counts from old allele to new allele
+        new_ac = {}
+        new_ac_hprc = {}
+        new_ac_pseudo = {}
+        for old_allele, new_allele in allele_to_new.items():
+            try:
+                new_ac[new_allele] += ac[old_allele]
+                new_ac_hprc[new_allele] += ac_hprc[old_allele]
+                new_ac_pseudo[new_allele] += ac_pseudo[old_allele]
+            except KeyError:
+                new_ac[new_allele] = ac[old_allele]
+                new_ac_hprc[new_allele] = ac_hprc[old_allele]
+                new_ac_pseudo[new_allele] = ac_pseudo[old_allele]
 
+        # preparing allele counts
+        new_ac = list(new_ac.values())
+        new_ac_hprc = list(new_ac_hprc.values())
+        new_ac_pseudo = list(new_ac_pseudo.values())
+
+        # checking if only one allele (the reference allele) is present.
+        # ignore if this is the case
+        if len(new_ac) == 1:
+            num_variants['skipped'] += 1
+            continue
+
+        num_variants['processed'] += 1
+        
         #Determine allele frequencies
-        #TODO: What should the denominator be? The number of available alleles or 88?
-        af = []
-        tot = 0
-        for key, value in allele_count.items():
-            if key == 0:
-                tot += value
-                continue
-            if key in dup:
-                tot += value
-            else:
-                af.append(value)
-                tot += value
-        af = [a/tot for a in af]
-        for i in reversed(dup):
-            del seq[i]
-            del at[i]
-            del ac[i-1]
+        tot = sum(new_ac)
+        af = [x/tot for x in new_ac[1:]]
+        tot = sum(new_ac_hprc)
+        if tot == 0:
+            af_hprc = [0 for _ in new_ac_hprc[1:]]
+        else:
+            af_hprc = [x/tot for x in new_ac_hprc[1:]]
+        tot = sum(new_ac_pseudo)
+        if tot == 0:
+            af_pseudo = [0 for _ in new_ac_pseudo[1:]]
+        else:
+            af_pseudo = [x/tot for x in new_ac_pseudo[1:]]
+        
 
         nd = nodes[bub.split(">")[1]]
         chr = nd.SN
@@ -516,8 +650,11 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
         ref = seq[0]
         alt = seq[1:]
         qual = 60
-        info={"CONFLICT": conflict, "AC": ac, "AF": af, "NS": ns, "AT": at}
-        writer.write(variant_record_to_string(chr, pos, id, ref, alt, qual, filter, info, genotypes))
+        info={"CONFLICT": conflict, "AC": ac, "HPRC_AC": ac_hprc, "PSEUDO_AC": ac_pseudo, "AF": af, "HPRC_AF": af_hprc, "PSEUDO_AF": af_pseudo, "NS": ns, "HPRC_NS": ns_hprc, "PSEUDO_NS": ns_pseudo, "AT": at}
+        writer['all'].write(variant_record_to_string(chr, pos, id, ref, alt, qual, filter, deepcopy(info), genotypes))
+        writer['giggles'].write(variant_record_to_string(chr, pos, id, ref, alt, qual, filter, deepcopy(info), genotypes_giggles))
+    
+    logger.info("Variant counts: ", num_variants)
         
 
 def get_reference_alleles(edges, bubbles):
@@ -598,14 +735,14 @@ def variant_record_to_string(chr, pos, id, ref, alt, qual, filter, info, genotyp
 if __name__=='__main__':
     
     parser = argparse.ArgumentParser(prog='assembly-to-vcf.py', description="Collects the stats from the giggles callset vcf")
+    parser.add_argument("-debug", action="store_true", default=False, help="Print debug messages")
     parser.add_argument("-gfa", required=True, help="GFA file with the sort keys (BO and NO tagged)")
     parser.add_argument("-hprc-list", required=True, help="Text file with the list of HPRC assembly-to-graph GAF files.")
     parser.add_argument("-pseudo-list", required=True, help="Text file with the list of pseudohaplotype assembly-to-graph GAF files.")
-    parser.add_argument("--output", required=True, help="Output VCF File path")
+    parser.add_argument("-output", required=True, help="Output directory for VCF files")
     
     options = parser.parse_args()
     
-    exit()
     setup_logging(options.debug)
     
     annotate(options)
