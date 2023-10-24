@@ -105,9 +105,11 @@ rule assemblies_to_vcf:
 # filter the VCF
 rule filter_vcf:
     input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{vcf}.vcf'
+        vcf1='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{callset}.vcf',
+        vcf2='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{callset}-giggles.vcf'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{vcf}_filtered.vcf'
+        vcf1='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{callset}_filtered.vcf',
+        vcf2='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{callset}-giggles_filtered.vcf'
     wildcard_constraints:
         vcf=lambda wildcards: '|'.join(['%s.vcf|%s-giggles.vcf'%(w,w) for w in config['callsets'].keys()])
     conda:
@@ -118,5 +120,6 @@ rule filter_vcf:
         mem_total_mb=lambda wildcards, attempt: 2*1024 * attempt
     shell:
         '''
-        bcftools view -f "PASS" -o {output} {input}
+        bcftools view -f "PASS" -o {output.vcf1} {input.vcf1}
+        bcftools view -f "PASS" -o {output.vcf2} {input.vcf2}
         '''
