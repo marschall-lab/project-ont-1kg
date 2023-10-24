@@ -99,7 +99,7 @@ rule assemblies_to_vcf:
         runtime_min=0,
         mem_total_mb=lambda wildcards, attempt: 10*1024 * attempt
     shell:
-        'python scripts/assembly-to-vcf.py -gfa {input.ref} -hprc-list {input.hprc_path} -pseudo-list {input.pseudo_path} --output {output} 2> {log}'
+        'python scripts/assembly-to-vcf.py -gfa {input.ref} -hprc-list {input.hprc_path} -pseudo-list {input.pseudo_path} -output {params} 2> {log}'
 
 
 # filter the VCF
@@ -108,6 +108,8 @@ rule filter_vcf:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{vcf}.vcf'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/giggles_augmented_graph/{callset}/vcf/{vcf}_filtered.vcf'
+    wildcard_constraints:
+        vcf=lambda wildcards: '|'.join(['%s.vcf|%s-giggles.vcf'%(w,w) for w in config['callsets'].keys()])
     conda:
         '../envs/basic.yml'
     resources:

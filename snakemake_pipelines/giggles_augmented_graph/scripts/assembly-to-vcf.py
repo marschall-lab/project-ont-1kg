@@ -654,7 +654,8 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
         writer['all'].write(variant_record_to_string(chr, pos, id, ref, alt, qual, filter, deepcopy(info), genotypes))
         writer['giggles'].write(variant_record_to_string(chr, pos, id, ref, alt, qual, filter, deepcopy(info), genotypes_giggles))
     
-    logger.info("Variant counts: ", num_variants)
+    logger.info("\nSkipped variant counts: ", num_variants['skipped'])
+    logger.info("Proceesed variant counts: ", num_variants['processed'])
         
 
 def get_reference_alleles(edges, bubbles):
