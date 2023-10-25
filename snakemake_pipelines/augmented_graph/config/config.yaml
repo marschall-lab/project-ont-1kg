@@ -12,6 +12,7 @@ callsets:
   minigraph-extended_all:
     gfa: '/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/extend-graph-by-callsets/results-population-calls/minigraph/minigraph-extended_all.gfa'
     pseudohaplotypes: 'resources/pseudohaplotypes/minigraph-extended_all.txt'
+  
 
 hprc_samples:
   - HG00438
