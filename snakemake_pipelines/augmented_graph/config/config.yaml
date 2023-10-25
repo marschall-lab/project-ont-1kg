@@ -9,11 +9,13 @@ pilot: True
 #  gfa: '/gpfs/project/projects/medbioinf/users/spani/files/gfa/1000GP/chm13-90c.r518.gfa'
 #  pseudohaplotypes: None 
 callsets:
-  minigraph-extended_all:
-    gfa: '/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/extend-graph-by-callsets/results-population-calls/minigraph/minigraph-extended_all.gfa'
-    pseudohaplotypes: 'resources/pseudohaplotypes/minigraph-extended_all.txt'
+  minigraph-extended_all_Oct18:
+    gfa: '/gpfs/project/projects/medbioinf/users/spani/temp/minigraph-extended_all_Oct18.gfa'
+    pseudohaplotypes: 'resources/pseudohaplotypes/minigraph-extended_all_Oct18.txt'
+  minigraph-extended_all_Oct24:
+    gfa: '/gpfs/project/projects/medbioinf/users/spani/temp/minigraph-extended_all_Oct24.gfa'
+    pseudohaplotypes: 'resources/pseudohaplotypes/minigraph-extended_all_Oct24.txt'
   
-
 hprc_samples:
   - HG00438
   - HG00621
