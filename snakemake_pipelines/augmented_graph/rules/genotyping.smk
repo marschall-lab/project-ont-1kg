@@ -2,7 +2,7 @@ include: './get-sample-list.smk'
 
 if config['pilot']:
     samples.sort()
-    samples=samples[0:100]
+    samples=samples[0:10]
 
 # run genotyping
 rule giggles:
@@ -18,7 +18,7 @@ rule giggles:
     output:
         vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/{sample}-multiallelic.vcf')
     log:
-        stderr='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/{sample}.stderr'
+        stderr='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/{sample}-multiallelic.stderr'
     resources:
         mem_total_mb=50000,
         runtime_hrs=48,
