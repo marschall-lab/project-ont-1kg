@@ -53,7 +53,7 @@ rule convert_sample_vcf_biallelic:
 # merge multiallelic records to give multisample vcf
 rule merge_vcf_to_multisample:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/{sample}-multiallelic.vcf.gz', sample=samples)
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/genotypes/{sample}-multiallelic.vcf.gz', sample=samples)
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-multiallelic.vcf')
     conda:
@@ -84,7 +84,7 @@ rule convert_multisample_vcf_biallelic:
 rule sv_count:
     input:
         metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
-        vcf=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/{sample}-biallelic.vcf.gz',sample=samples)
+        vcf=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/genotypes/{sample}-biallelic.vcf.gz',sample=samples)
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts/het_count_population-wise.png',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts/het_count_sample-wise.png',
@@ -145,16 +145,16 @@ rule calc_and_plot_statistics:
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/hwe.png',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/af.png',
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/hwe.{pop}.png', pop=['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/af.{pop}.png', pop=['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/hwe-af/hwe.{pop}.png', pop=['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/hwe-af/af.{pop}.png', pop=['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/hwe.SVonly.png',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/af.SVonly.png',
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/hwe.{pop}.SVonly.png', pop=['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/af.{pop}.SVonly.png', pop=['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/hwe.{vtype}.png', vtype=['INS', 'DEL', 'COMPLEX']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/af.{vtype}.png', vtype=['INS', 'DEL', 'COMPLEX']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/hwe.{vtype}.SVonly.png', vtype=['INS', 'DEL', 'COMPLEX']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/af.{vtype}.SVonly.png', vtype=['INS', 'DEL', 'COMPLEX']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/hwe-af/hwe.{pop}.SVonly.png', pop=['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/hwe-af/af.{pop}.SVonly.png', pop=['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/hwe-af/hwe.{vtype}.png', vtype=['INS', 'DEL', 'COMPLEX']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/hwe-af/af.{vtype}.png', vtype=['INS', 'DEL', 'COMPLEX']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/hwe-af/hwe.{vtype}.SVonly.png', vtype=['INS', 'DEL', 'COMPLEX']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/hwe-af/af.{vtype}.SVonly.png', vtype=['INS', 'DEL', 'COMPLEX']),
     params:
         outdir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/'
     conda:
