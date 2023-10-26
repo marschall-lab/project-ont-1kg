@@ -11,7 +11,7 @@ rule cram_to_fasta:
         "../envs/basic.yml"
     resources:
         runtime_hrs=20,
-        mem_total_mb=lambda wildcards, attempt: 20000 * attempt
+        mem_total_mb=20000
     priority: 1
     shell:
         '''
@@ -36,8 +36,8 @@ rule minigraph_alignment:
     resources:
         runtime_hrs=24,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 30000 * attempt
-    threads: 32
+        mem_total_mb=80000
+    threads: 24
     shell:
         '/gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr {input.ref} {input.fasta} -t {threads} > {output}'
 
@@ -55,7 +55,7 @@ rule gaftools_sort:
     resources:
         runtime_hrs=48,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 20000 * attempt
+        mem_total_mb=20000
     shell:
         '''
         module load Python/3.11.4

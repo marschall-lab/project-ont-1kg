@@ -29,7 +29,7 @@ rule align_hprc_assemblies:
     resources:
         runtime_hrs=12,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 80000 * attempt
+        mem_total_mb=80000
     threads: 8
     shell:
         '''
@@ -50,7 +50,7 @@ rule align_pseudohaplotypes:
     resources:
         runtime_hrs=12,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 80000 * attempt
+        mem_total_mb=80000
     threads: 8
     shell:
         '''
@@ -103,7 +103,7 @@ rule assemblies_to_vcf:
     resources:
         runtime_hrs=1,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 50*1024 * attempt
+        mem_total_mb=50*1024
     shell:
         'python scripts/assembly-to-vcf.py -gfa {input.ref} -hprc-list {input.hprc_path} -pseudo-list {input.pseudo_path} -output {params} 2> {log}'
 
@@ -120,10 +120,6 @@ rule filter_vcf:
         vcf=lambda wildcards: '|'.join(['%s.vcf|%s-giggles.vcf'%(w,w) for w in config['callsets'].keys()])
     conda:
         '../envs/basic.yml'
-    resources:
-        runtime_hrs=1,
-        runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 2*1024 * attempt
     shell:
         '''
         bcftools view -f "PASS" -o {output.vcf1} {input.vcf1}
