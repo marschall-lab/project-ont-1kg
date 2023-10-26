@@ -407,7 +407,6 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
     hprc_samples.sort()
     pseudo_samples = list(set([x.split('.')[0] for x in haplotypes if '.' not in x]))
     pseudo_samples.sort()
-    samples = hprc_samples+pseudo_samples
     num_variants = {'skipped': 0, 'processed': 0}
     for bub in variants.keys():
         variant = variants[bub]
@@ -641,10 +640,10 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
         chr = nd.SN
         pos = nd.SO + nd.LN
         id = bub
-        ref = seq[0]
-        alt = seq[1:]
+        ref = new_seq[0]
+        alt = new_seq[1:]
         qual = 60
-        info={"CONFLICT": conflict, "AC": ac, "HPRC_AC": ac_hprc, "PSEUDO_AC": ac_pseudo, "AF": af, "HPRC_AF": af_hprc, "PSEUDO_AF": af_pseudo, "NS": ns, "HPRC_NS": ns_hprc, "PSEUDO_NS": ns_pseudo, "AT": at}
+        info={"CONFLICT": conflict, "AC": new_ac, "HPRC_AC": new_ac_hprc, "PSEUDO_AC": new_ac_pseudo, "AF": af, "HPRC_AF": af_hprc, "PSEUDO_AF": af_pseudo, "NS": ns, "HPRC_NS": ns_hprc, "PSEUDO_NS": ns_pseudo, "AT": at}
         writer['all'].write(variant_record_to_string(chr, pos, id, ref, alt, qual, filter, deepcopy(info), genotypes))
         writer['giggles'].write(variant_record_to_string(chr, pos, id, ref, alt, qual, filter, deepcopy(info), genotypes_giggles))
     
