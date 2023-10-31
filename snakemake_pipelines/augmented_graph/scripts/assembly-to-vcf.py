@@ -673,7 +673,7 @@ def get_sequences(at, nodes):
     alleles = []
     for traversal in at:
         path = list(filter(None, re.split('(>)|(<)', traversal)))
-        seq = ''
+        seq = nodes[path[1]].Seq[-1]
         orient = None
         for nd in path[2:-2]:
             if nd in ['>', '<']:
@@ -683,8 +683,7 @@ def get_sequences(at, nodes):
                 seq += nodes[nd].Seq
             elif orient == '<':
                 seq += reverse_complement(nodes[nd].Seq)
-        if seq == '':
-            seq = '*'
+        assert seq is not ''    
         alleles.append(seq)
     return alleles
 
