@@ -505,7 +505,7 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
         # need to make allele traversal list for unique alleles
         at_new = []
         for i in range(len(new_seq)):
-            at_new.append(at[seq.index[new_seq[i]]])
+            at_new.append(at[seq.index(new_seq[i])])
         
         # remapping the alleles to sequences
         for i in range(len(seq)):
