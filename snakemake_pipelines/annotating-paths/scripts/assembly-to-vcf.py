@@ -231,10 +231,6 @@ def find_variant_alleles(gaf, variants, nodes, haplotype):
         alignment = reader.readline()
         if not alignment:
             break
-        #if offset != 30432:
-        #    continue
-        #if (counts['total']+1) % 1 == 0:
-        #    logger.info('\tProcessed %d alignments'%(counts['total']))
         alignment = alignment.split('\t')
         logger.debug("\tProcessing contig %s"%(alignment[0]))
         path = list(filter(None, re.split('(>)|(<)', alignment[5])))
@@ -413,7 +409,8 @@ def write_header(writer, contigs, haplotypes, options):
 
 def write_records(writer, variants, ref_alleles, haplotypes, nodes):
 
-    samples = list(set([x.split(".")[0] for x in haplotypes])) 
+    samples = list(set([x.split(".")[0] for x in haplotypes]))
+    samples.sort()
     for bub in variants.keys():
         variant = variants[bub]
         ref_path = ref_alleles[bub]
@@ -490,25 +487,35 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
                 ac[int(g[1])] += 1
             except ValueError:
                 pass
-        ac.pop(0)
-        ac = list(ac.values())
+        
         #Determine allele traversals
         at = []
         for key,_ in alleles.items():
             at.append(key)
         seq = get_sequences(at, nodes)
-        #Looking for alternate alleles which has ref sequence
-        ref = seq[0]
-        dup = []
-        count = 1
+        
+        # looking for same alleles with different labels
         allele_to_new = {}
-        for i, alt in enumerate(seq[1:]):
-            if ref == alt:
-                allele_to_new[i+1] = 0
-                dup.append(i+1)
+        for i in range(len(seq)):
+            allele_to_new[i] = i
+        new_seq = []
+        for s in seq:
+            if s not in new_seq:
+                new_seq.append(s)
+        # need to make allele traversal list for unique alleles
+        at_new = []
+        for i in range(len(new_seq)):
+            at_new.append(at[seq.index[new_seq[i]]])
+        
+        # remapping the alleles to sequences
+        for i in range(len(seq)):
+            allele_to_new[i] = new_seq.index(seq[i])
+        new_allele_to_sequence = {}
+        for old_allele, new_allele in allele_to_new.items():
+            if new_allele in new_allele_to_sequence:
+                assert seq[old_allele] == new_allele_to_sequence[new_allele]
             else:
-                allele_to_new[i+1] = count
-                count += 1
+                new_allele_to_sequence[new_allele] = seq[old_allele]
         
         for i, gen in enumerate(genotypes):
             haps = [int(a) if a != '.' else a for a in gen.split('|')]
@@ -522,33 +529,34 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
                     new_genotype.append(str(allele_to_new[h]))
             genotypes[i] = '|'.join(new_genotype)
 
-        #Determine allele frequencies
-        #TODO: What should the denominator be? The number of available alleles or 88?
-        af = []
-        tot = 0
-        for key, value in allele_count.items():
-            if key == 0:
-                tot += value
-                continue
-            if key in dup:
-                tot += value
-            else:
-                af.append(value)
-                tot += value
-        af = [a/tot for a in af]
-        for i in reversed(dup):
-            del seq[i]
-            del at[i]
-            del ac[i-1]
+        # remapping allele counts from old allele to new allele
+        new_ac = {}
+        for old_allele, new_allele in allele_to_new.items():
+            try:
+                new_ac[new_allele] += ac[old_allele]
+            except KeyError:
+                new_ac[new_allele] = ac[old_allele]
 
+        # preparing allele counts
+        new_ac = list(new_ac.values())
+        
+        # checking if only one allele (the reference allele) is present.
+        # ignore if this is the case
+        if len(new_ac) == 1:
+            continue
+
+        #Determine allele frequencies
+        tot = sum(new_ac)
+        af = [x/tot for x in new_ac[1:]]
+        
         nd = nodes[bub.split(">")[1]]
         chr = nd.SN
         pos = nd.SO + nd.LN
         id = bub
-        ref = seq[0]
-        alt = seq[1:]
+        ref = new_seq[0]
+        alt = new_seq[1:]
         qual = 60
-        info={"CONFLICT": conflict, "AC": ac, "AF": af, "NS": ns, "AT": at}
+        info={"CONFLICT": conflict, "AC": new_ac[1:], "AF": af, "NS": ns, "AT": at_new}
         writer.write(variant_record_to_string(chr, pos, id, ref, alt, qual, filter, info, genotypes))
         
 
@@ -574,7 +582,7 @@ def get_sequences(at, nodes):
     alleles = []
     for traversal in at:
         path = list(filter(None, re.split('(>)|(<)', traversal)))
-        seq = ''
+        seq = nodes[path[1]].Seq[-1]
         orient = None
         for nd in path[2:-2]:
             if nd in ['>', '<']:
@@ -584,8 +592,7 @@ def get_sequences(at, nodes):
                 seq += nodes[nd].Seq
             elif orient == '<':
                 seq += reverse_complement(nodes[nd].Seq)
-        if seq == '':
-            seq = '*'
+        assert seq is not ''    
         alleles.append(seq)
     return alleles
 

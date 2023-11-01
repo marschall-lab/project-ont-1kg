@@ -19,12 +19,12 @@ rule all:
     input:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518_tagged_withseq.gfa',
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/{sample}.{haplotype}.gaf', sample=config['samples'], haplotype=config['haplotypes']),
-        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/minigraph_bubble_calls/{sample}.{haplotype}.bed', sample=config['samples'], haplotype=config['haplotypes'])
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/stats/{sample}_{haplotype}_{graph}.png', sample=config['samples'], haplotype=config['haplotypes'], graph=['dv', 'mapq', 'num_align', 'num_res_match', 'p_align']),
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/stats/text_stats.txt',
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/{sample}.{haplotype}.sorted.gaf', sample=config['samples'], haplotype=config['haplotypes']),
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518.vcf.gz',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518_filtered.vcf.gz'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518_filtered.vcf.gz',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518.check'
 
 ################################################
 ##### Aligning the Assemblies to the Graph #####
@@ -201,6 +201,16 @@ rule filtered_vcf:
         bcftools index {output}
         '''
 
-
-
-# Retagging the GFA file with the new NO tags (based on allele traversals)
+# check correctness of vcfs
+rule vcf_correctness:
+    input:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518.vcf.gz',
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/fasta/HPRC/reference/chm13v2.0_maskedY_rCRS.fa.gz'
+    output:
+        out1='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518.check'
+    log:
+        log1='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518.check.log'
+    conda:
+        'envs/basic.yaml'
+    shell:
+        'bcftools norm --check-ref e -f {input.ref} {input.vcf} &> {log.log1} && {output.out1}'
