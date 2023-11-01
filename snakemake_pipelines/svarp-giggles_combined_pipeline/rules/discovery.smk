@@ -118,6 +118,6 @@ rule pav_pipeline:
         module load Snakemake/7.8.5
         module load Singularity
         cd {params.dir}
-        mkdir pav
+        mkdir -p pav
         snakemake -s /gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/svarp-giggles_combined_pipeline/rules/pav.smk -c {threads} --use-singularity --config sample={wildcards.sample}
         '''
