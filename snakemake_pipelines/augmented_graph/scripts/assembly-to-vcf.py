@@ -551,22 +551,18 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
         for s in seq:
             if s not in new_seq:
                 new_seq.append(s)
+        # need to make allele traversal list for unique alleles
+        at_new = []
+        for i in range(len(new_seq)):
+            at_new.append(at[seq.index[new_seq[i]]])
+        
+        # remapping the alleles to sequences
         for i in range(len(seq)):
             allele_to_new[i] = new_seq.index(seq[i])
         new_allele_to_sequence = {}
         for old_allele, new_allele in allele_to_new.items():
             if new_allele in new_allele_to_sequence:
-                try:
-                    assert seq[old_allele] == new_allele_to_sequence[new_allele]
-                except AssertionError:
-                    print("Old Allele: ", old_allele)
-                    print("Old Allele Seq: ", seq[old_allele])
-                    print("New Allele: ", new_allele)
-                    print("New Allele Seq: ", new_allele_to_sequence[new_allele])
-                    print(allele_to_new)
-                    print(seq)
-                    print(new_seq)
-                    exit()
+                assert seq[old_allele] == new_allele_to_sequence[new_allele]
             else:
                 new_allele_to_sequence[new_allele] = seq[old_allele]
         
@@ -643,7 +639,7 @@ def write_records(writer, variants, ref_alleles, haplotypes, nodes):
         ref = new_seq[0]
         alt = new_seq[1:]
         qual = 60
-        info={"CONFLICT": conflict, "AC": new_ac, "HPRC_AC": new_ac_hprc, "PSEUDO_AC": new_ac_pseudo, "AF": af, "HPRC_AF": af_hprc, "PSEUDO_AF": af_pseudo, "NS": ns, "HPRC_NS": ns_hprc, "PSEUDO_NS": ns_pseudo, "AT": at}
+        info={"CONFLICT": conflict, "AC": new_ac[1:], "HPRC_AC": new_ac_hprc[1:], "PSEUDO_AC": new_ac_pseudo[1:], "AF": af, "HPRC_AF": af_hprc, "PSEUDO_AF": af_pseudo, "NS": ns, "HPRC_NS": ns_hprc, "PSEUDO_NS": ns_pseudo, "AT": at_new}
         writer['all'].write(variant_record_to_string(chr, pos, id, ref, alt, qual, filter, deepcopy(info), genotypes))
         writer['giggles'].write(variant_record_to_string(chr, pos, id, ref, alt, qual, filter, deepcopy(info), genotypes_giggles))
     
