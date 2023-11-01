@@ -186,7 +186,8 @@ rule assemblies_to_vcf:
 # Filter out the NS80 tagged records
 rule filtered_vcf:
     input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518.vcf.gz'
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518.vcf.gz',
+        check='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518.check'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518_filtered.vcf.gz'
     conda:
@@ -213,4 +214,4 @@ rule vcf_correctness:
     conda:
         'envs/basic.yaml'
     shell:
-        'bcftools norm --check-ref e -f {input.ref} {input.vcf} &> {log.log1} && {output.out1}'
+        'bcftools norm --check-ref e -f {input.ref} {input.vcf} &> {log.log1} && touch {output.out1}'
