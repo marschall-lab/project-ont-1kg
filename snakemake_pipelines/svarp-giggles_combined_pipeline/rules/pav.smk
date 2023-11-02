@@ -41,7 +41,7 @@ rule prepare_pav_config:
         import json
         import shutil
         pav_cfg = {
-            'assembly_table': input.assm_tsv,
+            'assembly_table': input.assm_tsv.split('/')[-1],
             'reference': output.ref.replace('pav/', '', 1)
         }
         with open(output.cfg, 'w') as dump:
