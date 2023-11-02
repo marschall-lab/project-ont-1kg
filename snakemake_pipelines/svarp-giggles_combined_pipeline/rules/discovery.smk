@@ -107,17 +107,21 @@ rule pav_pipeline:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/{sample}_svtigs_H1.fa',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/{sample}_svtigs_H2.fa'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav/run.complete'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav/run.complete',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav/pav_svtigs.vcf.gz'
     params:
         dir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/'
-    threads: 8
+    threads: 24
     resources:
-        mem_total_mb=10000
+        mem_total_mb=50000
     shell:
         '''
         module load Snakemake/7.8.5
         module load Singularity
         cd {params.dir}
         mkdir -p pav
-        snakemake -s /gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/svarp-giggles_combined_pipeline/rules/pav.smk -c {threads} --use-singularity --config sample={wildcards.sample}
+        snakemake -s /gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/svarp-giggles_combined_pipeline/rules/pav.smk -c {threads} --use-singularity --config sample={wildcards.sample} -F
+        rm -r pav/data
+        rm -r pav/temp
+        rm -r pav/results
         '''

@@ -15,12 +15,10 @@ rule prepare_pav_assembly_table:
         import pathlib as pl
         import shutil
         # I don't trust Snakemake keeping a sort-order intact
-        input_assemblies = [input.svtigs_h1, input.svtigs_h2
-                        ]
-        output_assemblies = [output.svtigs_h1, output.svtigs_h2
-                        ]
+        input_assemblies = [input.svtigs_h1, input.svtigs_h2]
+        output_assemblies = [output.svtigs_h1, output.svtigs_h2]
         # relative path to working directory for PAV assemblies.tsv
-        pav_input_assemblies = [fp.replace('results/', '', 1) for fp in output_assemblies]
+        pav_input_assemblies = [fp.replace('pav/', '', 1) for fp in output_assemblies]
         names = [pl.Path(fp).name.split('_')[0] for fp in output_assemblies]
         with open(output.assm_tsv, 'w') as table:
             _ = table.write('\t'.join(['NAME', 'HAP1', 'HAP2']) + '\n')
@@ -58,7 +56,7 @@ rule run_pav:
         'pav/data/ref/hg38_ref.fa.fai'
     output:
         chk='pav/run.complete'
-    threads: 8
+    threads: 24
     log:
         pav='pav/pav.log'
     benchmark:
