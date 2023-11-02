@@ -55,7 +55,7 @@ rule align_pseudohaplotypes:
     shell:
         '''
         /gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --version > {log}
-        /gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr {input.ref} {input.assembly} -t {threads} > {output} 2> {log}
+        /gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr {input.ref} {input.assembly} -t {threads} > {output} 2>> {log}
         '''
 
 
@@ -108,11 +108,27 @@ rule assemblies_to_vcf:
         'python scripts/assembly-to-vcf.py -gfa {input.ref} -hprc-list {input.hprc_path} -pseudo-list {input.pseudo_path} -output {params} 2> {log}'
 
 
+# check correctness of vcfs
+rule vcf_correctness:
+    input:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}.vcf',
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/fasta/HPRC/reference/chm13v2.0_maskedY_rCRS.fa.gz'
+    output:
+        out1='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}.check'
+    log:
+        log1='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}.check.log'
+    conda:
+        '../envs/basic.yaml'
+    shell:
+        'bcftools norm --check-ref e -f {input.ref} {input.vcf} > /dev/null 2> {log.log1} && touch {output.out1}'
+
+
 # filter the VCF
 rule filter_vcf:
     input:
         vcf1='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}.vcf',
-        vcf2='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}-giggles.vcf'
+        vcf2='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}-giggles.vcf',
+        chk='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}.check'
     output:
         vcf1='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}_filtered.vcf',
         vcf2='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}-giggles_filtered.vcf'
