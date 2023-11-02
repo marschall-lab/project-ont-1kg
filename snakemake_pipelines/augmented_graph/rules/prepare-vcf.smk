@@ -118,7 +118,7 @@ rule vcf_correctness:
     log:
         log1='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}.check.log'
     conda:
-        '../envs/basic.yaml'
+        '../envs/basic.yml'
     shell:
         'bcftools norm --check-ref e -f {input.ref} {input.vcf} > /dev/null 2> {log.log1} && touch {output.out1}'
 
