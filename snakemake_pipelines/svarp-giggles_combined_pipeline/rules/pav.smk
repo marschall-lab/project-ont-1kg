@@ -25,7 +25,7 @@ rule prepare_pav_assembly_table:
         # relative path to working directory for PAV assemblies.tsv
         pav_input_assemblies_hg38 = [fp.replace('pav_hg38/', '', 1) for fp in output_assemblies_hg38]
         pav_input_assemblies_t2t = [fp.replace('pav_t2t/', '', 1) for fp in output_assemblies_t2t]
-        names = [pl.Path(fp).name.split('_')[0] for fp in output_assemblies]
+        names = [pl.Path(fp).name.split('_')[0] for fp in output_assemblies_hg38]
         with open(output.assm_tsv_hg38, 'w') as table:
             _ = table.write('\t'.join(['NAME', 'HAP1', 'HAP2']) + '\n')
             _ = table.write('\t'.join([names[0], pav_input_assemblies_hg38[0], pav_input_assemblies_hg38[1]])  + '\n')
