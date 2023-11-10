@@ -1,46 +1,59 @@
 ###### PAV rules from Arda ######
 rule all:
     input:
-        'pav/run.complete'
+        'pav_hg38/run.complete',
+        'pav_t2t/run.complete'
 
 rule prepare_pav_assembly_table:
     input:
         svtigs_h1=config['sample']+'_svtigs_H1.fa',
         svtigs_h2=config['sample']+'_svtigs_H2.fa',
     output:
-        svtigs_h1=temp('pav/svtigs_h1.asm.fa'),
-        svtigs_h2=temp('pav/svtigs_h2.asm.fa'),
-        assm_tsv='pav/assemblies.tsv'
+        svtigs_h1_hg38=temp('pav_hg38/svtigs_h1.asm.fa'),
+        svtigs_h2_hg38=temp('pav_hg38/svtigs_h2.asm.fa'),
+        assm_tsv_hg38='pav_hg38/assemblies.tsv',
+        svtigs_h1_t2t=temp('pav_t2t/svtigs_h1.asm.fa'),
+        svtigs_h2_t2t=temp('pav_t2t/svtigs_h2.asm.fa'),
+        assm_tsv_t2t='pav_t2t/assemblies.tsv'
     run:
         import pathlib as pl
         import shutil
         # I don't trust Snakemake keeping a sort-order intact
         input_assemblies = [input.svtigs_h1, input.svtigs_h2]
-        output_assemblies = [output.svtigs_h1, output.svtigs_h2]
+        output_assemblies_hg38 = [output.svtigs_h1_hg38, output.svtigs_h2_hg38]
+        output_assemblies_t2t = [output.svtigs_h1_t2t, output.svtigs_h2_t2t]
         # relative path to working directory for PAV assemblies.tsv
-        pav_input_assemblies = [fp.replace('pav/', '', 1) for fp in output_assemblies]
+        pav_input_assemblies_hg38 = [fp.replace('pav_hg38/', '', 1) for fp in output_assemblies_hg38]
+        pav_input_assemblies_t2t = [fp.replace('pav_t2t/', '', 1) for fp in output_assemblies_t2t]
         names = [pl.Path(fp).name.split('_')[0] for fp in output_assemblies]
-        with open(output.assm_tsv, 'w') as table:
+        with open(output.assm_tsv_hg38, 'w') as table:
             _ = table.write('\t'.join(['NAME', 'HAP1', 'HAP2']) + '\n')
-            _ = table.write('\t'.join([names[0], pav_input_assemblies[0], pav_input_assemblies[1]])  + '\n')
-        for infile, outfile in zip(input_assemblies, output_assemblies):
+            _ = table.write('\t'.join([names[0], pav_input_assemblies_hg38[0], pav_input_assemblies_hg38[1]])  + '\n')
+        with open(output.assm_tsv_t2t, 'w') as table:
+            _ = table.write('\t'.join(['NAME', 'HAP1', 'HAP2']) + '\n')
+            _ = table.write('\t'.join([names[0], pav_input_assemblies_t2t[0], pav_input_assemblies_t2t[1]])  + '\n')
+        for infile, outfile in zip(input_assemblies, output_assemblies_hg38):
+            shutil.copy(infile, outfile)
+        for infile, outfile in zip(input_assemblies, output_assemblies_t2t):
             shutil.copy(infile, outfile)
 
 rule prepare_pav_config:
     input:
-        assm_tsv='pav/assemblies.tsv',
-        ref='/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/data/1KG_ONT_VIENNA_hg38.fa',
-        ref_idx='/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/data/1KG_ONT_VIENNA_hg38.fa.fai'
+        assm_tsv='pav_{ref}/assemblies.tsv',
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/1KG_ONT_VIENNA_{ref}.fa',
+        ref_idx='/gpfs/project/projects/medbioinf/users/spani/files/ref/1KG_ONT_VIENNA_{ref}.fa.fai'
     output:
-        cfg='pav/config.json',
-        ref=temp('pav/data/ref/hg38_ref.fa'),
-        ref_idx=temp('pav/data/ref/hg38_ref.fa.fai'),
+        cfg='pav_{ref}/config.json',
+        ref=temp('pav_{ref}/data/ref/{ref}.fa'),
+        ref_idx=temp('pav_{ref}/data/ref/{ref}.fa.fai'),
+    params:
+        ref='pav_{ref}/'
     run:
         import json
         import shutil
         pav_cfg = {
             'assembly_table': input.assm_tsv.split('/')[-1],
-            'reference': output.ref.replace('pav/', '', 1)
+            'reference': output.ref.replace(params.ref, '', 1)
         }
         with open(output.cfg, 'w') as dump:
             _ = json.dump(pav_cfg, dump, ensure_ascii=True)
@@ -49,19 +62,21 @@ rule prepare_pav_config:
 
 rule run_pav:
     input:
-        'pav/config.json',
-        'pav/svtigs_h1.asm.fa',
-        'pav/svtigs_h2.asm.fa',
-        'pav/data/ref/hg38_ref.fa',
-        'pav/data/ref/hg38_ref.fa.fai'
+        'pav_{ref}/config.json',
+        'pav_{ref}/svtigs_h1.asm.fa',
+        'pav_{ref}/svtigs_h2.asm.fa',
+        'pav_{ref}/data/ref/{ref}.fa',
+        'pav_{ref}/data/ref/{ref}.fa.fai'
     output:
-        chk='pav/run.complete'
+        chk='pav_{ref}/run.complete'
+    params:
+        wdir='pav_{ref}/'
     threads: 24
     log:
-        pav='pav/pav.log'
+        pav='pav_{ref}/pav.log'
     benchmark:
-        'pav/pav_run.rsrc'
+        'pav_{ref}/pav_run.rsrc'
     container:
         '/gpfs/project/projects/medbioinf/container/pav_v2.2.4.1.sif'
     shell:
-        'snakemake --verbose --jobs {threads} -d pav/ -s /opt/pav/Snakefile --rerun-incomplete --keep-incomplete --restart-times 0 &> {log.pav} && touch {output.chk}'
+        'snakemake --verbose --jobs {threads} -d {params.wdir} -s /opt/pav/Snakefile --rerun-incomplete --keep-incomplete --restart-times 0 &> {log.pav} && touch {output.chk}'

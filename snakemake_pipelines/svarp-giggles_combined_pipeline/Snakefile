@@ -8,6 +8,10 @@ include: 'rules/get-sample-list.smk'
 if config['pilot']:
     samples=['HG00099']
 
+# remove problematic samples from the snakemake pipeline
+#bad_samples = ['HG01699', 'HG00139', 'HG00235', 'HG00268', 'HG01915', 'HG01791', 'HG01879', 'HG03009', 'HG03521']
+#samples = [s for s in samples if s not in bad_samples]
+
 wildcard_constraints:
     sample='|'.join(samples)
 
@@ -22,8 +26,8 @@ rule genotype_experiment:
         
 rule svarp_experiment:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/variants.vcf', sample=samples),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav/run.complete', sample=samples)
+        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/svimasm/variants.vcf', sample=samples),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_{ref}/pav_svtigs_merged.vcf', ref=['hg38','t2t'], sample=samples)
 
 
 rule all:

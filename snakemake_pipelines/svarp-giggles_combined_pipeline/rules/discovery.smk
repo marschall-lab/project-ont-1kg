@@ -107,21 +107,45 @@ rule pav_pipeline:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/{sample}_svtigs_H1.fa',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/{sample}_svtigs_H2.fa'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav/run.complete',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav/pav_svtigs.vcf.gz'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_hg38/run.complete',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_hg38/pav_svtigs.vcf.gz',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_t2t/run.complete',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_t2t/pav_svtigs.vcf.gz'
     params:
         dir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/'
-    threads: 24
+    threads: 8
     resources:
+        runtime_hrs=24,
         mem_total_mb=50000
     shell:
         '''
         module load Snakemake/7.8.5
         module load Singularity
         cd {params.dir}
-        mkdir -p pav
-        snakemake -s /gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/svarp-giggles_combined_pipeline/rules/pav.smk -c {threads} --use-singularity --config sample={wildcards.sample} -F
-        rm -r pav/data
-        rm -r pav/temp
-        rm -r pav/results
+        mkdir -p pav_hg38
+        mkdir -p pav_t2t
+        snakemake -s /gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/svarp-giggles_combined_pipeline/rules/pav.smk -c {threads} --use-singularity --config sample={wildcards.sample}
+        rm -r pav_hg38/data
+        rm -r pav_hg38/temp
+        rm -r pav_hg38/results
+        rm -r pav_t2t/data
+        rm -r pav_t2t/temp
+        rm -r pav_t2t/results
+        '''
+
+rule process_pav_output:
+    input:
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/1KG_ONT_VIENNA_{ref}.fa',
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_{ref}/pav_svtigs.vcf.gz'
+    output:
+        tmp=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_{ref}/pav_svtigs.vcf.gz_merged.vcf'),
+        final='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_{ref}/pav_svtigs_merged.vcf'
+    conda:
+        '../envs/svarp_processing.yml'
+    wildcard_constraints:
+        ref='t2t|hg38'
+    shell:
+        '''
+        python /gpfs/project/projects/medbioinf/projects/1000g-ont/extended_graph/svtig_to_single_contig.py -g {input.ref} -v {input.vcf}
+        mv {output.tmp} {output.final}
         '''
