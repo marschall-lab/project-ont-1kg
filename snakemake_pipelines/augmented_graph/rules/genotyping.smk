@@ -2,7 +2,7 @@ include: './get-sample-list.smk'
 
 if config['pilot']:
     samples.sort()
-    samples=samples[0:10]
+    samples=samples[0:2]
 
 # run genotyping
 rule giggles:
