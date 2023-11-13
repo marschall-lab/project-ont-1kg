@@ -71,7 +71,7 @@ rule run_pav:
         chk='pav_{ref}/run.complete'
     params:
         wdir='pav_{ref}/'
-    threads: 24
+    threads: 4
     log:
         pav='pav_{ref}/pav.log'
     benchmark:
