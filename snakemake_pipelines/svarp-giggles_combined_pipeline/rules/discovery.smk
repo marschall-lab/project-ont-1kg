@@ -116,7 +116,7 @@ rule pav_pipeline:
     threads: 8
     resources:
         runtime_hrs=12,
-        mem_total_mb=50000
+        mem_total_mb=70000
     shell:
         '''
         module load Snakemake/7.8.5
@@ -124,7 +124,7 @@ rule pav_pipeline:
         cd {params.dir}
         mkdir -p pav_hg38
         mkdir -p pav_t2t
-        snakemake -s /gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/svarp-giggles_combined_pipeline/rules/pav.smk -c {threads} --use-singularity --config sample={wildcards.sample}
+        snakemake -s /gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/svarp-giggles_combined_pipeline/rules/pav.smk -c {threads} --use-singularity --config sample={wildcards.sample} -F
         rm -r pav_hg38/data
         rm -r pav_hg38/temp
         rm -r pav_hg38/results
@@ -153,5 +153,7 @@ rule rename_pav_output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_{ref}/pav_svtigs_merged.vcf'
     wildcard_constraints:
         ref='t2t|hg38'
+    resources:
+        mem_total_mb=5000
     shell:
         'mv {input} {output}'
