@@ -138,10 +138,20 @@ rule process_pav_output:
         ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/1KG_ONT_VIENNA_{ref}.fa',
         vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_{ref}/pav_svtigs.vcf.gz'
     output:
-        final='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_{ref}/pav_svtigs_merged.vcf'
+        final='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_{ref}/pav_svtigs.vcf.gz_merged.vcf'
     conda:
         '../envs/svarp_processing.yml'
     wildcard_constraints:
         ref='t2t|hg38'
     shell:
         'python /gpfs/project/projects/medbioinf/projects/1000g-ont/extended_graph/svtig_to_single_contig.py -g {input.ref} -v {input.vcf}'
+
+rule rename_pav_output:
+    input:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_{ref}/pav_svtigs.vcf.gz_merged.vcf'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_{ref}/pav_svtigs_merged.vcf'
+    wildcard_constraints:
+        ref='t2t|hg38'
+    shell:
+        'mv {input} {output}'
