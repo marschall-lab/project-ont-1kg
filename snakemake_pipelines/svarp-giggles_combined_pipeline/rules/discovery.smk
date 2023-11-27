@@ -1,3 +1,16 @@
+'''
+Issue with 9 sample wrt memory and compute time:
+- SVarp calls for HG00139, HG00235, HG00268, HG01699, HG01791, HG01879, HG01915, HG03009, HG03521 were run separately by Arda.
+- Reason: Gaftools realign step taking too much memory and time which HILBERT was unable to handle.
+- HG00268, HG01791, HG01879, HG01915, HG03009, HG03521 have been run using “-s 10 -d 100”. All other SVarp runs were done using “-s 5 -d 500"
+- Samples separately ran by Arda and then added to the snakemake pipeline and touched to further proceed with PAV calling and post processing.
+
+Issue with 4 samples wrt PAV calling:
+- Samples are HG02661, HG01600, HG01308, NA19676.
+- Very low coverage leading to no SV discovery.
+- PAV not able to output empty VCF file and hence these samples were hardcoded out of the svarp call list to allow pipeline to run smoothly.
+'''
+
 # run svarp
 rule svarp:
     input:
