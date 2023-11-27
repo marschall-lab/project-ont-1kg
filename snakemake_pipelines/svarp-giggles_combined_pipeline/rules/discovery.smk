@@ -154,6 +154,8 @@ rule process_pav_output:
         final='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/svarp/{sample}/pav_{ref}/pav_svtigs.vcf.gz_merged.vcf'
     conda:
         '../envs/svarp_processing.yml'
+    resources:
+        mem_total_mb=5000
     wildcard_constraints:
         ref='t2t|hg38'
     shell:
