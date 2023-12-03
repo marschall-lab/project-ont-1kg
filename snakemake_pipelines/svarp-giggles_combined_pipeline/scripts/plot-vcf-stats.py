@@ -40,8 +40,11 @@ def plot_all_hwe(data, out):
     g.set_axis_labels(x_name, y_name)
     plt.subplots_adjust(left=0, right=0.8, top=1, bottom=0)  # shrink fig so cbar is visible
     # make new ax object for the cbar
+    plt.yticks(fontsize=15)
+    plt.xticks(fontsize=15)
     cbar_ax = g.fig.add_axes([.85, .1, .05, .8])  # x, y, width, height
     plt.colorbar(cax=cbar_ax)
+    plt.yticks(fontsize=15)
     g.fig.suptitle(title)
     g.savefig(out)
     plt.close()
@@ -60,8 +63,11 @@ def plot_pop_hwe(data, out, pop):
     g.set_axis_labels(x_name, y_name)
     plt.subplots_adjust(left=0, right=0.8, top=1, bottom=0)  # shrink fig so cbar is visible
     # make new ax object for the cbar
+    plt.yticks(fontsize=15)
+    plt.xticks(fontsize=15)
     cbar_ax = g.fig.add_axes([.85, .1, .05, .8])  # x, y, width, height
     plt.colorbar(cax=cbar_ax)
+    plt.yticks(fontsize=15)
     g.fig.suptitle(title)
     g.savefig(out)
     plt.close()
@@ -81,8 +87,11 @@ def plot_all_panelAF_vs_callsetAF(data, out):
     g.set_axis_labels(x_name, y_name)
     plt.subplots_adjust(left=0, right=0.8, top=1, bottom=0)  # shrink fig so cbar is visible
     # make new ax object for the cbar
+    plt.yticks(fontsize=15)
+    plt.xticks(fontsize=15)
     cbar_ax = g.fig.add_axes([.85, .1, .05, .8])  # x, y, width, height
     plt.colorbar(cax=cbar_ax)
+    plt.yticks(fontsize=15)
     g.fig.suptitle(title)
     g.savefig(out)
     plt.close()
@@ -101,8 +110,11 @@ def plot_pop_panelAF_vs_callsetAF(data, out, pop):
     g.set_axis_labels(x_name, y_name)
     plt.subplots_adjust(left=0, right=0.8, top=1, bottom=0)  # shrink fig so cbar is visible
     # make new ax object for the cbar
+    plt.yticks(fontsize=15)
+    plt.xticks(fontsize=15)
     cbar_ax = g.fig.add_axes([.85, .1, .05, .8])  # x, y, width, height
     plt.colorbar(cax=cbar_ax)
+    plt.yticks(fontsize=15)
     g.fig.suptitle(title)
     g.savefig(out)
     plt.close()
