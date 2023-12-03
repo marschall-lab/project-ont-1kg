@@ -15,7 +15,10 @@ callsets:
   minigraph-extended_all_Oct24:
     gfa: '/gpfs/project/projects/medbioinf/users/spani/temp/minigraph-extended_all_Oct24.gfa'
     pseudohaplotypes: 'resources/pseudohaplotypes/minigraph-extended_all_Oct24.txt'
-  
+  minigraph-extended_all:
+    gfa: '/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/graph-augmentation/results/minigraph/minigraph-extended_all.gfa'
+    pseudohaplotypes: 'resources/pseudohaplotypes/minigraph-extended_all.txt'
+
 hprc_samples:
   - HG00438
   - HG00621
