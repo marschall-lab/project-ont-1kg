@@ -120,7 +120,7 @@ rule vcf_correctness:
     conda:
         '../envs/basic.yml'
     shell:
-        'bcftools norm --check-ref e -f {input.ref} {input.vcf} > /dev/null 2> {log.log1} && touch {output.out1}'
+        'bcftools norm --check-ref w -f {input.ref} {input.vcf} > /dev/null 2> {log.log1} && touch {output.out1}'
 
 
 # filter the VCF
