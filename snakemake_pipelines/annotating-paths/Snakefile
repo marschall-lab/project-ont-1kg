@@ -49,7 +49,7 @@ rule align_assemblies_to_chm13_minigraph:
 
 rule bubble_calling_minigraph:
     input:
-        ref='/gpfs/project/projects/medbioinf/users/spani/files/gfa/HengLi/chm13-90c.r518.gfa',
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/gfa/1000GP/chm13-90c.r518.gfa',
         assembly='/gpfs/project/projects/medbioinf/users/spani/files/fasta/HPRC/Assemblies_Yr1/{sample}.{haplotype}.fa',
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/minigraph_bubble_calls/{sample}.{haplotype}.bed'
@@ -106,7 +106,7 @@ rule get_alignment_stats:
 # conda environment should have networkx and whatshap. In this version, the tagged GFA does not have sequence info.
 rule call_rGFA_bubbles:
     input:
-        ref='/gpfs/project/projects/medbioinf/users/spani/files/gfa/HengLi/chm13-90c.r518.gfa',
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/gfa/1000GP/chm13-90c.r518.gfa',
         script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/order_gfa.py'
     output:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518-{chr}.gfa', chr=chromosomes),

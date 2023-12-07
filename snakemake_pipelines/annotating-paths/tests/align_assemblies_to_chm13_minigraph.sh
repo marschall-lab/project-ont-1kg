@@ -5,4 +5,4 @@
 #PBS -o /gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/tests/$PBS_JOBNAME.out
 #PBS -e /gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/tests/$PBS_JOBNAME.err 
 
-/gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr /gpfs/project/projects/medbioinf/users/spani/files/gfa/HengLi/chm13-90c.r518.gfa.gz /gpfs/project/projects/medbioinf/data/hprc/assemblies/HG01258.maternal.f1_assembly_v1.fa.gz -t 16 > /gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/tests/HG01258.maternal.gaf
+/gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr /gpfs/project/projects/medbioinf/users/spani/files/gfa/1000GP/chm13-90c.r518.gfa.gz /gpfs/project/projects/medbioinf/data/hprc/assemblies/HG01258.maternal.f1_assembly_v1.fa.gz -t 16 > /gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/tests/HG01258.maternal.gaf

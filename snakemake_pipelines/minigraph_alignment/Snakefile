@@ -68,7 +68,7 @@ rule merge_fasta:
 rule minigraph_alignment:
     input:
         fasta = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}_merged.fasta.gz',
-        ref = '/gpfs/project/projects/medbioinf/users/spani/files/gfa/HengLi/chm13-90c.r518_tagged.gfa'
+        ref = '/gpfs/project/projects/medbioinf/users/spani/files/gfa/1000GP/chm13-90c.r518_tagged.gfa'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.gaf'
     log:
@@ -108,7 +108,7 @@ rule gaftools_phase:
 rule gaftools_sort:
     input:
         gaf = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.tagged.gaf',
-        gfa = '/gpfs/project/projects/medbioinf/users/spani/files/gfa/HengLi/chm13-90c.r518_tagged.gfa'
+        gfa = '/gpfs/project/projects/medbioinf/users/spani/files/gfa/1000GP/chm13-90c.r518_tagged.gfa'
     output:
         sorted_gaf = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.tagged.sorted.gaf.gz',
         index = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.tagged.sorted.gaf.gz.gai'
