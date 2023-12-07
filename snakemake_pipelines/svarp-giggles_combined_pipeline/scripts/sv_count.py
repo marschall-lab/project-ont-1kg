@@ -136,6 +136,7 @@ if __name__ == '__main__':
     ax.set_title('HOM SV Counts Population-Wise')
     plt.yticks(fontsize=15)
     plt.yticks(fontsize=15)
+    plt.ylim((0, 22000))
     plt.tight_layout()
     plt.savefig(args.output+'/hom_count_population-wise.png')
     
@@ -159,5 +160,6 @@ if __name__ == '__main__':
     ax.set_title('HET SV Counts Population-Wise')
     plt.yticks(fontsize=15)
     plt.yticks(fontsize=15)
+    plt.ylim((0, 22000))
     plt.tight_layout()
     plt.savefig(args.output+'/het_count_population-wise.png')

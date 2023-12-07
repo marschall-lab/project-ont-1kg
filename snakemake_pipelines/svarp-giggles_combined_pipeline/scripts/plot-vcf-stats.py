@@ -2,7 +2,8 @@ import seaborn
 import matplotlib.pyplot as plt
 import pandas
 import argparse
-
+import numpy as np
+from scipy.stats import pearsonr
 
 class Table:
   
@@ -38,6 +39,9 @@ def plot_all_hwe(data, out):
     g.plot_marginals(seaborn.histplot, bins=50)
     g.plot_joint(plt.hexbin, bins='log', gridsize=50, cmap='Blues')
     g.set_axis_labels(x_name, y_name)
+    x = np.linspace(0,1,10000)
+    y = 2*x*(1-x)
+    plt.plot(x,y, color='black', linewidth=2)
     plt.subplots_adjust(left=0, right=0.8, top=1, bottom=0)  # shrink fig so cbar is visible
     # make new ax object for the cbar
     plt.yticks(fontsize=15)
@@ -61,6 +65,9 @@ def plot_pop_hwe(data, out, pop):
     g.plot_marginals(seaborn.histplot, bins=50)
     g.plot_joint(plt.hexbin, bins='log', gridsize=50, cmap='Blues')
     g.set_axis_labels(x_name, y_name)
+    x = np.linspace(0,1,10000)
+    y = 2*x*(1-x)
+    plt.plot(x,y, color='black', linewidth=2)
     plt.subplots_adjust(left=0, right=0.8, top=1, bottom=0)  # shrink fig so cbar is visible
     # make new ax object for the cbar
     plt.yticks(fontsize=15)
@@ -81,6 +88,8 @@ def plot_all_panelAF_vs_callsetAF(data, out):
     x_name="panel_allele_freq"
     y_name="all_allele_freq"
     title=out.split('/')[-1][0:-4]
+    print(title)
+    print(pearsonr(data[x_name], data[y_name]))
     g = seaborn.JointGrid(data=data, x=x_name, y=y_name, height=10, ratio=5)
     g.plot_marginals(seaborn.histplot, bins=50)
     g.plot_joint(plt.hexbin, bins='log', gridsize=50, cmap='Blues')
@@ -104,6 +113,8 @@ def plot_pop_panelAF_vs_callsetAF(data, out, pop):
     x_name="panel_allele_freq"
     y_name=pop+"_allele_freq"
     title=out.split('/')[-1][0:-4]
+    print(title)
+    print(pearsonr(data[x_name], data[y_name]))
     g = seaborn.JointGrid(data=data, x=x_name, y=y_name, height=10, ratio=5)
     g.plot_marginals(seaborn.histplot, bins=50)
     g.plot_joint(plt.hexbin, bins='log', gridsize=50, cmap='Blues')
