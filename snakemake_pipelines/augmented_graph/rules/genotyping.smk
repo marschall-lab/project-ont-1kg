@@ -14,7 +14,7 @@ rule giggles:
         alignment='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/ont-alignments/{sample}.sorted.gaf.gz',
         alignment_index='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/ont-alignments/{sample}.sorted.gaf.gz.gai',
         gfa='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/bubble_calling_and_tagging/{callset}.tagged.gfa',
-        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/panel-multiallelic.vcf.gz'
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready_multiallelic.vcf.gz'
     output:
         vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/{sample}-multiallelic.vcf')
     log:
@@ -39,7 +39,7 @@ rule giggles:
 rule convert_sample_vcf_biallelic:
     input:
         sample_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/{sample}-multiallelic.vcf',
-        biallelic_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/panel-biallelic.vcf.gz'
+        biallelic_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready_biallelic.vcf.gz'
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/{sample}-biallelic.vcf')
     conda:
@@ -69,7 +69,7 @@ rule merge_vcf_to_multisample:
 rule convert_multisample_vcf_biallelic:
     input:
         vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-multiallelic.vcf',
-        biallelic_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/panel-biallelic.vcf.gz'
+        biallelic_vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready_biallelic.vcf.gz'
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-biallelic.vcf')
     conda:
@@ -109,7 +109,7 @@ rule sv_count:
 rule collect_vcf_stats:
     input:
         metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
-        panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/panel-biallelic.vcf.gz',
+        panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready_biallelic.vcf.gz',
         callset='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-biallelic.vcf.gz'
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/callset-stats.tsv')
@@ -127,7 +127,7 @@ rule collect_vcf_stats:
 rule add_bub_ids:
     input:
         table='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/callset-stats.tsv',
-        multi_panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/panel-multiallelic.vcf.gz'
+        multi_panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready_multiallelic.vcf.gz'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/variant-stats.tsv'
     conda:

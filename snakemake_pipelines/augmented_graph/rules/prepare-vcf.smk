@@ -145,9 +145,9 @@ rule filter_vcf:
 # prepare vcf panel
 rule trim_panel:
     input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}-giggles_filtered.vcf'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{vcf_name}_filtered.vcf'
     output:
-        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}-giggles_filtered_trimmed.vcf')
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{vcf_name}_filtered_trimmed.vcf')
     conda:
         '../envs/basic.yml'
     resources:
@@ -158,18 +158,45 @@ rule trim_panel:
         'bcftools view --trim-alt-alleles -c1 {input} > {output}'
 
 
-# annotate vcf with allele decomposition information
-rule annotate_panel:
+# annotate giggles vcf with allele decomposition information
+rule annotate_panel_giggles_ready:
     input:
         vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}-giggles_filtered_trimmed.vcf',
         gfa='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/bubble_calling_and_tagging/{callset}.tagged.gfa'
     output:
-        multi='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/panel-multiallelic.vcf',
+        multi='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready_multiallelic.vcf',
+        multi_tmp=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-tmp.vcf'),
+        biallelic='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready_biallelic.vcf',
+        bi_tmp=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-tmp_biallelic.vcf')
+    log:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready.annotate.log'
+    conda:
+        '../envs/basic.yml'
+    resources:
+        mem_total_mb=20000,
+        runtime_hrs=5,
+        runtime_min=59
+    params:
+        outname='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-tmp'
+    shell:
+        '''
+        python3 scripts/annotate_vcf.py -vcf {input.vcf} -gfa {input.gfa} -o {params.outname} &> {log}
+        cat {output.multi_tmp} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n\"}}' > {output.multi}
+        cat {output.bi_tmp} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n\"}}' > {output.biallelic}
+        '''
+
+# annotate full vcf with allele decomposition information
+rule annotate_panel_full:
+    input:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/{callset}_filtered_trimmed.vcf',
+        gfa='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/bubble_calling_and_tagging/{callset}.tagged.gfa'
+    output:
+        multi='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/panel-full_multiallelic.vcf',
         multi_tmp=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/panel-tmp.vcf'),
-        biallelic='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/panel-biallelic.vcf',
+        biallelic='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/panel-full_biallelic.vcf',
         bi_tmp=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/panel-tmp_biallelic.vcf')
     log:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/panel.annotate.log'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/panel-full.annotate.log'
     conda:
         '../envs/basic.yml'
     resources:
