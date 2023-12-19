@@ -21,9 +21,8 @@ rule giggles:
         stderr='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/{sample}-multiallelic.stderr'
     resources:
         mem_total_mb=90000,
-        runtime_hrs=72,
+        runtime_hrs=48,
         runtime_min=1
-    priority: 3
     shell:
         """
         set +u
