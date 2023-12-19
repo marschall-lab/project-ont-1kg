@@ -37,7 +37,7 @@ rule minigraph_alignment:
         runtime_hrs=24,
         runtime_min=0,
         mem_total_mb=80000
-    threads: 24
+    threads: 8
     shell:
         '/gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr {input.ref} {input.fasta} -t {threads} > {output}'
 
@@ -58,7 +58,9 @@ rule gaftools_sort:
         mem_total_mb=20000
     shell:
         '''
-        module load Python/3.11.4
+        set +u
+        source ~/.bashrc
+        conda activate gaftools-dev
+        set -u
         gaftools sort --bgzip --outgaf {output.sorted_gaf} {input.gaf} {input.gfa} 2> {log}
-        module unload Python/3.11.4
         '''
