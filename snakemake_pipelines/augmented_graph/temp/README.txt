@@ -1,0 +1,1 @@
+This folder contains the output plots and files from the partially run snakemake genotyping pipeline
