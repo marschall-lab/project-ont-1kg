@@ -212,7 +212,7 @@ rule plot_statistics:
 rule plot_qc_curves:
     input:
         metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
-        callset='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-biallelic.vcf.gz'
+        callset='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-biallelic.vcf.gz',
         script='scripts/plot-qc-curves.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/audano-curve.png',
