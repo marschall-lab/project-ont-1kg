@@ -26,7 +26,7 @@ if __name__ == '__main__':
         writer = open(args.output+'/sv_count.tsv', 'w')
         print("Sample\tPopulation\tSuperpopulation\tHET_COMPLEX\tHET_DEL\tHET_INS\tHOM_COMPLEX\tHOM_DEL\tHOM_INS", file=writer)
         for n,v in enumerate(vcfs):
-            sample=v[-21:-14]
+            sample=v[-24:-17]
             sample_data=metadata[metadata["Sample name"] == sample]
             d = [[0,0,0], [0,0,0], sample_data["Population code"].values[0], sample_data["Superpopulation code"].values[0]]      # first element counts number of HET SVs [COMPLEX, DEL, INS]. second element counts HOM SVs [COMPLEX, DEL, INS].
             reader = VariantFile(v)
@@ -98,20 +98,26 @@ if __name__ == '__main__':
         labels.append(pop)
         color_index += 1
     
+    y_range = (0, 24000)
+
     # Plotting SV count sample-wise
-    fig, ax = plt.subplots(figsize=(20,5))
+    fig, ax = plt.subplots(figsize=(10,10), dpi=100)
     ax.bar(sample_list, hom_count_list, color=color_list)
     ax.set_ylabel('HOM SV Count')
     ax.set_title('HOM SV Counts Sample-Wise')
+    plt.ylim(y_range)
+    plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
     plt.figlegend(handles, labels, framealpha=1, frameon=True)
     plt.tight_layout()
     plt.savefig(args.output+'/hom_count_sample-wise.png')
     
     # Plotting Variant Count sample-wise
-    fig, ax = plt.subplots(figsize=(20,5))
+    fig, ax = plt.subplots(figsize=(10,10), dpi=100)
     ax.bar(sample_list, het_count_list, color=color_list)
     ax.set_ylabel('HET SV Count')
     ax.set_title('HET SV Counts Sample-Wise')
+    plt.ylim(y_range)
+    plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
     plt.figlegend(handles, labels, framealpha=1, frameon=True)
     plt.tight_layout()
     plt.savefig(args.output+'/het_count_sample-wise.png')
@@ -132,11 +138,10 @@ if __name__ == '__main__':
     for flier in bp['fliers']:
         flier.set(marker ='o', color ='black', alpha = 1)    
     ax.set_xticklabels([x for x,_ in color_by_pop.items()])
-    ax.set_ylabel('HOM SV Count')
-    ax.set_title('HOM SV Counts Population-Wise')
+    ax.set_title('HOM SV Counts Population-Wise', fontsize=15)
     plt.yticks(fontsize=15)
-    plt.yticks(fontsize=15)
-    plt.ylim((0, 22000))
+    plt.xticks(fontsize=15)
+    plt.ylim(y_range)
     plt.tight_layout()
     plt.savefig(args.output+'/hom_count_population-wise.png')
     
@@ -156,10 +161,9 @@ if __name__ == '__main__':
     for flier in bp['fliers']:
         flier.set(marker ='o', color ='black', alpha = 1)    
     ax.set_xticklabels([x for x,_ in color_by_pop.items()])
-    ax.set_ylabel('HET SV Count')
-    ax.set_title('HET SV Counts Population-Wise')
+    ax.set_title('HET SV Counts Population-Wise', fontsize=15)
     plt.yticks(fontsize=15)
-    plt.yticks(fontsize=15)
-    plt.ylim((0, 22000))
+    plt.xticks(fontsize=15)
+    plt.ylim(y_range)
     plt.tight_layout()
     plt.savefig(args.output+'/het_count_population-wise.png')

@@ -7,11 +7,12 @@
 ls /gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/minigraph-extended_all/genotypes/*-multiallelic.vcf.gz > ../temp/multiallelic-vcfs.txt
 
 # creating merged multiallelic vcf
+source ~/.bashrc
 conda activate base
 bcftools merge --no-version -l ../temp/multiallelic-vcfs.txt -o ../temp/multisample-multiallelic.vcf
 bgzip -c ../temp/multisample-multiallelic.vcf > ../temp/multisample-multiallelic.vcf.gz
 tabix -p vcf ../temp/multisample-multiallelic.vcf.gz
-conda active /gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/augmented_graph/.snakemake/conda/91103c7d858528647eb601a6ea8dffb7_
+conda activate /gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/augmented_graph/.snakemake/conda/91103c7d858528647eb601a6ea8dffb7_
 
 # get the biallelic multisample VCF
 convert_to_biallelic="/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/augmented_graph/scripts/convert-to-biallelic.py"

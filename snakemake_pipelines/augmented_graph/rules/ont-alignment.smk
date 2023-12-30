@@ -34,9 +34,9 @@ rule minigraph_alignment:
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/ont-alignments/{sample}.alignment.log'
     resources:
-        runtime_hrs=24,
+        runtime_hrs=36,
         runtime_min=0,
-        mem_total_mb=80000
+        mem_total_mb=96000
     threads: 8
     shell:
         '/gpfs/project/projects/medbioinf/users/spani/packages/minigraph/minigraph --vc -cx lr {input.ref} {input.fasta} -t {threads} > {output}'
@@ -53,7 +53,7 @@ rule gaftools_sort:
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/ont-alignments/{sample}.sorting.log'
     resources:
-        runtime_hrs=48,
+        runtime_hrs=54,
         runtime_min=0,
         mem_total_mb=20000
     shell:

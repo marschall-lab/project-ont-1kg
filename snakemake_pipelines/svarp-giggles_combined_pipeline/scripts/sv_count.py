@@ -26,7 +26,7 @@ if __name__ == '__main__':
         writer = open(args.output+'/sv_count.tsv', 'w')
         print("Sample\tPopulation\tSuperpopulation\tHET_COMPLEX\tHET_DEL\tHET_INS\tHOM_COMPLEX\tHOM_DEL\tHOM_INS", file=writer)
         for n,v in enumerate(vcfs):
-            sample=v[-21:-14]
+            sample=v[-24:-17]
             sample_data=metadata[metadata["Sample name"] == sample]
             d = [[0,0,0], [0,0,0], sample_data["Population code"].values[0], sample_data["Superpopulation code"].values[0]]      # first element counts number of HET SVs [COMPLEX, DEL, INS]. second element counts HOM SVs [COMPLEX, DEL, INS].
             reader = VariantFile(v)
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     ax.set_title('HOM SV Counts Population-Wise')
     plt.yticks(fontsize=15)
     plt.yticks(fontsize=15)
-    plt.ylim((0, 22000))
+    plt.ylim((0, 24000))
     plt.tight_layout()
     plt.savefig(args.output+'/hom_count_population-wise.png')
     
@@ -160,6 +160,6 @@ if __name__ == '__main__':
     ax.set_title('HET SV Counts Population-Wise')
     plt.yticks(fontsize=15)
     plt.yticks(fontsize=15)
-    plt.ylim((0, 22000))
+    plt.ylim((0, 24000))
     plt.tight_layout()
     plt.savefig(args.output+'/het_count_population-wise.png')

@@ -20,9 +20,9 @@ rule giggles:
     log:
         stderr='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/{sample}-multiallelic.stderr'
     resources:
-        mem_total_mb=90000,
-        runtime_hrs=48,
-        runtime_min=1
+        mem_total_mb=20000,
+        runtime_hrs=71,
+        runtime_min=59
     shell:
         """
         set +u
@@ -58,7 +58,7 @@ rule merge_vcf_to_multisample:
     conda:
         '../envs/basic.yml'
     resources:
-        mem_total_mb=30000,
+        mem_total_mb=170000,
         runtime_hrs=24,
     shell:
         'bcftools merge --no-version -o {output} {input}'
@@ -83,7 +83,8 @@ rule convert_multisample_vcf_biallelic:
 rule sv_count:
     input:
         metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
-        vcf=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/genotypes/{sample}-biallelic.vcf.gz',sample=samples)
+        vcf=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/genotypes/{sample}-biallelic.vcf.gz',sample=samples),
+        script='scripts/sv_count.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts/het_count_population-wise.png',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts/het_count_sample-wise.png',
@@ -102,14 +103,15 @@ rule sv_count:
         runtime_hrs=24,
         runtime_min=1
     shell:
-        'python scripts/sv_count.py -meta {input.metadata} -vcf {params.inp_vcfs} -output {params.out} 2> {log}'
+        'python {input.script} -meta {input.metadata} -vcf {params.inp_vcfs} -output {params.out} 2> {log}'
 
 # collect vcf stats
 rule collect_vcf_stats:
     input:
         metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
         panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready_biallelic.vcf.gz',
-        callset='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-biallelic.vcf.gz'
+        callset='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-biallelic.vcf.gz',
+        script='scripts/collect-vcf-stats.py'
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/callset-stats.tsv')
     log:
@@ -120,13 +122,14 @@ rule collect_vcf_stats:
         mem_total_mb=5000,
         runtime_hrs=18
     shell:
-        'python scripts/collect-vcf-stats.py -meta {input.metadata} -panel {input.panel} -callset {input.callset} > {output} 2> {log}'
+        'python {input.script} -meta {input.metadata} -panel {input.panel} -callset {input.callset} > {output} 2> {log}'
 
 # adding bubble ids to the vcf stats table
 rule add_bub_ids:
     input:
         table='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/callset-stats.tsv',
-        multi_panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready_multiallelic.vcf.gz'
+        multi_panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready_multiallelic.vcf.gz',
+        script='scripts/add-bub-info.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/variant-stats.tsv'
     conda:
@@ -135,12 +138,13 @@ rule add_bub_ids:
         mem_total_mb=5000,
         runtime_hrs=3
     shell:
-        'python scripts/add-bub-info.py -table {input.table} -panel {input.multi_panel} -output {output}'
+        'python {input.script} -table {input.table} -panel {input.multi_panel} -output {output}'
 
-# plot statistics
+# plot af and hwe related statistics
 rule calc_and_plot_statistics:
     input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/variant-stats.tsv'
+        table='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/variant-stats.tsv',
+        script='scripts/plot-vcf-stats.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/hwe.png',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/af.png',
@@ -159,4 +163,23 @@ rule calc_and_plot_statistics:
     conda:
         '../envs/basic.yml'
     shell:
-        'python scripts/plot-vcf-stats.py -table {input} -output {params.outdir}'
+        'python {input.script} -table {input.table} -output {params.outdir}'
+
+# plot sv discovery growth curve (audano curve), sv count distribution, and log(#svs) vs log(#ac) curve
+rule plot_qc_curves:
+    input:
+        metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
+        callset='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-biallelic.vcf.gz'
+        script='scripts/plot-qc-curves.py'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/qc/audano-curve.png',
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/size-distribution_{sv_type}_{range}', sv_type=['COMPLEX', 'DEL', 'INS'], range=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/rausch-curve_{v_set}-{v_type}.png', v_set = ['All', 'SV'], v_type = ['All', 'COMPLEX', 'DEL', 'INS'])
+    params:
+        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/qc/'
+    conda:
+        '../envs/basic.yml'
+    resources:
+        mem_total_mb=5000
+    shell:
+        'python {input.script} -vcf {input.callset} -meta {input.metadata} -output {params.out}'

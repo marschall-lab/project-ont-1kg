@@ -17,9 +17,9 @@ rule giggles:
         stderr="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}.stderr",
         stdout="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}.stdout"
     resources:
-        mem_total_mb=50000,
-        runtime_hrs=48,
-        runtime_min=1
+        mem_total_mb=20000,
+        runtime_hrs=71,
+        runtime_min=59
     priority: 3
     shell:
         """
@@ -125,7 +125,8 @@ rule convert_multisample_vcf_biallelic:
 rule sv_count:
     input:
         metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
-        vcf=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-biallelic.vcf',sample=samples)
+        vcf=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-biallelic.vcf.gz',sample=samples),
+        script='scripts/sv_count.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/het_count_population-wise.png',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/het_count_sample-wise.png',
@@ -144,14 +145,15 @@ rule sv_count:
         runtime_hrs=24,
         runtime_min=1
     shell:
-        'python scripts/sv_count.py -meta {input.metadata} -vcf {params.inp_vcfs} -output {params.out} 2> {log}'
+        'python {input.script} -meta {input.metadata} -vcf {params.inp_vcfs} -output {params.out} 2> {log}'
 
 # collect vcf stats
 rule collect_vcf_stats:
     input:
         metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
         panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/vcf/panel-biallelic.vcf.gz',
-        callset='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-biallelic.vcf.gz'
+        callset='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-biallelic.vcf.gz',
+        script='scripts/collect-vcf-stats.py'
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/callset-stats.tsv')
     log:
@@ -162,13 +164,14 @@ rule collect_vcf_stats:
         mem_total_mb=5000,
         runtime_hrs=18
     shell:
-        'python scripts/collect-vcf-stats.py -meta {input.metadata} -panel {input.panel} -callset {input.callset} > {output} 2> {log}'
+        'python {input.script} -meta {input.metadata} -panel {input.panel} -callset {input.callset} > {output} 2> {log}'
 
 # adding bubble ids to the vcf stats table
 rule add_bub_ids:
     input:
         table='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/callset-stats.tsv',
-        multi_panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/vcf/panel-multiallelic.vcf'
+        multi_panel='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/vcf/panel-multiallelic.vcf',
+        script='scripts/add-bub-info.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/variant-stats.tsv'
     conda:
@@ -177,13 +180,14 @@ rule add_bub_ids:
         mem_total_mb=5000,
         runtime_hrs=3
     shell:
-        'python scripts/add-bub-info.py -table {input.table} -panel {input.multi_panel} -output {output}'
+        'python {input.script} -table {input.table} -panel {input.multi_panel} -output {output}'
 
 # plot statistics
 # TODO: Add a separate output file for the printed numerical stats
 rule plot_statistics:
     input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/variant-stats.tsv'
+        table='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/variant-stats.tsv',
+        script='scripts/plot-vcf-stats.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hwe.png',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/af.png',
@@ -202,4 +206,23 @@ rule plot_statistics:
     conda:
         '../envs/cyvcf2.yml'
     shell:
-        'python scripts/plot-vcf-stats.py -table {input} -output {params.outdir}'
+        'python {input.script} -table {input.table} -output {params.outdir}'
+
+# plot sv discovery growth curve (audano curve), sv count distribution, and log(#svs) vs log(#ac) curve
+rule plot_qc_curves:
+    input:
+        metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
+        callset='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-biallelic.vcf.gz'
+        script='scripts/plot-qc-curves.py'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/audano-curve.png',
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/size-distribution_{sv_type}_{range}', sv_type=['COMPLEX', 'DEL', 'INS'], range=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/rausch-curve_{v_set}-{v_type}.png', v_set = ['All', 'SV'], v_type = ['All', 'COMPLEX', 'DEL', 'INS'])
+    params:
+        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/'
+    conda:
+        '../envs/basic.yml'
+    resources:
+        mem_total_mb=5000
+    shell:
+        'python {input.script} -vcf {input.callset} -meta {input.metadata} -output {params.out}'

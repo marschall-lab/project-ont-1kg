@@ -7,6 +7,7 @@
 ls /gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/minigraph-extended_all/genotypes/*-biallelic.vcf.gz > ../temp/biallelic-vcfs.txt
 
 # activating conda environment used in snakemake pipeline
+source ~/.bashrc
 conda activate /gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/augmented_graph/.snakemake/conda/91103c7d858528647eb601a6ea8dffb7_
 
 # creating comma separate list of biallelic vcfs
