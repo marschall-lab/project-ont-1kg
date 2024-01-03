@@ -4,6 +4,14 @@ if config['pilot']:
     samples.sort()
     samples=samples[0:2]
 
+wildcard_constraints:
+    sample='|'.join(samples),
+    pop='|'.join(['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
+    sv_type='|'.join(['COMPLEX', 'DEL', 'INS']),
+    ranges='|'.join(['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
+    regions='|'.join(['biallelic', 'multiallelic']),
+    vartype='|'.join(['all', 'sv', 'indels', 'large-deletion', 'large-insertion', 'large-complex'])
+
 # run genotyping
 rule giggles:
     input:
@@ -78,6 +86,8 @@ rule convert_multisample_vcf_biallelic:
     shell:
         "cat {input.vcf} | python scripts/convert-to-biallelic.py {input.biallelic_vcf} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' > {output}"
 
+
+### Quality Check ###
 
 # calculate SV count
 rule sv_count:
@@ -173,7 +183,7 @@ rule plot_qc_curves:
         script='scripts/plot-qc-curves.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/qc/audano-curve.png',
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/size-distribution_{sv_type}_{range}', sv_type=['COMPLEX', 'DEL', 'INS'], range=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/size-distribution_{sv_type}_{ranges}', sv_type=['COMPLEX', 'DEL', 'INS'], ranges=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/rausch-curve_{v_set}-{v_type}.png', v_set = ['All', 'SV'], v_type = ['All', 'COMPLEX', 'DEL', 'INS'])
     params:
         out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/qc/'
@@ -183,3 +193,4 @@ rule plot_qc_curves:
         mem_total_mb=5000
     shell:
         'python {input.script} -vcf {input.callset} -meta {input.metadata} -output {params.out}'
+

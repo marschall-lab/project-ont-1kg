@@ -6,6 +6,9 @@ include: 'rules/prepare-vcf.smk'
 include: 'rules/bubble-tagging.smk'
 include: 'rules/common-rules.smk'
 include: 'rules/get-sample-list.smk'
+include: 'rules/self-genotyping.smk'
+include: 'rules/truvari-comparisons.smk'
+include: 'rules/callset-comparisons.smk'
 
 if config['pilot']:
     samples.sort()
@@ -31,4 +34,5 @@ rule all:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/variant-stats.tsv', callset = [c for c in config['callsets'].keys()]),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts/sv_count.tsv', callset = [c for c in config['callsets'].keys()]),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/hwe.png', callset = [c for c in config['callsets'].keys()]),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/qc/audano-curve.png', callset = [c for c in config['callsets'].keys()])
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/qc/audano-curve.png', callset = [c for c in config['callsets'].keys()]),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance/summary.tsv', callset = [c for c in config['callsets'].keys()])
