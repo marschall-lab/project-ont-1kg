@@ -58,12 +58,19 @@ rule prepare_beds:
         bedtools complement -i {input.bed} -g {output.tmp} > {output.bed}
         """
 
+# create empty list of untypable variant IDs
+rule create_empty_list_of_untypable_ids:
+    output:
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/HG01258-untypable-ids.tsv')
+    shell:
+        'touch {output}'
+
 # determine untypable IDs
 rule remove_untypable_callset:
     input:
         vcf = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/HG01258-biallelic.vcf.gz",
+        tmp = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/HG01258-untypable-ids.tsv"
     output:
-        tmp = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/HG01258-untypable-ids.tsv"),
         vcf = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/callset/HG01258-typable-{vartype}.vcf.gz",
         tbi = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/callset/HG01258-typable-{vartype}.vcf.gz.tbi"
     resources:
@@ -73,8 +80,7 @@ rule remove_untypable_callset:
         "../envs/basic.yml"
     shell:
         """
-        touch {output.tmp}
-        zcat {input.vcf} | python scripts/skip-untypable.py {output.tmp} | python scripts/extract-varianttype.py {wildcards.vartype} | bgzip -c > {output.vcf}
+        zcat {input.vcf} | python scripts/skip-untypable.py {input.tmp} | python scripts/extract-varianttype.py {wildcards.vartype} | bgzip -c > {output.vcf}
         tabix -p vcf {output.vcf}
         """
 
@@ -93,7 +99,7 @@ rule remove_untypable_truth:
         "../envs/basic.yml"
     shell:
         """
-        zcat {input.vcf} | python scripts/skip-untypable.py {output.tmp} | python scripts/extract-varianttype.py {wildcards.vartype} | bgzip -c > {output.vcf}
+        zcat {input.vcf} | python scripts/skip-untypable.py {input.tmp} | python scripts/extract-varianttype.py {wildcards.vartype} | bgzip -c > {output.vcf}
         tabix -p vcf {output.vcf}
         """
 
