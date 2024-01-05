@@ -63,9 +63,11 @@ rule gaftools_sort:
         mem_total_mb=lambda wildcards, attempt: 20000 * attempt
     shell:
         '''
-        module load Python/3.11.4
+        set +u
+        source ~/.bashrc
+        conda activate gaftools-dev
+        set -u
         gaftools sort --bgzip --outgaf {output.sorted_gaf} {input.gaf} {input.gfa} 2> {log}
-        module unload Python/3.11.4
         '''
         
 # prepare vcf panel

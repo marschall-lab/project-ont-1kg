@@ -1,11 +1,13 @@
 include: './get-sample-list.smk'
 
+giggles_memory_req={'HG02013': 50000, 'HG00268': 30000, 'NA21113': 30000}
+
 # run genotyping
 rule giggles:
     input:
-        reads='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/fasta/{sample}.fasta.gz',
-        reads_gzi='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/fasta/{sample}.fasta.gz.gzi',
-        reads_fai='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/fasta/{sample}.fasta.gz.fai',
+        reads='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/data/fasta/{sample}.fasta.gz',
+        reads_gzi='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/data/fasta/{sample}.fasta.gz.gzi',
+        reads_fai='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/data/fasta/{sample}.fasta.gz.fai',
         haplotag='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv',
         alignment='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.sorted.gaf.gz',
         alignment_index='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.sorted.gaf.gz.gai',
@@ -17,7 +19,7 @@ rule giggles:
         stderr="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}.stderr",
         stdout="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}.stdout"
     resources:
-        mem_total_mb=20000,
+        mem_total_mb=lambda wildcards: 20000 if wildcards.sample not in ['HG02013', 'HG00268', 'NA21113'] else giggles_memory_req[wildcards.sample],
         runtime_hrs=71,
         runtime_min=59
     priority: 3
