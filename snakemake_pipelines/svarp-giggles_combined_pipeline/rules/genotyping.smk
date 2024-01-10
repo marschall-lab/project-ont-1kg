@@ -150,7 +150,7 @@ rule sv_count:
 
 
 # calculate SV length box plots
-rule sv_count:
+rule sv_length:
     input:
         metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
         vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-biallelic.vcf.gz',
