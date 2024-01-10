@@ -8,9 +8,18 @@ class VariantType(Enum):
 	midsize_insertion = 4
 	midsize_deletion = 5
 	midsize_complex = 6
-	large_insertion = 7
-	large_deletion = 8
-	large_complex = 9
+	large_insertion_50_1000 = 7
+	large_deletion_50_1000 = 8
+	large_complex_50_1000 = 9
+	large_insertion_1000_10000 = 10
+	large_deletion_1000_10000 = 11
+	large_complex_1000_10000 = 12
+	large_insertion_10000_50000 = 13
+	large_deletion_10000_50000 = 14
+	large_complex_10000_50000 = 15
+	large_insertion_50000 = 16
+	large_deletion_50000 = 17
+	large_complex_50000 = 18
 
 
 def determine_class_from_alleles(ref_allele, alt_allele):
@@ -82,13 +91,33 @@ def determine_type_from_id(varid):
 			return VariantType.midsize_deletion
 		return VariantType.midsize_complex
 
-	if varlen >= 50:
+	if varlen >= 50 and varlen < 1000:
 		if is_insertion:
-			return VariantType.large_insertion
+			return VariantType.large_insertion_50_1000
 		if is_deletion:
-			return VariantType.large_deletion
-		return VariantType.large_complex
+			return VariantType.large_deletion_50_1000
+		return VariantType.large_complex_50_1000
+	
+	if varlen >= 1000 and varlen < 10000:
+		if is_insertion:
+			return VariantType.large_insertion_1000_10000
+		if is_deletion:
+			return VariantType.large_deletion_1000_10000
+		return VariantType.large_complex_1000_10000
 
+	if varlen >= 10000 and varlen < 50000:
+		if is_insertion:
+			return VariantType.large_insertion_10000_50000
+		if is_deletion:
+			return VariantType.large_deletion_10000_50000
+		return VariantType.large_complex_10000_50000
+
+	if varlen >= 50000:
+		if is_insertion:
+			return VariantType.large_insertion_50000
+		if is_deletion:
+			return VariantType.large_deletion_50000
+		return VariantType.large_complex_50000
 
 
 def determine_variant_type(line):
@@ -135,12 +164,33 @@ def determine_variant_type(line):
 			return VariantType.midsize_deletion
 		return VariantType.midsize_complex
 
-	if varlen >= 50:
+	if varlen >= 50 and varlen < 1000:
 		if is_insertion:
-			return VariantType.large_insertion
+			return VariantType.large_insertion_50_1000
 		if is_deletion:
-			return VariantType.large_deletion
-		return VariantType.large_complex
+			return VariantType.large_deletion_50_1000
+		return VariantType.large_complex_50_1000
+	
+	if varlen >= 1000 and varlen < 10000:
+		if is_insertion:
+			return VariantType.large_insertion_1000_10000
+		if is_deletion:
+			return VariantType.large_deletion_1000_10000
+		return VariantType.large_complex_1000_10000
+
+	if varlen >= 10000 and varlen < 50000:
+		if is_insertion:
+			return VariantType.large_insertion_10000_50000
+		if is_deletion:
+			return VariantType.large_deletion_10000_50000
+		return VariantType.large_complex_10000_50000
+
+	if varlen >= 50000:
+		if is_insertion:
+			return VariantType.large_insertion_50000
+		if is_deletion:
+			return VariantType.large_deletion_50000
+		return VariantType.large_complex_50000
 
 
 def determine_variant_from_line(line):
@@ -175,12 +225,33 @@ def determine_variant_from_line(line):
 			return VariantType.midsize_deletion
 		return VariantType.midsize_complex
 
-	if varlen >= 50:
+	if varlen >= 50 and varlen < 1000:
 		if is_insertion:
-			return VariantType.large_insertion
+			return VariantType.large_insertion_50_1000
 		if is_deletion:
-			return VariantType.large_deletion
-		return VariantType.large_complex
+			return VariantType.large_deletion_50_1000
+		return VariantType.large_complex_50_1000
+	
+	if varlen >= 1000 and varlen < 10000:
+		if is_insertion:
+			return VariantType.large_insertion_1000_10000
+		if is_deletion:
+			return VariantType.large_deletion_1000_10000
+		return VariantType.large_complex_1000_10000
+
+	if varlen >= 10000 and varlen < 50000:
+		if is_insertion:
+			return VariantType.large_insertion_10000_50000
+		if is_deletion:
+			return VariantType.large_deletion_10000_50000
+		return VariantType.large_complex_10000_50000
+
+	if varlen >= 50000:
+		if is_insertion:
+			return VariantType.large_insertion_50000
+		if is_deletion:
+			return VariantType.large_deletion_50000
+		return VariantType.large_complex_50000
 
 
 def determine_pyvcf_type(record):
@@ -217,11 +288,32 @@ def determine_pyvcf_type(record):
 			return VariantType.midsize_deletion
 		return VariantType.midsize_complex
 
-	if varlen >= 50:
+	if varlen >= 50 and varlen < 1000:
 		if is_insertion:
-			return VariantType.large_insertion
+			return VariantType.large_insertion_50_1000
 		if is_deletion:
-			return VariantType.large_deletion
-		return VariantType.large_complex
+			return VariantType.large_deletion_50_1000
+		return VariantType.large_complex_50_1000
+	
+	if varlen >= 1000 and varlen < 10000:
+		if is_insertion:
+			return VariantType.large_insertion_1000_10000
+		if is_deletion:
+			return VariantType.large_deletion_1000_10000
+		return VariantType.large_complex_1000_10000
+
+	if varlen >= 10000 and varlen < 50000:
+		if is_insertion:
+			return VariantType.large_insertion_10000_50000
+		if is_deletion:
+			return VariantType.large_deletion_10000_50000
+		return VariantType.large_complex_10000_50000
+
+	if varlen >= 50000:
+		if is_insertion:
+			return VariantType.large_insertion_50000
+		if is_deletion:
+			return VariantType.large_deletion_50000
+		return VariantType.large_complex_50000
 
 

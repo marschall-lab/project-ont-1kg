@@ -17,7 +17,7 @@ def parse_line(line, gt_list, pos, add_qual=None, pass_only=False):
 	gt_qual = 0
 	qual_thresh = 0
 	if add_qual != None:
-		gt_qual = int(genotype_field[format_field.index('GQ')]) if genotype_field[format_field.index('GQ')] is not '.' else 0
+		gt_qual = int(genotype_field[format_field.index('GQ')]) if genotype_field[format_field.index('GQ')] != '.' else 0
 		qual_thresh = int(add_qual)
 	if not '.' in gt:
 		if len(gt) < 2:
