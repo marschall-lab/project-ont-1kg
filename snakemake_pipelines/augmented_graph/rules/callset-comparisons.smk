@@ -121,8 +121,6 @@ rule add_tags:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}.vcf.gz'
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}-tagged.vcf')
-    wildcard_constraints:
-        callset = "|".join(callsets)
     conda:
         "../envs/basic.yml"
     shell:
@@ -155,7 +153,7 @@ rule intersect_HG01258_vcfs:
 # intersecting the vcf files and creating upset plots for samples not in the graph
 rule intersect_outsample_vcfs:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/callset-comparison/vcfs/{source}-{sample}-tagged.vcf', source=['pangenie', 'giggles'])
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/callset-comparison/vcfs/{source}-{{sample}}-tagged.vcf', source=['pangenie', 'giggles'])
     output:
         tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.tsv",
         vcf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.vcf",

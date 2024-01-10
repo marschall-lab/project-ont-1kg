@@ -9,7 +9,7 @@ if config['pilot']:
 wildcard_constraints:
     sample='|'.join(samples),
     regions='|'.join(['biallelic', 'multiallelic']),
-    vartype='|'.join(['all', 'sv', 'indels', 'large-deletion', 'large-insertion', 'large-complex']),
+    vartype='|'.join(['all', 'sv', 'large-deletion', 'large-insertion', 'large-complex', 'large-deletion-1000', 'large-insertion-1000', 'large-complex-1000', 'large-deletion-10000', 'large-insertion-10000', 'large-complex-10000', 'large-deletion-50000', 'large-insertion-50000', 'large-complex-50000', 'large-deletion-above50000', 'large-insertion-above50000', 'large-complex-above50000']),
     representation='biallelic|multiallelic'
 
 
@@ -31,7 +31,7 @@ rule subset_vcf_af:
 # extract ground truth genotypes for sample
 rule prepare_truth:
     input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready_biallelic_{min_af}-{max_af}.vcf'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/truth/subset/giggles-ready_biallelic_{min_af}-{max_af}.vcf'
     output:
         temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/truth/HG01258-truth-biallelic_{min_af}-{max_af}.vcf")
     conda:
@@ -142,7 +142,7 @@ rule collect_typed_variants:
 # compute concordances
 rule genotype_concordances:
     input:
-        callset = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/callset/HG01258-callset-typable_{min_af}-{max_af}_{vartype}.vcf.gz"",
+        callset = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/callset/HG01258-callset-typable_{min_af}-{max_af}_{vartype}.vcf.gz",
         baseline = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/truth/HG01258-truth-typable_{min_af}-{max_af}_{vartype}.vcf.gz",
         regions = region_to_bed,
         typed_ids = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/genotyped-ids-{representation}/HG01258-{regions}-{vartype}_{min_af}-{max_af}.tsv"
@@ -168,7 +168,7 @@ rule genotype_concordances:
 # summarize concordance results
 rule summarize_concordance:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/self-genotyping/cooncordance-{representation}/{regions}_{vartype}_{{min_af}}-{{max_af}}/summary.txt', regions=['biallelic', 'multiallelic'],vartype=['all', 'sv', 'large-deletion', 'large-insertion', 'large-complex', 'large-deletion-1000', 'large-insertion-1000', 'large-complex-1000', 'large-deletion-10000', 'large-insertion-10000', 'large-complex-10000', 'large-deletion-50000', 'large-insertion-50000', 'large-complex-50000', 'large-deletion-above50000', 'large-insertion-above50000', 'large-complex-above50000'])
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/self-genotyping/concordance-{{representation}}/{regions}_{vartype}_{{min_af}}-{{max_af}}/summary.txt', regions=['biallelic', 'multiallelic'],vartype=['all', 'sv', 'large-deletion', 'large-insertion', 'large-complex', 'large-deletion-1000', 'large-insertion-1000', 'large-complex-1000', 'large-deletion-10000', 'large-insertion-10000', 'large-complex-10000', 'large-deletion-50000', 'large-insertion-50000', 'large-complex-50000', 'large-deletion-above50000', 'large-insertion-above50000', 'large-complex-above50000'])
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance-{representation}/summary_{min_af}-{max_af}.tsv'
     params:
