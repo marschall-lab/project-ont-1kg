@@ -25,7 +25,7 @@ rule subset_vcf_af:
         '../envs/basic.yml'
     shell:
         '''
-        python scripts/subset-by-af.py -panel {input.panel} -callset {input.callset} -mode panel -min-af {wildcards.min_af} -max_af {wildcards.max_af} -output-panel {output.panel} -output-callset {output.callset}
+        python scripts/subset-by-af.py -panel {input.panel} -callset {input.callset} -mode panel -min-af {wildcards.min_af} -max-af {wildcards.max_af} -output-panel {output.panel} -output-callset {output.callset}
         '''
 
 # extract ground truth genotypes for sample

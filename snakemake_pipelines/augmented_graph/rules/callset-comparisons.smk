@@ -112,7 +112,7 @@ rule vcf_stats:
     conda:
         "../envs/basic.yml"
     shell:
-        "zcat {input} | python scripts/set-pass.py | bcftools view -f PASS --min-af {min_af} --max-af {max_af} | python workflow/scripts/vcf_stats.py > {output}"
+        "zcat {input} | python scripts/set-pass.py | bcftools view -f PASS --min-af {min_af} --max-af {max_af} | python scripts/vcf_stats.py > {output}"
 
 # add tag of variant types
 rule add_tags:
@@ -123,7 +123,7 @@ rule add_tags:
     conda:
         "../envs/basic.yml"
     shell:
-        "zcat {input} | python scripts/set-pass.py | bcftools view -f PASS --min-af {min_af} --max-af {max_af} | python3 workflow/scripts/add-svtags.py > {output}"
+        "zcat {input} | python scripts/set-pass.py | bcftools view -f PASS --min-af {min_af} --max-af {max_af} | python3 scripts/add-svtags.py > {output}"
 
 
 # intersecting the vcf files and creating upset plots for HG01258 (sample in graph)
