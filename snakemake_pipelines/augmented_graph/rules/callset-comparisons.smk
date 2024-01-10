@@ -90,6 +90,7 @@ rule pangenie_panel_extract_sample:
         '''
 
 # extract vcf from giggles panel (only for HG01258)
+rule giggles_panel_extract_sample:
     input:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready_biallelic.vcf.gz'
     output:
