@@ -145,7 +145,7 @@ rule intersect_HG01258_vcfs:
         columns=["in_" + s for s in sources]
     shell:
         '''
-        python scripts/intersect_callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
+        python scripts/intersect-callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
         python scripts/plot-comparison-upset.py -t {output.tsv} -o {output.plot} -n {params.columns} &> {log.plot}
         '''
 
@@ -168,7 +168,7 @@ rule intersect_outsample_vcfs:
         columns=["in_" + s for s in ['nygc', 'pangenie', 'giggles']]
     shell:
         '''
-        python scripts/intersect_callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
+        python scripts/intersect-callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
         python scripts/plot-comparison-upset.py -t {output.tsv} -o {output.plot} -n {params.columns} &> {log.plot}
         '''
 '''

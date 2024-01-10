@@ -19,12 +19,12 @@ wildcard_constraints:
 
 rule all:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-multiallelic.vcf.gz', callset = [c for c in config['callsets'].keys()]),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-biallelic.vcf.gz', callset = [c for c in config['callsets'].keys()]),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts-boxplot/plot-sv-counts-boxplot.tsv', callset = [c for c in config['callsets'].keys()]),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-length-boxplot/plot-sv-length-boxplot.tsv', callset = [c for c in config['callsets'].keys()]),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/hwe.png', callset = [c for c in config['callsets'].keys()]),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/qc/audano-curve.png', callset = [c for c in config['callsets'].keys()]),
+        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-multiallelic.vcf.gz', callset = [c for c in config['callsets'].keys()]),
+        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-biallelic.vcf.gz', callset = [c for c in config['callsets'].keys()]),
+        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts-boxplot/plot-sv-counts-boxplot.tsv', callset = [c for c in config['callsets'].keys()]),
+        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-length-boxplot/plot-sv-length-boxplot.tsv', callset = [c for c in config['callsets'].keys()]),
+        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/hwe.png', callset = [c for c in config['callsets'].keys()]),
+        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/qc/audano-curve.png', callset = [c for c in config['callsets'].keys()]),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.tsv', callset = [c for c in config['callsets'].keys()], sample=config['hgsvc_samples']),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection.tsv', callset = [c for c in config['callsets'].keys()]),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance-{representation}/summary_{min_af}-{max_af}.tsv', 
