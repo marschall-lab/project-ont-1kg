@@ -1,6 +1,7 @@
-import seaborn
+import random
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+from matplotlib.legend_handler import HandlerTuple
 import pandas
 from cyvcf2 import VCF
 import argparse
@@ -15,40 +16,93 @@ def process_SV(name):
 
 def plot_audano_curve(svs_per_sample, metadata, output):
     # TODO: Create Legend. Figure out how to better represent the superpopulations when number of samples increases
-    color_by_pop_1 = {'AFR': '#ffd845', 'AMR': '#710027', 'EAS': '#778500', 'EUR': '#018ead', 'SAS': '#c44cfd'}
-    color_by_pop_2 = {'AFR': '#e3b300', 'AMR': '#4f001b', 'EAS': '#535d00', 'EUR': '#016379', 'SAS': '#9b03e4'}
+    color_by_pop_1 = {'AFR': '#ffd845', 'AMR': '#bfbcb0', 'EAS': '#bfbcb0', 'EUR': '#bfbcb0', 'SAS': '#bfbcb0'}
     samples = list(svs_per_sample.keys())
     # create legend
     handles = []
     labels = []
-    color_index = 0
-    for pop,color in color_by_pop_1.items():
-        line = mpatches.Patch(color=color, label=pop)
-        handles.append(line)
-        labels.append(pop)
-        color_index += 1
-    handles.append(mpatches.Patch(color='black', label='shared sv sites'))
-    labels.append('shared sv sites')
+    handles.append([mpatches.Patch(facecolor=c, label='Singletons (AC = 1)') for c in ['#ffd845', '#bfbcb0']])
+    labels.append('Singletons (AC = 1)')
+    handles.append([mpatches.Patch(facecolor=c, label='Doubletons (AC = 2)') for c in ['#ffca04', '#96917d']])
+    labels.append('Doubletons (AC = 2)')
+    handles.append([mpatches.Patch(facecolor=c, label='Polymorphic SVs (AC > 2)') for c in ['#c29a00', '#96917d']])
+    labels.append('Polymorphic SVs (AC > 2)')
+    handles.append([mpatches.Patch(facecolor=c, label='Major SVs (AF >= 50%)') for c in ['#826600', '#514e42']])
+    labels.append('Major SVs (AF >= 50%)')
+    handles.append(mpatches.Patch(facecolor='red', label='Shared SVs (AF = 100%)'))
+    labels.append('Shared SVs (AF = 100%)')
     colors_1 = []
     colors_2 = []
+    colors_3 = []
+    colors_4 = []
     for s in samples:
-        colors_1.append(color_by_pop_1[metadata[metadata['Sample name'] == s]['Superpopulation code'].values[0]])
-        colors_2.append(color_by_pop_2[metadata[metadata['Sample name'] == s]['Superpopulation code'].values[0]])
-    count_cumulative_svs = []
+        colors_1.append('#ffd845' if metadata[metadata['Sample name'] == s]['Superpopulation code'].values[0] == 'AFR' else '#bfbcb0')
+        colors_2.append('#ffca04' if metadata[metadata['Sample name'] == s]['Superpopulation code'].values[0] == 'AFR' else '#9e9a87')
+        colors_3.append('#c29a00' if metadata[metadata['Sample name'] == s]['Superpopulation code'].values[0] == 'AFR' else '#7a7563')
+        colors_4.append('#826600' if metadata[metadata['Sample name'] == s]['Superpopulation code'].values[0] == 'AFR' else '#514e42')
     count_shared_svs = []
-    cumulative_svs = set()
-    shared_svs = set()
-    count = 0
-    for sample in samples:
-        sample_svs = set([sv.name for sv in svs_per_sample[sample] if int(sv.len) > 49])
-        cumulative_svs = cumulative_svs | sample_svs
-        if count == 0:
-            shared_svs = sample_svs
-        else:
-            shared_svs = shared_svs & sample_svs
-        count_cumulative_svs.append(len(list(cumulative_svs)))
-        count_shared_svs.append(len(list(shared_svs)))
-        count += 1
+    count_major_svs = []
+    count_polymorphic_svs = []
+    count_doubletons_svs = []
+    count_singleton_svs = []
+    sv_counter = Counter()
+    for n, sample in enumerate(samples):
+        sample_svs = [sv.name for sv in svs_per_sample[sample] if int(sv.len) > 49]
+        sv_counter.update(sample_svs)
+        shared_counter = 0
+        major_counter = 0
+        polymorphic_counter = 0
+        doubleton_counter = 0
+        singleton_counter = 0
+        for value in sv_counter.values():
+            if value == n+1:
+                singleton_counter += 1
+                doubleton_counter += 1
+                polymorphic_counter += 1
+                major_counter += 1
+                shared_counter += 1
+            elif value >= (n+1)/2:
+                singleton_counter += 1
+                doubleton_counter += 1
+                polymorphic_counter += 1
+                major_counter += 1
+            elif value > 2:
+                singleton_counter += 1
+                doubleton_counter += 1
+                polymorphic_counter += 1
+            elif value == 2:
+                singleton_counter += 1
+                doubleton_counter += 1
+            elif value == 1:
+                singleton_counter += 1
+        count_shared_svs.append(shared_counter)
+        count_major_svs.append(major_counter)
+        count_polymorphic_svs.append(polymorphic_counter)
+        count_doubletons_svs.append(doubleton_counter)
+        count_singleton_svs.append(singleton_counter)
+    
+    fig, ax = plt.subplots(figsize = (10,10))
+    ax.bar(samples, count_singleton_svs, color=colors_1)
+    ax.bar(samples, count_doubletons_svs, color=colors_2)
+    ax.bar(samples, count_polymorphic_svs, color=colors_3)
+    ax.bar(samples, count_major_svs, color=colors_4)
+    ax.bar(samples, count_shared_svs, color='red')
+    ax.grid(axis='y', color='grey', linestyle='--', linewidth=0.5, alpha=0.5)
+    plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
+    plt.ylabel("Cumulative SVs", fontsize=15)
+    plt.xlabel("Samples", fontsize=15)
+    plt.yticks(fontsize=10)
+    plt.figlegend(handles, labels, framealpha=1, frameon=True, loc='upper left', bbox_to_anchor=(0.1, 0.99), handler_map = {list: HandlerTuple(None)})
+    plt.tight_layout()
+    plt.savefig('%s/audano-curve.png'%(output))
+    plt.close()
+    '''
+    # Removing all the singletons and replotting.
+    singleton_svs_list = []
+    for sv_name, count in sv_counter.items():
+        if count == 1:
+            singleton_svs_list.append(sv_name)
+    
     fig, ax = plt.subplots(figsize = (20,10))
     ax.bar(samples, count_cumulative_svs, label='cumulative svs', color=colors_1)
     ax.bar(samples, count_shared_svs, label='shared svs', color='black')
@@ -59,39 +113,88 @@ def plot_audano_curve(svs_per_sample, metadata, output):
     plt.yticks(fontsize=10)
     plt.figlegend(handles, labels, framealpha=1, frameon=True, loc='upper left', bbox_to_anchor=(0.1, 0.9))
     plt.tight_layout()
-    plt.savefig('%s/audano-curve.png'%(output))
+    plt.savefig('%s/audano-curve_no-singletons.png'%(output))
     plt.close()
-
+    '''
+    
 def plot_sv_size_distribution(size_dist, output):
     
     def construct_plot(s, r, o, b, offset):
-        for sv_type in ['COMPLEX', 'DEL', 'INS']:
+        mean_list = []
+        sum_list = []
+        for sv_type in ['DEL', 'INS', 'COMPLEX']:
             data = s[sv_type]
             mean = []
+            sum = []
             stddev = []
             for bin_data in data:
                 tmp = np.array(bin_data)
                 mean.append(np.mean(tmp))
+                sum.append(np.sum(tmp))
                 stddev.append(tmp.std())
-            fig = plt.figure(figsize =(10, 10))
+            mean_list.append(mean)
+            sum_list.append(sum)
             x_postion = np.array(range(len(data)))
             x_labels = ((x_postion+1)*b)+offset
             width = 0.8
+            # Plotting average count over all samples
+            fig = plt.figure(figsize =(10, 10))
             plt.bar(x_postion, mean, width=width, edgecolor='black')
             #plt.errorbar(x_postion, mean, yerr=stddev, fmt='none', ecolor='Black', elinewidth=2)
             plt.xlabel('Size (in bp)', fontsize=15)
             plt.ylabel('Average Count per Sample', fontsize=15)
-            plt.xticks(x_postion+0.5, x_labels, rotation=60, fontsize=10)
+            plt.xticks(x_postion+0.5, x_labels, rotation=60, fontsize=5)
             plt.yticks(fontsize=10)
             plt.title(sv_type, fontsize=20)
             plt.tight_layout()
-            plt.savefig('%s/size-distribution_%s_%s.png'%(o, sv_type, r))
+            plt.savefig('%s/average_count-size-distribution_%s_%s.png'%(o, sv_type, r))
             plt.close()
+            # Plotting total count over all samples
+            fig = plt.figure(figsize =(10, 10))
+            plt.bar(x_postion, sum, width=width, edgecolor='black')
+            #plt.errorbar(x_postion, mean, yerr=stddev, fmt='none', ecolor='Black', elinewidth=2)
+            plt.xlabel('Size (in bp)', fontsize=15)
+            plt.ylabel('Total Count over all Samples', fontsize=15)
+            plt.xticks(x_postion+0.5, x_labels, rotation=60, fontsize=5)
+            plt.yticks(fontsize=10)
+            plt.title(sv_type, fontsize=20)
+            plt.tight_layout()
+            plt.savefig('%s/total_count-size-distribution_%s_%s.png'%(o, sv_type, r))
+            plt.close()
+        # Plotting Stacked Bar Plots
+        fig = plt.figure(figsize =(10, 10))
+        plt.bar(x_postion, mean_list[0], width=width, edgecolor='black', color='grey', label='Insertions')
+        plt.bar(x_postion, mean_list[1], width=width, bottom=mean_list[0], edgecolor='black', color='salmon', label='Deletions')
+        plt.bar(x_postion, mean_list[2], width=width, bottom=list(np.array(mean_list[0]) + np.array(mean_list[1])), edgecolor='black', color='greenyellow', label='Others')
+        #plt.errorbar(x_postion, mean, yerr=stddev, fmt='none', ecolor='Black', elinewidth=2)
+        plt.xlabel('Size (in bp)', fontsize=15)
+        plt.ylabel('Average Count per Sample', fontsize=15)
+        plt.xticks(x_postion+0.5, x_labels, rotation=60, fontsize=5)
+        plt.yticks(fontsize=10)
+        plt.title("Stacked Bar Plot", fontsize=20)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig('%s/stacked-average_count-size-distribution_%s.png'%(o, r))
+        plt.close()
+        fig = plt.figure(figsize =(10, 10))
+        plt.bar(x_postion, sum_list[0], width=width, edgecolor='black', color='grey', label='Insertions')
+        plt.bar(x_postion, sum_list[1], width=width, bottom=sum_list[0], edgecolor='black', color='salmon', label='Deletions')
+        plt.bar(x_postion, sum_list[2], width=width, bottom=list(np.array(sum_list[0]) + np.array(sum_list[1])), edgecolor='black', color='greenyellow', label='Others')
+        #plt.errorbar(x_postion, mean, yerr=stddev, fmt='none', ecolor='Black', elinewidth=2)
+        plt.xlabel('Size (in bp)', fontsize=15)
+        plt.ylabel('Total Count over all Samples', fontsize=15)
+        plt.xticks(x_postion+0.5, x_labels, rotation=60, fontsize=5)
+        plt.yticks(fontsize=10)
+        plt.title("Stacked Bar Plot", fontsize=20)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig('%s/stacked-total_count-size-distribution_%s.png'%(o, r))
+        plt.close()
     
-    binsize_1 = 25
-    binsize_2 = 250
-    binsize_3 = 2500
-    binsize_4 = 25000
+    binsize_1 = 10
+    binsize_2 = 100
+    binsize_3 = 1000
+    binsize_4 = 10000
     n_bins_1 = 1000//binsize_1
     n_bins_2 = (10000-1000)//binsize_2
     n_bins_3 = (100000-10000)//binsize_3
@@ -192,7 +295,10 @@ metadata = metadata[["Sample name", "Population code", "Superpopulation code"]]
 metadata = metadata[metadata["Sample name"].isin(vcf_samples)].sort_values(by=["Superpopulation code"], ascending=False)
 
 # sorted sample list required for Audano curve
-sorted_vcf_samples = list(metadata['Sample name'].values)
+non_AFR_samples = list(metadata[metadata["Superpopulation code"] != 'AFR']['Sample name'].values)
+AFR_samples = list(metadata[metadata["Superpopulation code"] == 'AFR']['Sample name'].values)
+random.shuffle(non_AFR_samples)
+sorted_vcf_samples = non_AFR_samples + AFR_samples
 
 # things to store
 svs_per_sample = {}
@@ -212,7 +318,7 @@ for variant in vcf:
     sv = SV(name, t, b, int(l))
     allele_count = 0
     for index, g in enumerate(variant.genotypes):
-        if g[0] != '.' and g[1] != '.':
+        if g[0] != -1:
             allele_count += g[0] + g[1]
         s = vcf_samples[index]
         if g[0]+g[1] >= 1:

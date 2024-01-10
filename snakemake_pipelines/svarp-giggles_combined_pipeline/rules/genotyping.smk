@@ -123,22 +123,21 @@ rule convert_multisample_vcf_biallelic:
         "cat {input.sample_vcf} | python scripts/convert-to-biallelic.py {input.biallelic_vcf} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' > {output}"
 
 
-# calculate SV count
+# calculate SV count box plots
 rule sv_count:
     input:
         metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
-        vcf=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-biallelic.vcf.gz',sample=samples),
-        script='scripts/sv_count.py'
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-biallelic.vcf.gz',
+        script='scripts/plot-sv-count-boxplot.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/het_count_population-wise.png',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/het_count_sample-wise.png',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hom_count_population-wise.png',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hom_count_sample-wise.png',
-        plot_data='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/sv_count.tsv'
+        plot_data='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/plot-sv-counts-boxplot.tsv'
     log:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/sv_count.log'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/plot-sv-counts-boxplot.log'
     params:
-        inp_vcfs=lambda wildcards, input: ','.join(input.vcf),
         out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/'
     conda:
         '../envs/basic.yml'
@@ -147,7 +146,34 @@ rule sv_count:
         runtime_hrs=24,
         runtime_min=1
     shell:
-        'python {input.script} -meta {input.metadata} -vcf {params.inp_vcfs} -output {params.out} 2> {log}'
+        'python {input.script} -meta {input.metadata} -vcf {input.vcf} -output {params.out} 2> {log}'
+
+
+# calculate SV length box plots
+rule sv_count:
+    input:
+        metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-biallelic.vcf.gz',
+        script='scripts/plot-sv-length-boxplot.py'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/het_count_population-wise.png',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/het_count_sample-wise.png',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hom_count_population-wise.png',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hom_count_sample-wise.png',
+        plot_data='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/plot-sv-length-boxplot.tsv'
+    log:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/plot-sv-length-boxplot.log'
+    params:
+        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/'
+    conda:
+        '../envs/basic.yml'
+    resources:
+        mem_total_mb=5000,
+        runtime_hrs=24,
+        runtime_min=1
+    shell:
+        'python {input.script} -meta {input.metadata} -vcf {input.vcf} -output {params.out} 2> {log}'
+
 
 # collect vcf stats
 rule collect_vcf_stats:
@@ -218,7 +244,10 @@ rule plot_qc_curves:
         script='scripts/plot-qc-curves.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/audano-curve.png',
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/size-distribution_{sv_type}_{range}', sv_type=['COMPLEX', 'DEL', 'INS'], range=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/average_count-size-distribution_{sv_type}_{range}', sv_type=['COMPLEX', 'DEL', 'INS'], range=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/total_count-size-distribution_{sv_type}_{range}', sv_type=['COMPLEX', 'DEL', 'INS'], range=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/stacked-average_count-size-distribution_{range}', range=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/stacked-total_count-size-distribution_{range}', range=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/rausch-curve_{v_set}-{v_type}.png', v_set = ['All', 'SV'], v_type = ['All', 'COMPLEX', 'DEL', 'INS'])
     params:
         out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/'
