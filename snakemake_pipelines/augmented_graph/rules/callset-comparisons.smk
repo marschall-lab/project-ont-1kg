@@ -1,3 +1,4 @@
+""" 
 include: './get-sample-list.smk'
 
 if config['pilot']:
@@ -144,10 +145,10 @@ rule intersect_HG01258_vcfs:
         names=sources,
         columns=["in_" + s for s in sources]
     shell:
-        """
+        '''
         python scripts/intersect_callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
         python scripts/plot-comparison-upset.py -t {output.tsv} -o {output.plot} -n {params.columns} &> {log.plot}
-        """
+        '''
 
 # intersecting the vcf files and creating upset plots for samples not in the graph
 rule intersect_outsample_vcfs:
@@ -167,11 +168,11 @@ rule intersect_outsample_vcfs:
         names=['nygc', 'pangenie', 'giggles'],
         columns=["in_" + s for s in ['nygc', 'pangenie', 'giggles']]
     shell:
-        """
+        '''
         python scripts/intersect_callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
         python scripts/plot-comparison-upset.py -t {output.tsv} -o {output.plot} -n {params.columns} &> {log.plot}
-        """
-""" 
+        '''
+
 ### truvari comparisons ###
 
 # compare giggles genotypes to pangenie genotypes
@@ -188,4 +189,5 @@ rule truvari_pangenie_genotypes_compare:
 
 
 
-# compare giggles genotypes to nygc panel """
+# compare giggles genotypes to nygc panel 
+"""
