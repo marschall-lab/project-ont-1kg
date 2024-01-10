@@ -4,7 +4,7 @@ import gzip
 import pandas as pd
 
 #Finding sample list used for 1000GP project by us
-path='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/hg38/'
+path='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/hg38/'
 ls_command = 'ls '+path
 process = subprocess.Popen(ls_command.split(), stdout=subprocess.PIPE)
 ls_out, ls_err = process.communicate()
