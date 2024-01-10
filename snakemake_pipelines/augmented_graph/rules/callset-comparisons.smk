@@ -12,7 +12,6 @@ chromosomes='chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr1
 sources='pangenie,giggles,pangenie_panel,giggles_panel'.split(',')
 
 wildcard_constraints:
-    callset='|'.join(callsets),
     chr='|'.join(chromosomes),
     sample='|'.join(samples),
     source='|'.join(sources)

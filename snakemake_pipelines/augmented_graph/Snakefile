@@ -6,7 +6,7 @@ include: 'rules/prepare-vcf.smk'
 include: 'rules/bubble-tagging.smk'
 include: 'rules/common-rules.smk'
 include: 'rules/get-sample-list.smk'
-#include: 'rules/self-genotyping.smk'
+include: 'rules/self-genotyping.smk'
 include: 'rules/truvari-comparisons.smk'
 include: 'rules/callset-comparisons.smk'
 
