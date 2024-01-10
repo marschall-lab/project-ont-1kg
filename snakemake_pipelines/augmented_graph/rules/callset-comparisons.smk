@@ -1,4 +1,4 @@
-""" 
+
 include: './get-sample-list.smk'
 
 if config['pilot']:
@@ -8,7 +8,8 @@ if config['pilot']:
 max_af = 1
 min_af = 0
 chromosomes='chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22,chrX'.split(',')
-sources='nygc,pangenie,giggles,pangenie_panel,giggles_panel'.split(',')
+# add nygc here when the liftover vcf is ready
+sources='pangenie,giggles,pangenie_panel,giggles_panel'.split(',')
 
 wildcard_constraints:
     callset='|'.join(callsets),
@@ -118,7 +119,7 @@ rule add_tags:
     input:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}.vcf.gz'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}-tagged.vcf'
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}-tagged.vcf')
     wildcard_constraints:
         callset = "|".join(callsets)
     conda:
@@ -153,7 +154,7 @@ rule intersect_HG01258_vcfs:
 # intersecting the vcf files and creating upset plots for samples not in the graph
 rule intersect_outsample_vcfs:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/callset-comparison/vcfs/{source}-{sample}-tagged.vcf', source=['nygc', 'pangenie', 'giggles'])
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/callset-comparison/vcfs/{source}-{sample}-tagged.vcf', source=['pangenie', 'giggles'])
     output:
         tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.tsv",
         vcf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.vcf",
@@ -172,7 +173,7 @@ rule intersect_outsample_vcfs:
         python scripts/intersect_callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
         python scripts/plot-comparison-upset.py -t {output.tsv} -o {output.plot} -n {params.columns} &> {log.plot}
         '''
-
+'''
 ### truvari comparisons ###
 
 # compare giggles genotypes to pangenie genotypes
@@ -190,4 +191,4 @@ rule truvari_pangenie_genotypes_compare:
 
 
 # compare giggles genotypes to nygc panel 
-"""
+'''

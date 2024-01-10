@@ -85,8 +85,8 @@ rule remove_untypable_callset:
         vcf = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/callset/subset/HG01258-biallelic_{min_af}-{max_af}.vcf",
         tmp = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/HG01258-untypable-ids.tsv"
     output:
-        vcf = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/callset/HG01258-callset_{min_af}-{max_af}_{vartype}.vcf.gz"),
-        tbi = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/callset/HG01258-callset_{min_af}-{max_af}_{vartype}.vcf.gz.tbi")
+        vcf = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/callset/HG01258-callset-typable_{min_af}-{max_af}_{vartype}.vcf.gz"),
+        tbi = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/callset/HG01258-callset-typable_{min_af}-{max_af}_{vartype}.vcf.gz.tbi")
     resources:
         mem_total_mb = 1000,
         runtime_hrs = 1
@@ -104,8 +104,8 @@ rule remove_untypable_truth:
         vcf = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/truth/HG01258-truth-biallelic_{min_af}-{max_af}.vcf",
         tmp = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/HG01258-untypable-ids.tsv"
     output:
-        vcf = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/truth/HG01258-truth_{min_af}-{max_af}_{vartype}.vcf.gz"),
-        tbi = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/truth/HG01258-truth_{min_af}-{max_af}_{vartype}.vcf.gz.tbi")
+        vcf = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/truth/HG01258-truth-typable_{min_af}-{max_af}_{vartype}.vcf.gz"),
+        tbi = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/truth/HG01258-truth-typable_{min_af}-{max_af}_{vartype}.vcf.gz.tbi")
     resources:
         mem_total_mb = 1000,
         runtime_hrs = 1
@@ -127,11 +127,11 @@ def region_to_bed(wildcards):
 # determine the variants that went into re-typing per category
 rule collect_typed_variants:
     input:
-        callset = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/panel/giggles-ready_biallelic.vcf.gz",
+        callset = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/truth/subset/giggles-ready_biallelic_{min_af}-{max_af}.vcf",
         regions= region_to_bed,
         ids="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/HG01258-untypable-ids.tsv"
     output:
-        "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/genotyped-ids/HG01258-{regions}-{vartype}.tsv"
+        "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/genotyped-ids-{representation}/HG01258-{regions}-{vartype}_{min_af}-{max_af}.tsv"
     conda:
         "../envs/basic.yml"
     resources:
@@ -142,18 +142,18 @@ rule collect_typed_variants:
 # compute concordances
 rule genotype_concordances:
     input:
-        callset = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/callset/HG01258-typable-{vartype}.vcf.gz",
-        baseline = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/truth/HG01258-truth-biallelic-{vartype}.vcf.gz",
+        callset = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/callset/HG01258-callset-typable_{min_af}-{max_af}_{vartype}.vcf.gz"",
+        baseline = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/truth/HG01258-truth-typable_{min_af}-{max_af}_{vartype}.vcf.gz",
         regions = region_to_bed,
-        typed_ids = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/genotyped-ids/HG01258-{regions}-{vartype}.tsv"
+        typed_ids = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/genotyped-ids-{representation}/HG01258-{regions}-{vartype}_{min_af}-{max_af}.tsv"
     output:
-        tmp_vcf1 = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance/{regions}_{vartype}_base.vcf"),
-        tmp_vcf2 = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance/{regions}_{vartype}_call.vcf"),
-        summary = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance/{regions}_{vartype}/summary.txt"
+        tmp_vcf1 = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance-{representation}/{regions}_{vartype}_{min_af}-{max_af}_base.vcf"),
+        tmp_vcf2 = temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance-{representation}/{regions}_{vartype}_{min_af}-{max_af}_call.vcf"),
+        summary = "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance-{representation}/{regions}_{vartype}_{min_af}-{max_af}/summary.txt"
     conda:
         "../envs/basic.yml"
     log:
-        "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance/{regions}_{vartype}/summary.log"
+        "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance-{representation}/{regions}_{vartype}_{min_af}-{max_af}/summary.log"
     resources:
         mem_total_mb = 400,
         runtime_hrs = 0,
@@ -168,12 +168,12 @@ rule genotype_concordances:
 # summarize concordance results
 rule summarize_concordance:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/self-genotyping/concordance/{regions}_{vartype}/summary.txt', regions=['biallelic', 'multiallelic'],vartype=['all', 'sv', 'large-deletion', 'large-insertion', 'large-complex', 'large-deletion-1000', 'large-insertion-1000', 'large-complex-1000', 'large-deletion-10000', 'large-insertion-10000', 'large-complex-10000', 'large-deletion-50000', 'large-insertion-50000', 'large-complex-50000', 'large-deletion-above50000', 'large-insertion-above50000', 'large-complex-above50000'])
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/self-genotyping/cooncordance-{representation}/{regions}_{vartype}_{{min_af}}-{{max_af}}/summary.txt', regions=['biallelic', 'multiallelic'],vartype=['all', 'sv', 'large-deletion', 'large-insertion', 'large-complex', 'large-deletion-1000', 'large-insertion-1000', 'large-complex-1000', 'large-deletion-10000', 'large-insertion-10000', 'large-complex-10000', 'large-deletion-50000', 'large-insertion-50000', 'large-complex-50000', 'large-deletion-above50000', 'large-insertion-above50000', 'large-complex-above50000'])
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance/summary.tsv'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance-{representation}/summary_{min_af}-{max_af}.tsv'
     params:
-        dir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance/',
-        vartype=','.join(['all', 'sv', 'indels', 'large-deletion', 'large-insertion', 'large-complex']),
+        dir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance-{representation}/',
+        vartype=','.join(['all', 'sv', 'large-deletion', 'large-insertion', 'large-complex', 'large-deletion-1000', 'large-insertion-1000', 'large-complex-1000', 'large-deletion-10000', 'large-insertion-10000', 'large-complex-10000', 'large-deletion-50000', 'large-insertion-50000', 'large-complex-50000', 'large-deletion-above50000', 'large-insertion-above50000', 'large-complex-above50000']),
         regions='biallelic,multiallelic'
     conda:
         "../envs/basic.yml"
