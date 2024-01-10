@@ -63,13 +63,17 @@ rule merge_vcf_to_multisample:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/genotypes/{sample}-multiallelic.vcf.gz', sample=samples)
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-multiallelic.vcf')
-    conda:
-        '../envs/basic.yml'
     resources:
         mem_total_mb=170000,
         runtime_hrs=24,
     shell:
-        'bcftools merge --no-version -o {output} {input}'
+        '''
+        set +u
+        source ~/.bashrc
+        conda activate base
+        set -u
+        bcftools merge --no-version -o {output} {input}
+        '''
 
 
 # get the biallelic multisample VCF
