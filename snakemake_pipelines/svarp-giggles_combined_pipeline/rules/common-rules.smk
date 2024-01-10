@@ -1,7 +1,7 @@
 #extract gaf (to make gaftools sort faster(?))
 rule decompress_gaf:
     input:
-        '/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/gaf/{sample}.gaf.gz'
+        '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/gaf-original-graph/{sample}.gaf.gz'
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/gaf/{sample}.gaf')
     resources:
@@ -26,7 +26,7 @@ rule compress_vcf:
 # extract fasta from cram
 rule cram_to_fasta:
     input:
-        cram='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/hg38/{sample}.hg38.cram',
+        cram='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/hg38/{sample}.hg38.cram',
         ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
     output:
         fasta=temp("/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/data/fasta/{sample}.fasta.gz"),
