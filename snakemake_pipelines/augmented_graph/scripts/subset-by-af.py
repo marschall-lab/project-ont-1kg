@@ -100,10 +100,10 @@ callset_reader = gzip.open(callset, 'rt')
 
 # Skipping lines until the records start
 for line in panel_reader:
-    if line[0:2] == "##":
+    if line[0:2] == "#C":
         break
 for line in callset_reader:
-    if line[0:2] == "##":
+    if line[0:2] == "#C":
         break
 
 while True:

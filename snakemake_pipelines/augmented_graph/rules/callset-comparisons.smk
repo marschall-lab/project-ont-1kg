@@ -143,6 +143,8 @@ rule intersect_HG01258_vcfs:
     params:
         names=sources,
         columns=["in_" + s for s in sources]
+    resources:
+        mem_total_mb=3000
     shell:
         '''
         python scripts/intersect-callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
@@ -164,8 +166,10 @@ rule intersect_outsample_vcfs:
         intersect="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.log",
         plot="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-plotting.log"
     params:
-        names=['nygc', 'pangenie', 'giggles'],
-        columns=["in_" + s for s in ['nygc', 'pangenie', 'giggles']]
+        names=['pangenie', 'giggles'],
+        columns=["in_" + s for s in ['pangenie', 'giggles']]
+    resources:
+        mem_total_mb=3000
     shell:
         '''
         python scripts/intersect-callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
