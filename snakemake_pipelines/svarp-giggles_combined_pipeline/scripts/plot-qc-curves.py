@@ -6,9 +6,7 @@ import pandas
 from cyvcf2 import VCF
 import argparse
 import numpy as np
-from scipy.stats import pearsonr
 from collections import namedtuple, Counter
-from operator import itemgetter
 
 def process_SV(name):
     _, _, type, bub, len = name.split('-')

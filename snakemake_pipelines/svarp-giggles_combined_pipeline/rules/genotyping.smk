@@ -140,7 +140,7 @@ rule sv_count:
     params:
         out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/'
     conda:
-        '../envs/basic.yml'
+        '../envs/cyvcf2.yml'
     resources:
         mem_total_mb=5000,
         runtime_hrs=24,
@@ -166,7 +166,7 @@ rule sv_length:
     params:
         out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/'
     conda:
-        '../envs/basic.yml'
+        '../envs/cyvcf2.yml'
     resources:
         mem_total_mb=5000,
         runtime_hrs=24,
@@ -252,7 +252,7 @@ rule plot_qc_curves:
     params:
         out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/qc/'
     conda:
-        '../envs/basic.yml'
+        '../envs/cyvcf2.yml'
     resources:
         mem_total_mb=5000
     shell:
