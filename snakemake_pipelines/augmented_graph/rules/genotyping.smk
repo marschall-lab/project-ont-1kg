@@ -64,8 +64,8 @@ rule merge_vcf_to_multisample:
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-multiallelic.vcf')
     resources:
-        mem_total_mb=170000,
-        runtime_hrs=24,
+        mem_total_mb=180000,
+        runtime_hrs=71,
     shell:
         '''
         set +u

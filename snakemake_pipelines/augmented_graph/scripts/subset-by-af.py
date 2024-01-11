@@ -134,5 +134,8 @@ while True:
         if af1 >= min_af and af1 <= max_af and af2 >= min_af and af2 <= max_af:
             is_pass = True
     if is_pass:
-        print(panel_line.strip(), file=output_panel)
-        print(callset_line.strip(), file=output_callset)
+        print(panel_line.strip(), file=panel_writer)
+        print(callset_line.strip(), file=callset_writer)
+
+panel_writer.close()
+callset_writer.clos()

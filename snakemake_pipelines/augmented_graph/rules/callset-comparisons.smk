@@ -144,7 +144,8 @@ rule intersect_HG01258_vcfs:
         names=sources,
         columns=["in_" + s for s in sources]
     resources:
-        mem_total_mb=3000
+        mem_total_mb=4000,
+        runtime_hrs=12
     shell:
         '''
         python scripts/intersect-callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
@@ -169,7 +170,8 @@ rule intersect_outsample_vcfs:
         names=['pangenie', 'giggles'],
         columns=["in_" + s for s in ['pangenie', 'giggles']]
     resources:
-        mem_total_mb=3000
+        mem_total_mb=4000,
+        runtime_hrs=12
     shell:
         '''
         python scripts/intersect-callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}

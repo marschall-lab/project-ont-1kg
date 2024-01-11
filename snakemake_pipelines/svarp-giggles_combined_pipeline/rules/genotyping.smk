@@ -102,8 +102,8 @@ rule merge_vcf_to_multisample:
     conda:
         '../envs/basic.yml'
     resources:
-        mem_total_mb=30000,
-        runtime_hrs=24,
+        mem_total_mb=180000,
+        runtime_hrs=71,
     shell:
         'bcftools merge --no-version -o {output} {input}'
 
