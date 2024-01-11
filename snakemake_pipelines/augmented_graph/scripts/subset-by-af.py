@@ -109,8 +109,8 @@ for line in callset_reader:
 while True:
     panel_line = panel_reader.readline()
     callset_line = callset_reader.readline()
-    if panel_line == None:
-        assert callset_line == None
+    if not panel_line:
+        assert not callset_line
         break
     assert panel_line[0] != "#"
     assert callset_line[0] != "#"

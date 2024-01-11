@@ -81,7 +81,7 @@ def plot_audano_curve(svs_per_sample, metadata, output):
         count_doubletons_svs.append(doubleton_counter)
         count_singleton_svs.append(singleton_counter)
     
-    fig, ax = plt.subplots(figsize = (10,10))
+    fig, ax = plt.subplots(figsize = (20,10))
     ax.bar(samples, count_singleton_svs, color=colors_1)
     ax.bar(samples, count_doubletons_svs, color=colors_2)
     ax.bar(samples, count_polymorphic_svs, color=colors_3)
@@ -116,7 +116,7 @@ def plot_audano_curve(svs_per_sample, metadata, output):
     plt.savefig('%s/audano-curve_no-singletons.png'%(output))
     plt.close()
     '''
-    
+
 def plot_sv_size_distribution(size_dist, output):
     
     def construct_plot(s, r, o, b, offset):
