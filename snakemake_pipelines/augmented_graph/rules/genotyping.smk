@@ -143,61 +143,6 @@ rule sv_length:
     shell:
         'python {input.script} -meta {input.metadata} -vcf {input.vcf} -output {params.out} 2> {log}'
 
-### TEMP RULES
-# calculate SV count
-rule sv_count_temp:
-    input:
-        metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
-        vcf=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/genotypes/{sample}-biallelic.vcf.gz',sample=samples),
-        script='scripts/sv_count.py'
-    output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts-boxplot/het_count_population-wise-temp.png',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts-boxplot/het_count_sample-wise-temp.png',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts-boxplot/hom_count_population-wise-temp.png',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts-boxplot/hom_count_sample-wise-temp.png',
-        plot_data='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts-boxplot/sv_count-temp.tsv'
-    log:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts-boxplot/sv_count-temp.log'
-    params:
-        inp_vcfs=lambda wildcards, input: ','.join(input.vcf),
-        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts-boxplot/'
-    conda:
-        '../envs/basic.yml'
-    resources:
-        mem_total_mb=5000,
-        runtime_hrs=24,
-        runtime_min=1
-    shell:
-        'python {input.script} -meta {input.metadata} -vcf {params.inp_vcfs} -output {params.out} 2> {log}'
-
-
-# calculate SV length and boxplot it
-rule sv_length_temp:
-    input:
-        metadata='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv',
-        vcf=expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/genotypes/{sample}-biallelic.vcf.gz',sample=samples),
-        script='scripts/sv_length.py'
-    output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-length-boxplot/het_length_population-wise-temp.png',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-length-boxplot/het_length_sample-wise-temp.png',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-length-boxplot/hom_length_population-wise-temp.png',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-length-boxplot/hom_length_sample-wise-temp.png',
-        plot_data='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-length-boxplot/sv_length-temp.tsv'
-    log:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-length-boxplot/sv_length-temp.log'
-    params:
-        inp_vcfs=lambda wildcards, input: ','.join(input.vcf),
-        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-length-boxplot/'
-    conda:
-        '../envs/basic.yml'
-    resources:
-        mem_total_mb=5000,
-        runtime_hrs=24,
-        runtime_min=1
-    shell:
-        'python {input.script} -meta {input.metadata} -vcf {params.inp_vcfs} -output {params.out} 2> {log}'
-
-
 # collect vcf stats
 rule collect_vcf_stats:
     input:
@@ -266,10 +211,10 @@ rule plot_qc_curves:
         script='scripts/plot-qc-curves.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/qc/audano-curve.png',
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/average_count-size-distribution_{sv_type}_{ranges}', sv_type=['COMPLEX', 'DEL', 'INS'], ranges=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/total_count-size-distribution_{sv_type}_{ranges}', sv_type=['COMPLEX', 'DEL', 'INS'], ranges=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/stacked-average_count-size-distribution_{ranges}', ranges=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/stacked-total_count-size-distribution_{ranges}', ranges=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/average_count-size-distribution_{sv_type}_{ranges}.png', sv_type=['COMPLEX', 'DEL', 'INS'], ranges=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/total_count-size-distribution_{sv_type}_{ranges}.png', sv_type=['COMPLEX', 'DEL', 'INS'], ranges=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/stacked-average_count-size-distribution_{ranges}.png', ranges=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/stacked-total_count-size-distribution_{ranges}.png', ranges=['0-1kbp', '1kbp-10kbp', '10kbp-100kbp', '100kbp-1Mbp']),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/plots/qc/rausch-curve_{v_set}-{v_type}.png', v_set = ['All', 'SV'], v_type = ['All', 'COMPLEX', 'DEL', 'INS'])
     params:
         out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/qc/'
