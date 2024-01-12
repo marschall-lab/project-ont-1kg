@@ -138,4 +138,4 @@ while True:
         print(callset_line.strip(), file=callset_writer)
 
 panel_writer.close()
-callset_writer.clos()
+callset_writer.close()
