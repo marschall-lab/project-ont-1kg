@@ -217,6 +217,7 @@ rule plot_statistics:
         table='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/variant-stats.tsv',
         script='scripts/plot-vcf-stats.py'
     output:
+        txt='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/output.stdout',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hwe.png',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/af.png',
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/plots/hwe.{pop}.png', pop=['AFR', 'AMR', 'EAS', 'EUR', 'SAS']),
@@ -234,7 +235,7 @@ rule plot_statistics:
     conda:
         '../envs/cyvcf2.yml'
     shell:
-        'python {input.script} -table {input.table} -output {params.outdir}'
+        'python {input.script} -table {input.table} -output {params.outdir} > {output.txt}'
 
 # plot sv discovery growth curve (audano curve), sv count distribution, and log(#svs) vs log(#ac) curve
 rule plot_qc_curves:
