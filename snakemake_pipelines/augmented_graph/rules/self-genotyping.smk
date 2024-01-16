@@ -155,7 +155,7 @@ rule genotype_concordances:
     log:
         "/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/self-genotyping/concordance-{representation}/{regions}_{vartype}_{min_af}-{max_af}/summary.log"
     resources:
-        mem_total_mb = 400,
+        mem_total_mb = 2000,
         runtime_hrs = 0,
         runtime_min = 40
     shell:
@@ -178,4 +178,4 @@ rule summarize_concordance:
     conda:
         "../envs/basic.yml"
     shell:
-        'python scripts/concordance-summary.py {params.dir} {params.regions} {params.vartype} > {output}'
+        'python scripts/concordance-summary.py {params.dir} {params.regions} {params.vartype} {wildcards.min_af} {wildcards.max_af} > {output}'

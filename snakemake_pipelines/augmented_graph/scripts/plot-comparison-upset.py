@@ -15,7 +15,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     df = pd.read_csv(args.table, sep='\t')
+    print(df)
     df = df[df[args.names].any(1)]
+    print(df)
+    
 
     numbers = defaultdict(lambda: defaultdict(lambda : 0))
 
@@ -29,7 +32,7 @@ if __name__ == '__main__':
         plt.close()
         
         # one plot per variant type
-        vartypes = ["INS", "DEL", "INV", "DUP", "INVDUP", "CNV", "DUP:TANDEM"]
+        vartypes = ["INS", "DEL", "OTHER"]
         for vartype in vartypes:
             fig = plt.figure()
             df_sub = df[df["var_type"] == vartype]
