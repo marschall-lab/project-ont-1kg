@@ -133,23 +133,38 @@ rule intersect_HG01258_vcfs:
     output:
         tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection.tsv",
         vcf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection.vcf",
-        pdf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection.pdf",
+        pdf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection.pdf"
+    conda:
+        "../envs/basic.yml"
+    log:
+        intersect="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection.log"
+    params:
+        names=sources
+    resources:
+        mem_total_mb=4000,
+        runtime_hrs=24
+    shell:
+        '''
+        python scripts/intersect-callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
+        '''
+
+rule plot_intersect_HG01258:
+    input:
+        tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection.tsv"
+    output:
         plot="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection-upsetplot.pdf"
     conda:
         "../envs/basic.yml"
     log:
-        intersect="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection.log",
         plot="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-plotting.log"
     params:
-        names=sources,
         columns=["in_" + s for s in sources]
     resources:
         mem_total_mb=4000,
-        runtime_hrs=12
+        runtime_hrs=2
     shell:
         '''
-        python scripts/intersect-callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
-        python scripts/plot-comparison-upset.py -t {output.tsv} -o {output.plot} -n {params.columns} &> {log.plot}
+        python scripts/plot-comparison-upset.py -t {input.tsv} -o {output.plot} -n {params.columns} &> {log.plot}
         '''
 
 # intersecting the vcf files and creating upset plots for samples not in the graph
@@ -159,24 +174,40 @@ rule intersect_outsample_vcfs:
     output:
         tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.tsv",
         vcf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.vcf",
-        pdf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.pdf",
+        pdf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.pdf"
+    conda:
+        "../envs/basic.yml"
+    log:
+        intersect="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.log"
+    params:
+        names=['pangenie', 'giggles']
+    resources:
+        mem_total_mb=4000,
+        runtime_hrs=24
+    shell:
+        '''
+        python scripts/intersect-callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
+        '''
+
+rule plot_intersect_outsample:
+    input:
+        tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.tsv"
+    output:
         plot="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection-upsetplot.pdf"
     conda:
         "../envs/basic.yml"
     log:
-        intersect="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.log",
         plot="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-plotting.log"
     params:
-        names=['pangenie', 'giggles'],
         columns=["in_" + s for s in ['pangenie', 'giggles']]
     resources:
         mem_total_mb=4000,
-        runtime_hrs=12
+        runtime_hrs=2
     shell:
         '''
-        python scripts/intersect-callsets.py intersect -c {input} -n {params.names} -t {output.tsv} -v {output.vcf} -p {output.pdf} &> {log.intersect}
-        python scripts/plot-comparison-upset.py -t {output.tsv} -o {output.plot} -n {params.columns} &> {log.plot}
+        python scripts/plot-comparison-upset.py -t {input.tsv} -o {output.plot} -n {params.columns} &> {log.plot}
         '''
+
 '''
 ### truvari comparisons ###
 

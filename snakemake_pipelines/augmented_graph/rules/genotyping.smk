@@ -158,7 +158,7 @@ rule collect_vcf_stats:
         '../envs/basic.yml'
     resources:
         mem_total_mb=5000,
-        runtime_hrs=18
+        runtime_hrs=71
     shell:
         'python {input.script} -meta {input.metadata} -panel {input.panel} -callset {input.callset} > {output} 2> {log}'
 

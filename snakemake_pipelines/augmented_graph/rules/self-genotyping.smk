@@ -137,7 +137,7 @@ rule collect_typed_variants:
     resources:
         mem_total_mb=5000
     shell:
-        "zcat {input.callset} | python scripts/skip-untypable.py {input.ids} | python scripts/extract-varianttype.py {wildcards.vartype} | bedtools intersect -header -a - -b {input.regions} -u -f 0.5 | python scripts/get_ids.py > {output}"
+        "cat {input.callset} | python scripts/skip-untypable.py {input.ids} | python scripts/extract-varianttype.py {wildcards.vartype} | bedtools intersect -header -a - -b {input.regions} -u -f 0.5 | python scripts/get_ids.py > {output}"
 
 # compute concordances
 rule genotype_concordances:
