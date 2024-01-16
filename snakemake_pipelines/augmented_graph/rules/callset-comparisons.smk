@@ -230,7 +230,7 @@ rule truvari_outsample_compare:
         mem_total_mb=4000,
         runtime_hrs=2
     shell:
-        'truvari bench -b {input.pangenie} -c {input.giggles} -o {params}'
+        'truvari bench -b {input.base} -c {input.call} -o {params}'
         
 # compare giggles genotypes to pangenie panel (only for HG01258)
 rule truvari_HG01258_compare:
