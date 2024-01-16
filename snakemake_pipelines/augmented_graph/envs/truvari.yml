@@ -5,7 +5,6 @@ channels:
 
 dependencies:
   - truvari
-  - bgzip
   - cyvcf2
   - tabix
   - bcftools
