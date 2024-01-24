@@ -214,7 +214,9 @@ rule plot_intersect_outsample:
 rule truvari_outsample_compare:
     input:
         call='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-{sample}.vcf.gz',
-        base='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}.vcf.gz'
+        call_tbi='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-{sample}.vcf.gz.tbi',
+        base='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}.vcf.gz',
+        base_tbi='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}.vcf.gz.tbi'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}/summary.json',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}/params.json',
@@ -236,7 +238,9 @@ rule truvari_outsample_compare:
 rule truvari_HG01258_compare:
     input:
         call='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-HG01258.vcf.gz',
-        base='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-HG01258.vcf.gz'
+        call_ind='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-HG01258.vcf.gz.tbi',
+        base='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-HG01258.vcf.gz',
+        base_ind='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-HG01258.vcf.gz.tbi'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}/summary.json',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}/params.json',
