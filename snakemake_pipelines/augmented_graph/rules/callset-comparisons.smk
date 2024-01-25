@@ -129,7 +129,7 @@ rule add_tags:
 # intersecting the vcf files and creating upset plots for HG01258 (sample in graph)
 rule intersect_HG01258_vcfs:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/callset-comparison/vcfs/{source}-HG01258-{min_af}-{max_af}-tagged.vcf', source=sources)
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/callset-comparison/vcfs/{source}-HG01258-{{min_af}}-{{max_af}}-tagged.vcf', source=sources)
     output:
         tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-{min_af}-{max_af}/intersection.tsv",
         vcf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-{min_af}-{max_af}/intersection.vcf",
@@ -170,7 +170,7 @@ rule plot_intersect_HG01258:
 # intersecting the vcf files and creating upset plots for samples not in the graph
 rule intersect_outsample_vcfs:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/callset-comparison/vcfs/{source}-{{sample}}-{min_af}-{max_af}-tagged.vcf', source=['pangenie', 'giggles'])
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/callset-comparison/vcfs/{source}-{{sample}}-{{min_af}}-{{max_af}}-tagged.vcf', source=['pangenie', 'giggles'])
     output:
         tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-{min_af}-{max_af}/intersection.tsv",
         vcf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-{min_af}-{max_af}/intersection.vcf",
