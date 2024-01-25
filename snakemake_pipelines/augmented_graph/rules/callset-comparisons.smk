@@ -54,7 +54,7 @@ rule pangenie_create_sample_vcf:
         '../envs/basic.yml'
     shell:
         '''
-        bcftools view {input} | bgzip -c > {output.vcf}
+        bcftools view --min-ac 1 {input} | bgzip -c > {output.vcf}
         tabix -p vcf {output.vcf}
         '''
 
@@ -69,7 +69,7 @@ rule giggles_create_sample_vcf:
         '../envs/basic.yml'
     shell:
         '''
-        bcftools view {input} | bgzip -c > {output.vcf}
+        bcftools view --min-ac 1 {input} | bgzip -c > {output.vcf}
         tabix -p vcf {output.vcf}
         '''
 
@@ -84,7 +84,7 @@ rule pangenie_panel_extract_sample:
         '../envs/basic.yml'
     shell:
         '''
-        bcftools view --samples HG01258 {input} | bgzip -c > {output.vcf}
+        bcftools view --samples HG01258 {input} | bcftools view --min-ac 1 | bgzip -c > {output.vcf}
         tabix -p vcf {output.vcf}
         '''
 
@@ -99,7 +99,7 @@ rule giggles_panel_extract_sample:
         '../envs/basic.yml'
     shell:
         '''
-        bcftools view --samples HG01258 {input} | bgzip -c > {output.vcf}
+        bcftools view --samples HG01258 {input} | bcftools view --min-ac 1 | bgzip -c > {output.vcf}
         tabix -p vcf {output.vcf}
         '''
 
@@ -119,25 +119,25 @@ rule add_tags:
     input:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}.vcf.gz'
     output:
-        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}-tagged.vcf')
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}-{min_af}-{max_af}-tagged.vcf')
     conda:
         "../envs/basic.yml"
     shell:
-        "zcat {input} | python scripts/set-pass.py | bcftools view -f PASS --min-af {min_af} --max-af {max_af} | python3 scripts/add-svtags.py > {output}"
+        "zcat {input} | python scripts/set-pass.py | bcftools view -f PASS --min-af {wildcards.min_af} --max-af {wildcards.max_af} | python3 scripts/add-svtags.py > {output}"
 
 
 # intersecting the vcf files and creating upset plots for HG01258 (sample in graph)
 rule intersect_HG01258_vcfs:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/callset-comparison/vcfs/{source}-HG01258-tagged.vcf', source=sources)
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/callset-comparison/vcfs/{source}-HG01258-{min_af}-{max_af}-tagged.vcf', source=sources)
     output:
-        tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection.tsv",
-        vcf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection.vcf",
-        pdf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection.pdf"
+        tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-{min_af}-{max_af}/intersection.tsv",
+        vcf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-{min_af}-{max_af}/intersection.vcf",
+        pdf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-{min_af}-{max_af}/intersection.pdf"
     conda:
         "../envs/basic.yml"
     log:
-        intersect="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection.log"
+        intersect="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-{min_af}-{max_af}/intersection.log"
     params:
         names=sources
     resources:
@@ -150,13 +150,13 @@ rule intersect_HG01258_vcfs:
 
 rule plot_intersect_HG01258:
     input:
-        tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection.tsv"
+        tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-{min_af}-{max_af}/intersection.tsv"
     output:
-        plot="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-intersection-upsetplot.pdf"
+        plot="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-{min_af}-{max_af}/intersection-upsetplot.pdf"
     conda:
         "../envs/basic.yml"
     log:
-        plot="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-plotting.log"
+        plot="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-{min_af}-{max_af}/plotting.log"
     params:
         columns=["in_" + s for s in sources]
     resources:
@@ -170,15 +170,15 @@ rule plot_intersect_HG01258:
 # intersecting the vcf files and creating upset plots for samples not in the graph
 rule intersect_outsample_vcfs:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/callset-comparison/vcfs/{source}-{{sample}}-tagged.vcf', source=['pangenie', 'giggles'])
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{{callset}}/callset-comparison/vcfs/{source}-{{sample}}-{min_af}-{max_af}-tagged.vcf', source=['pangenie', 'giggles'])
     output:
-        tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.tsv",
-        vcf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.vcf",
-        pdf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.pdf"
+        tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-{min_af}-{max_af}/intersection.tsv",
+        vcf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-{min_af}-{max_af}/intersection.vcf",
+        pdf="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-{min_af}-{max_af}/intersection.pdf"
     conda:
         "../envs/basic.yml"
     log:
-        intersect="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.log"
+        intersect="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-{min_af}-{max_af}/intersection.log"
     params:
         names=['pangenie', 'giggles']
     resources:
@@ -191,13 +191,13 @@ rule intersect_outsample_vcfs:
 
 rule plot_intersect_outsample:
     input:
-        tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection.tsv"
+        tsv="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-{min_af}-{max_af}/intersection.tsv"
     output:
-        plot="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-intersection-upsetplot.pdf"
+        plot="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-{min_af}-{max_af}/intersection-upsetplot.pdf"
     conda:
         "../envs/basic.yml"
     log:
-        plot="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-plotting.log"
+        plot="/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-{min_af}-{max_af}/plotting.log"
     params:
         columns=["in_" + s for s in ['pangenie', 'giggles']]
     resources:
@@ -213,48 +213,54 @@ rule plot_intersect_outsample:
 # compare giggles genotypes to pangenie genotypes
 rule truvari_outsample_compare:
     input:
-        call='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-{sample}.vcf.gz',
-        call_tbi='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-{sample}.vcf.gz.tbi',
-        base='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}.vcf.gz',
-        base_tbi='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}.vcf.gz.tbi'
+        call='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-{sample}-{min_af}-{max_af}-tagged.vcf',
+        base='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}-{min_af}-{max_af}-tagged.vcf'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}/summary.json',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}/params.json',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}/tp-base.vcf.gz',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}/tp-comp.vcf.gz',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}/fp.vcf.gz',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}/fn.vcf.gz'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}-{min_af}-{max_af}/summary.json',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}-{min_af}-{max_af}/params.json',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}-{min_af}-{max_af}/tp-base.vcf.gz',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}-{min_af}-{max_af}/tp-comp.vcf.gz',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}-{min_af}-{max_af}/fp.vcf.gz',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}-{min_af}-{max_af}/fn.vcf.gz'
     params:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}/'
+        folder='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}-{min_af}-{max_af}',
+        tmp='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}-{min_af}-{max_af}/tmp'
     conda:
         '../envs/truvari.yml'
     resources:
         mem_total_mb=4000,
         runtime_hrs=2
     shell:
-        'truvari bench -b {input.base} -c {input.call} -o {params}'
+        '''
+        truvari bench -b {input.base} -c {input.call} -o {params.tmp}
+        mv {params.tmp}/* {params.folder}/
+        rm {params.tmp}
+        '''
         
 # compare giggles genotypes to pangenie panel (only for HG01258)
 rule truvari_HG01258_compare:
     input:
-        call='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-HG01258.vcf.gz',
-        call_ind='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-HG01258.vcf.gz.tbi',
-        base='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-HG01258.vcf.gz',
-        base_ind='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-HG01258.vcf.gz.tbi'
+        call='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-HG01258-{min_af}-{max_af}-tagged.vcf',
+        base='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-HG01258-{min_af}-{max_af}-tagged.vcf'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}/summary.json',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}/params.json',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}/tp-base.vcf.gz',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}/tp-comp.vcf.gz',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}/fp.vcf.gz',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}/fn.vcf.gz'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}-{min_af}-{max_af}/summary.json',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}-{min_af}-{max_af}/params.json',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}-{min_af}-{max_af}/tp-base.vcf.gz',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}-{min_af}-{max_af}/tp-comp.vcf.gz',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}-{min_af}-{max_af}/fp.vcf.gz',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}-{min_af}-{max_af}/fn.vcf.gz'
     params:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}/'
+        folder='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}-{min_af}-{max_af}/',
+        tmp='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}-{min_af}-{max_af}/tmp'
     conda:
         '../envs/truvari.yml'
     resources:
         mem_total_mb=4000,
         runtime_hrs=2
     shell:
-        'truvari bench -b {input.base} -c {input.call} -o {params}'
+        '''
+        truvari bench -b {input.base} -c {input.call} -o {params.tmp}
+        mv {params.tmp}/* {params.folder}/
+        rm {params.tmp}
+        '''
 
