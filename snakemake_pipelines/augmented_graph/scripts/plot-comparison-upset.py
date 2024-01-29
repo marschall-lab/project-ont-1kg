@@ -15,9 +15,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     df = pd.read_csv(args.table, sep='\t')
-    print(df)
     df = df[df[args.names].any(1)]
-    print(df)
     
 
     numbers = defaultdict(lambda: defaultdict(lambda : 0))
@@ -43,10 +41,12 @@ if __name__ == '__main__':
             pdf.savefig()
             plt.close()
     
-            min_len = [0, 100, 1000, 10000, 100000, 1000000]
+            min_len = [0, 1000, 10000, 100000, 1000000]
             for i in range(len(min_len)-1):
                 df_sub = df[(df["var_type"] == vartype) & (df["length"] >= min_len[i]) & (df["length"] < min_len[i+1])] 
                 variants = df_sub.groupby(by=args.names).size()
+                if df_sub.size == 0:
+                    continue
                 upsetplot.plot(variants, sort_by='cardinality', show_counts='%d')
                 plt.suptitle(vartype + ' [' + str(min_len[i]) + ',' + str(min_len[i+1]) + ')')
                 fig.tight_layout()

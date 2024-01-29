@@ -234,7 +234,7 @@ rule truvari_outsample_compare:
         '''
         truvari bench -b {input.base} -c {input.call} -o {params.tmp}
         mv {params.tmp}/* {params.folder}/
-        rm {params.tmp}
+        rm -r {params.tmp}
         '''
         
 # compare giggles genotypes to pangenie panel (only for HG01258)
@@ -261,6 +261,6 @@ rule truvari_HG01258_compare:
         '''
         truvari bench -b {input.base} -c {input.call} -o {params.tmp}
         mv {params.tmp}/* {params.folder}/
-        rm {params.tmp}
+        rm -r {params.tmp}
         '''
 
