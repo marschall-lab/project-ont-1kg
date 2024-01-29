@@ -213,8 +213,8 @@ rule plot_intersect_outsample:
 # compare giggles genotypes to pangenie genotypes
 rule truvari_outsample_compare:
     input:
-        call='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-{sample}-{min_af}-{max_af}-tagged.vcf',
-        base='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}-{min_af}-{max_af}-tagged.vcf'
+        call='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-{sample}-{min_af}-{max_af}-tagged.vcf.gz',
+        base='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}-{min_af}-{max_af}-tagged.vcf.gz'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}-{min_af}-{max_af}/summary.json',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}-{min_af}-{max_af}/params.json',
@@ -240,8 +240,8 @@ rule truvari_outsample_compare:
 # compare giggles genotypes to pangenie panel (only for HG01258)
 rule truvari_HG01258_compare:
     input:
-        call='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-HG01258-{min_af}-{max_af}-tagged.vcf',
-        base='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-HG01258-{min_af}-{max_af}-tagged.vcf'
+        call='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-HG01258-{min_af}-{max_af}-tagged.vcf.gz',
+        base='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-HG01258-{min_af}-{max_af}-tagged.vcf.gz'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}-{min_af}-{max_af}/summary.json',
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/in-graph/HG01258-{source}-{min_af}-{max_af}/params.json',
