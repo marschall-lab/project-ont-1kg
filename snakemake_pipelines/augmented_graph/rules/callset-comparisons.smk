@@ -104,6 +104,7 @@ rule giggles_panel_extract_sample:
         '''
 
 # basic counting stats of the vcfs
+# set-pass also filters out X and Y chromosomes
 rule vcf_stats:
     input:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}.vcf.gz'
@@ -117,13 +118,14 @@ rule vcf_stats:
 # add tag of variant types
 rule add_tags:
     input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}.vcf.gz'
+        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}.vcf.gz',
+        ref_index='/gpfs/project/projects/medbioinf/users/spani/files/fasta/HPRC/reference/chm13v2.0_maskedY_rCRS.fa.gz.fai'
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}-{min_af}-{max_af}-tagged.vcf')
     conda:
         "../envs/basic.yml"
     shell:
-        "zcat {input} | python scripts/set-pass.py | bcftools view -f PASS --min-af {wildcards.min_af} --max-af {wildcards.max_af} | python3 scripts/add-svtags.py > {output}"
+        "zcat {input} | python scripts/set-pass.py | bcftools view -f PASS --min-af {wildcards.min_af} --max-af {wildcards.max_af} | python scripts/add-svtags.py | python scripts/truvari-add-contig-len.py {input.ref_index} > {output}"
 
 
 # intersecting the vcf files and creating upset plots for HG01258 (sample in graph)
