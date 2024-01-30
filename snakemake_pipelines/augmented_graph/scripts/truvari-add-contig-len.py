@@ -26,7 +26,6 @@ for line in sys.stdin:
             if not 'length' in f:
                 assert chrom in chrom_to_length
                 line = "##contig=<ID=" + chrom + ',length=' + chrom_to_length[chrom] + '>'
-            continue
         print(line.strip())
         continue
     if line.startswith('#'):
