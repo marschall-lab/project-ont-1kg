@@ -125,7 +125,7 @@ rule add_tags:
     conda:
         "../envs/basic.yml"
     shell:
-        "zcat {input} | python scripts/set-pass.py | bcftools view -f PASS --min-af {wildcards.min_af} --max-af {wildcards.max_af} | python scripts/add-svtags.py | python scripts/truvari-add-contig-len.py {input.ref_index} > {output}"
+        "zcat {input.vcf} | python scripts/set-pass.py | bcftools view -f PASS --min-af {wildcards.min_af} --max-af {wildcards.max_af} | python scripts/add-svtags.py | python scripts/truvari-add-contig-len.py {input.ref_index} > {output}"
 
 
 # intersecting the vcf files and creating upset plots for HG01258 (sample in graph)
