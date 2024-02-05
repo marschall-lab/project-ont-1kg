@@ -55,7 +55,7 @@ rule extract_samples:
         mem_per_cpu_mb=lambda wildcards, attempt: 512 * attempt
     shell:
         '''
-        bcftools view -s {wildcard.sample} {input.vcf} | bgzip > {output.vcf}
+        bcftools view -s {wildcards.sample} {input.vcf} | bgzip > {output.vcf}
         bcftools index --tbi -o {output.vcf_index} {output.vcf}
         '''
 
@@ -123,11 +123,10 @@ rule extract_phased_single:
     resources:
         runtime_hrs=lambda wildcards, attempt: 3 * attempt,
         runtime_min=0,
-        mem_total_mb=lambda wildcards, attempt: 512 * attempt,
-        mem_per_cpu_mb=lambda wildcards, attempt: 512 * attempt
+        mem_total_mb=lambda wildcards, attempt: 2048 * attempt,
     shell:
         '''
-        bcftools view -s {wildcard.sample} -f .,PASS --trim-alt-alleles -c 1 {input.stat} | bcftools annotate -x INFO,FORMAT > {output.stat}
+        bcftools view -s {wildcards.sample} -f .,PASS --trim-alt-alleles -c 1 {input.stat} | bcftools annotate -x INFO,FORMAT > {output.stat}
         '''
 
 rule concat_stat_phased_single:
@@ -141,7 +140,6 @@ rule concat_stat_phased_single:
         runtime_hrs=lambda wildcards, attempt: attempt,
         runtime_min=0,
         mem_total_mb=lambda wildcards, attempt: 2048 * attempt,
-        mem_per_cpu_mb=lambda wildcards, attempt: 2048 * attempt
     shell:
         '''
         bcftools concat -o {output} {input}
