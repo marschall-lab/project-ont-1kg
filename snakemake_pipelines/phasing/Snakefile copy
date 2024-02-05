@@ -1,0 +1,250 @@
+configfile: 'config.yaml'
+include: 'rules/get-sample-list.smk'
+include: 'rules/no-trio-based-comparison.smk'
+include: 'rules/trio-based-comparison.smk'
+include: 'rules/no-trio-based-phasing.smk'
+include: 'rules/trio-based-phasing.smk'
+include: 'rules/prepare-nygc-genotypes.smk'
+
+experiments=['longread', 'trio_phase', 'longread_trio_phase']
+varianttype=['snp']
+flag_indel={'snp': '', 'indel': '--indels'}
+wh_compare_flag={'snp': '--only-snvs', 'indel': ''}
+
+
+rule all:
+    input:
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/comparision/{sample}/{vtype}/multiway.tsv', sample=config['samples'], vtype=varianttype)
+        
+rule extract_family:
+    input:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/genotyped/20201028_CCDG_14151_B01_GRM_WGS_2020-08-05_{chr}.recalibrated_variants.vcf.gz'
+    params:
+        samples=lambda wildcards: ','.join((wildcards.family).split('_'))
+    output:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/genotyped/familywise/{family}/{chr}.vcf.gz',
+        vcf_index='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/genotyped/familywise/{family}/{chr}.vcf.gz.tbi'
+    conda:
+        'envs/preprocessing.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 5 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 512 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 512 * attempt
+    shell:
+        '''
+        bcftools view -s {params.samples} {input.vcf} | bgzip > {output.vcf}
+        bcftools index --tbi -o {output.vcf_index} {output.vcf}
+        '''
+
+rule filter_vcf:
+    input:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/genotyped/familywise/{family}/{chr}.vcf.gz',
+    output:
+        vcf='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/genotyped/familywise/{family}/{chr}_filtered.vcf'
+    conda:
+        'envs/preprocessing.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 512 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 512 * attempt
+    shell:
+        '''
+        bcftools view -f .,PASS --trim-alt-alleles -c 1 {input.vcf} | bcftools annotate -x INFO,FORMAT > {output.vcf}
+        '''
+
+rule extract_phased:
+    input:
+        stat='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/phased/1kGP_high_coverage_Illumina.{chr}.filtered.SNV_INDEL_SV_phased_panel.vcf.gz'
+    params:
+        samples=lambda wildcards: ','.join((wildcards.family).split('_'))
+    output:
+        stat=temp('/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/phased/familywise/{family}/{chr}_filtered.vcf')
+    conda:
+        'envs/preprocessing.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 3 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 512 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 512 * attempt
+    shell:
+        '''
+        bcftools view -s {params.samples} -f .,PASS --trim-alt-alleles -c 1 {input.stat} | bcftools annotate -x INFO,FORMAT > {output.stat}
+        '''
+
+rule concat_stat_phased:
+    input:
+        expand('/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/phased/familywise/{{family}}/{chr}_filtered.vcf', chr=config['chromosome'])
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/phased/familywise/{family}/filtered.vcf'
+    conda:
+        'envs/preprocessing.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 2048 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 2048 * attempt
+    shell:
+        '''
+        bcftools concat -o {output} {input}
+        '''
+
+rule phase_sample_longread:
+    input:
+        vcf=lambda wildcards: '/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/genotyped/familywise/'+ped_dict[wildcards.sample].name()+'/{chr}_filtered.vcf',
+        bam='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/cram/{sample}/alignments/{sample}.cram',
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
+    output:
+        vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/sample_longread/{sample}/{chr}_{vtype}.vcf'),
+        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/outfiles/sample_longread/{sample}/{chr}_{vtype}.out'
+    params:
+        indel_flag=lambda wildcards: flag_indel[wildcards.vtype]
+    conda:
+        'envs/whatshap.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 2048 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 2048 * attempt
+    shell:
+        '''
+        whatshap phase -o {output.vcf} --chromosome {wildcards.chr} --sample {wildcards.sample} {params.indel_flag} -r {input.ref} {input.vcf} {input.bam} 2>&1 | tee {output.out} 
+        '''
+
+rule concat_longread:
+    input:
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/sample_longread/{{sample}}/{chr}_{{vtype}}.vcf', chr=config['chromosome'])
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/sample_longread/{sample}/{vtype}.vcf'
+    wildcard_constraints:
+        chr='[c][h][r][0-9X]{1,2}',
+        sample='(?:NA|HG)\d{5}',
+        vtype='[a-z]{3,5}'
+    conda:
+        'envs/preprocessing.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 3 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 512 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 512 * attempt
+    shell:
+        '''
+        bcftools concat -o {output} {input}
+        '''
+
+rule phase_trio:
+    input:
+        vcf=lambda wildcards: '/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/genotyped/familywise/'+ped_dict[wildcards.sample].name()+'/{chr}_filtered.vcf',
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta',
+        ped='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/pedigree.ped'
+    output:
+        vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/sample_trio_phase/{sample}/{chr}_{vtype}.vcf'),
+        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/outfiles/sample_trio_phase/{sample}/{chr}_{vtype}.out'
+    conda:
+        'envs/whatshap.yaml'
+    params:
+        indel_flag=lambda wildcards: flag_indel[wildcards.vtype]
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 2,
+        mem_total_mb=lambda wildcards, attempt: 2048 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 2048 * attempt
+    shell:
+        '''
+        whatshap phase -o {output.vcf} --chromosome {wildcards.chr} {params.indel_flag} -r {input.ref} --ped {input.ped} {input.vcf} 2>&1 | tee {output.out} 
+        '''
+
+rule concat_trio_phase:
+    input:
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/sample_trio_phase/{{sample}}/{chr}_{{vtype}}.vcf', chr=config['chromosome'])
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/sample_trio_phase/{sample}/{vtype}.vcf'
+    wildcard_constraints:
+        chr='[c][h][r][0-9X]{1,2}',
+        sample='(?:NA|HG)\d{5}',
+        vtype='[a-z]{3,5}'
+    conda:
+        'envs/preprocessing.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 3 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 512 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 512 * attempt
+    shell:
+        '''
+        bcftools concat -o {output} {input}
+        '''
+
+rule longread_trio_phase:
+    input:
+        vcf=lambda wildcards: '/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/genotyped/familywise/'+ped_dict[wildcards.sample].name()+'/{chr}_filtered.vcf',
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta',
+        bam='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/cram/{sample}/alignments/{sample}.cram',
+        ped='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/pedigree.ped'
+    output:
+        vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/sample_longread_trio_phase/{sample}/{chr}_{vtype}.vcf'),
+        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/outfiles/sample_longread_trio_phase/{sample}/{chr}_{vtype}.out'
+    conda:
+        'envs/whatshap.yaml'
+    params:
+        indel_flag=lambda wildcards: flag_indel[wildcards.vtype]
+    resources:
+        runtime_hrs=lambda wildcards, attempt: attempt,
+        mem_total_mb=lambda wildcards, attempt: 2048 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 2048 * attempt
+    shell:
+        '''
+        whatshap phase -o {output.vcf} --chromosome {wildcards.chr} {params.indel_flag} -r {input.ref} --ped {input.ped} {input.vcf} {input.bam} 2>&1 | tee {output.out} 
+        '''
+
+rule concat_longread_trio:
+    input:
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/sample_longread_trio_phase/{{sample}}/{chr}_{{vtype}}.vcf', chr=config['chromosome'])
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/sample_longread_trio_phase/{sample}/{vtype}.vcf'
+    wildcard_constraints:
+        chr='[c][h][r][0-9X]{1,2}',
+        sample='(?:NA|HG)\d{5}',
+        vtype='[a-z]{3,5}'
+    conda:
+        'envs/preprocessing.yaml'
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 3 * attempt,
+        runtime_min=0,
+        mem_total_mb=lambda wildcards, attempt: 512 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 512 * attempt
+    shell:
+        '''
+        bcftools concat -o {output} {input}
+        '''
+
+rule comparision:
+    input:
+        exp1='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/sample_trio_phase/{sample}/{vtype}.vcf',
+        exp3='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/sample_longread_trio_phase/{sample}/{vtype}.vcf',
+        exp2='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/sample_longread/{sample}/{vtype}.vcf',
+        stat=lambda wildcards: '/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/phased/familywise/'+ped_dict[wildcards.sample].name()+'/filtered.vcf'
+    output:
+        comp12='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/comparision/{sample}/{vtype}/trio_longread.txt',
+        comp13='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/comparision/{sample}/{vtype}/trio_triolongread.txt',
+        comp1stat='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/comparision/{sample}/{vtype}/trio_stat.txt',
+        pairwise='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/comparision/{sample}/{vtype}/pairwise.tsv',
+        multiway='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/comparision/{sample}/{vtype}/multiway.tsv'
+    wildcard_constraints:
+        sample='(?:NA|HG)\d{5}',
+        vtype='[a-z]{3,5}'
+    conda:
+        'envs/whatshap.yaml'
+    params:
+        indel_flag=lambda wildcards: wh_compare_flag[wildcards.vtype]
+    resources:
+        runtime_hrs=lambda wildcards, attempt: 3 * attempt,
+        mem_total_mb=lambda wildcards, attempt: 10240 * attempt,
+        mem_per_cpu_mb=lambda wildcards, attempt: 10240 * attempt
+    shell:
+        '''
+        whatshap compare --sample {wildcards.sample} {params.indel_flag} --names trio,longread {input.exp1} {input.exp2} > {output.comp12}
+        whatshap compare --sample {wildcards.sample} {params.indel_flag} --names trio,trio-longread {input.exp1} {input.exp3} > {output.comp13}
+        whatshap compare --sample {wildcards.sample} {params.indel_flag} --names trio,nygc {input.exp1} {input.stat} > {output.comp1stat}
+        whatshap compare --sample {wildcards.sample} {params.indel_flag} --names trio,longread,trio-longread,nygc --tsv-pairwise {output.pairwise} --tsv-multiway {output.multiway} {input.exp1} {input.exp2} {input.exp3} {input.stat}
+        '''

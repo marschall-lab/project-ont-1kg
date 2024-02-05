@@ -1,4 +1,4 @@
-configfile: 'config.yaml'
+configfile: './config.yaml'
 flag_indel={'snp': '', 'indel': '--indels'}
 wh_compare_flag={'snp': '--only-snvs', 'indel': ''}
 
