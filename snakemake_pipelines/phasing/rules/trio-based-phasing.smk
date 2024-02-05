@@ -10,7 +10,7 @@ rule phase_trio:
         vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/trio_phase/{family}/{chr}_{vtype}.vcf'),
         out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/trio_phase/{family}/{chr}_{vtype}.out'
     conda:
-        'envs/whatshap.yaml'
+        '../envs/whatshap.yaml'
     params:
         indel_flag=lambda wildcards: flag_indel[wildcards.vtype]
     resources:
@@ -32,7 +32,7 @@ rule concat_trio_phase:
         sample='(?:NA|HG)\d{5}',
         vtype='[a-z]{3,5}'
     conda:
-        'envs/preprocessing.yaml'
+        '../envs/preprocessing.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 3 * attempt,
         runtime_min=0,
@@ -53,7 +53,7 @@ rule longread_trio_phase:
         vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread_trio_phase/{family}/{chr}_{vtype}.vcf'),
         out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread_trio_phase/{family}/{chr}_{vtype}.out'
     conda:
-        'envs/whatshap.yaml'
+        '../envs/whatshap.yaml'
     params:
         indel_flag=lambda wildcards: flag_indel[wildcards.vtype]
     resources:
@@ -75,7 +75,7 @@ rule concat_longread_trio:
         sample='(?:NA|HG)\d{5}',
         vtype='[a-z]{3,5}'
     conda:
-        'envs/preprocessing.yaml'
+        '../envs/preprocessing.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 3 * attempt,
         runtime_min=0,

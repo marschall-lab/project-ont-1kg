@@ -12,6 +12,8 @@ varianttype=['snp']
 flag_indel={'snp': '', 'indel': '--indels'}
 wh_compare_flag={'snp': '--only-snvs', 'indel': ''}
 
+wildcard_constraints:
+    sample='|'.join(samples)
 
 rule all:
     input:

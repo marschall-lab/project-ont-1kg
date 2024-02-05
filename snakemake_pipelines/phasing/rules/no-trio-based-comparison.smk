@@ -12,7 +12,7 @@ rule no_trio_comparision:
         sample='(?:NA|HG)\d{5}',
         vtype='[a-z]{3,5}'
     conda:
-        'envs/whatshap.yaml'
+        '../envs/whatshap.yaml'
     params:
         indel_flag=lambda wildcards: wh_compare_flag[wildcards.vtype]
     resources:

@@ -12,7 +12,7 @@ rule phase_sample_longread:
     params:
         indel_flag=lambda wildcards: flag_indel[wildcards.vtype]
     conda:
-        'envs/whatshap.yaml'
+        '../envs/whatshap.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: attempt,
         runtime_min=0,
@@ -33,7 +33,7 @@ rule concat_longread:
         sample='(?:NA|HG)\d{5}',
         vtype='[a-z]{3,5}'
     conda:
-        'envs/preprocessing.yaml'
+        '../envs/preprocessing.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 3 * attempt,
         runtime_min=0,
