@@ -4,7 +4,7 @@ wh_compare_flag={'snp': '--only-snvs', 'indel': ''}
 rule phase_sample_longread:
     input:
         vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/no-trios/{sample}/{chr}_filtered.vcf',
-        bam='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/cram/{sample}/alignments/{sample}.cram',
+        bam='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/hg38/{sample}.hg38.cram',
         ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
     output:
         vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread/{sample}/{chr}_{vtype}.vcf'),

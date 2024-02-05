@@ -47,7 +47,7 @@ rule longread_trio_phase:
     input:
         vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/trios/{family}/{chr}_filtered.vcf',
         ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta',
-        bam= lambda wildcards: expand('/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/cram/{sample}/alignments/{sample}.cram', sample=wildcards.family.split('_')),
+        bam= lambda wildcards: expand('/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/hg38/{sample}.hg38.cram', sample=wildcards.family.split('_')),
         ped='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/pedigree.ped'
     output:
         vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread_trio_phase/{family}/{chr}_{vtype}.vcf'),
