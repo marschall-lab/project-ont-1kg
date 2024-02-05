@@ -83,7 +83,7 @@ rule extract_phased_trio:
     params:
         samples=lambda wildcards: ','.join((wildcards.family).split('_'))
     output:
-        stat=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/trios/{family}/{chr}.vcf.gz')
+        stat=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/trios/{family}/{chr}_filtered.vcf')
     conda:
         'envs/preprocessing.yaml'
     resources:
@@ -117,7 +117,7 @@ rule extract_phased_single:
     input:
         stat='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/NYGC/phased/1kGP_high_coverage_Illumina.{chr}.filtered.SNV_INDEL_SV_phased_panel.vcf.gz'
     output:
-        stat=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/no-trios/{sample}/{chr}.vcf.gz')
+        stat=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/no-trios/{sample}/{chr}_filtered.vcf')
     conda:
         'envs/preprocessing.yaml'
     resources:
