@@ -1,4 +1,3 @@
-configfile: './config.yaml'
 flag_indel={'snp': '', 'indel': '--indels'}
 wh_compare_flag={'snp': '--only-snvs', 'indel': ''}
 
@@ -63,9 +62,9 @@ rule extract_samples:
 rule filter_samples:
     input:
         vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/no-trios/{sample}/{chr}.vcf.gz',
-        vcf_index=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/no-trios/{sample}/{chr}.vcf.gz.tbi'),
+        vcf_index='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/no-trios/{sample}/{chr}.vcf.gz.tbi',
     output:
-        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/no-trios/{sample}/{chr}_filtered.vcf'
+        vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/no-trios/{sample}/{chr}_filtered.vcf')
     conda:
         'envs/preprocessing.yaml'
     resources:
@@ -101,7 +100,7 @@ rule concat_stat_phased_trio:
     input:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/trios/{{family}}/{chr}_filtered.vcf', chr=config['chromosome'])
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/trios/{family}/filtered.vcf'
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/trios/{family}/filtered.vcf')
     conda:
         'envs/preprocessing.yaml'
     resources:
@@ -135,7 +134,7 @@ rule concat_stat_phased_single:
     input:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/no-trios/{{sample}}/{chr}_filtered.vcf', chr=config['chromosome'])
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/no-trios/{sample}/filtered.vcf'
+        temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/no-trios/{sample}/filtered.vcf')
     conda:
         'envs/preprocessing.yaml'
     resources:
