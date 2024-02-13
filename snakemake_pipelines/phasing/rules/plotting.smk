@@ -22,7 +22,7 @@ rule plot_trios:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/'
     conda:
         '../envs/basic.yaml'
-    run:
+    shell:
         'python scripts/plot-ser-trios.py -tsvs {input} -output {params}'
 
 
