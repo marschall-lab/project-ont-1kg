@@ -51,7 +51,7 @@ rule plot_non_trios:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/'
     conda:
         '../envs/basic.yaml'
-    run:
+    shell:
         'python scripts/plot-ser-boxplot.py -tsvs {input.tsv} -meta {input.meta} -output {params}'   
 
         
