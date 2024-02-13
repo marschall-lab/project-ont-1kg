@@ -43,3 +43,16 @@ rule concat_longread:
         '''
         bcftools concat -o {output} {input}
         '''
+
+rule stats_longread:
+    input:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread/{sample}/{vtype}.vcf'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread/{sample}/{vtype}.stats.tsv'
+    conda:
+        '../envs/whatshap.yaml'
+    resources:
+        runtime_hrs=0,
+        runtime_min=10
+    shell:
+        'whatshap stats --tsv={output} {input}' 

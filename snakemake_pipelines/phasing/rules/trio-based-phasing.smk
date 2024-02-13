@@ -43,6 +43,20 @@ rule concat_trio_phase:
         bcftools concat -o {output} {input}
         '''
 
+rule stats_trio_phase:
+    input:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/trio_phase/{family}/{vtype}.vcf'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/trio_phase/{family}/{vtype}.stats.tsv'
+    conda:
+        '../envs/whatshap.yaml'
+    resources:
+        runtime_hrs=0,
+        runtime_min=10
+    shell:
+        'whatshap stats --tsv={output} {input}'    
+
+
 rule longread_trio_phase:
     input:
         vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/trios/{family}/{chr}_filtered.vcf',
@@ -85,3 +99,16 @@ rule concat_longread_trio:
         '''
         bcftools concat -o {output} {input}
         '''
+
+rule stats_longread_trio:
+    input:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread_trio_phase/{family}/{vtype}.vcf'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread_trio_phase/{family}/{vtype}.stats.tsv'
+    conda:
+        '../envs/whatshap.yaml'
+    resources:
+        runtime_hrs=0,
+        runtime_min=10
+    shell:
+        'whatshap stats --tsv={output} {input}' 

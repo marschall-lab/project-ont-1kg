@@ -35,41 +35,7 @@ def read_metadata(file):
         sample2pop[sample] = pop
     
     return sample2pop, pop2color
-
-def plot_boxplot(data, y_label, output, pop2color):
-
-    # create legend
-    handles = []
-    labels = []
-    for pop,color in pop2color.items():
-        line = matplotlib.patches.Patch(color=color, label=pop)
-        handles.append(line)
-        labels.append(pop)
-
-    fig = plt.figure(figsize =(10, 10))
-    ax = fig.add_subplot(111)
-    bp = ax.boxplot([data[x] for x in data.keys()], patch_artist = True)
-    colors = [v for _,v in pop2color.items()]
-    for patch, color in zip(bp['boxes'], colors):
-        patch.set_facecolor(color)
-    for whisker in bp['whiskers']:
-        whisker.set(color ='black', linewidth = 1)
-    for cap in bp['caps']:
-        cap.set(color ='black', linewidth = 1)
-    for median in bp['medians']:
-        median.set(color ='black', linewidth = 1)
-    for flier in bp['fliers']:
-        flier.set(marker ='o', color ='black', alpha = 1)    
-    ax.set_xticklabels([x for x,_ in pop2color.items()])
-    plt.ylabel(y_label)
-    plt.yticks(fontsize=15)
-    plt.xticks(fontsize=15)
-    plt.tight_layout()
-    plt.legend(handles, labels, framealpha=1, frameon=True)
-    plt.savefig(output+'/no-trio-%s.svg'%(y_label))
-    plt.savefig(output+'/no-trio-%s.pdf'%(y_label))
     
-
 parser = argparse.ArgumentParser(prog='plot-ser-boxplot.py', description="Plotting the phasing comparison results")
 parser.add_argument('-tsvs', metavar='TSVS', help='File containing list of Pairwise TSV output files from whatshap compare')
 parser.add_argument('-meta', metavar='META', help='sample metadata')
@@ -91,7 +57,46 @@ non_trio_ser_values_by_pop = {'AFR': [], 'AMR': [], 'EAS': [], 'EUR': [], 'SAS':
 for sample, data in sample_results.items():
     pop = sample2pop[sample]
     d = data[0][('longread', 'nygc')]
-    ser = d[1]/d[0]
+    ser = d[1]*100/d[0]
     non_trio_ser_values_by_pop[pop].append(ser)
 
-plot_boxplot(non_trio_ser_values_by_pop, 'ser', args.output, pop2color)
+## Some statistics
+data = []
+for pop in non_trio_ser_values_by_pop.keys():
+    data += non_trio_ser_values_by_pop[pop]
+data = numpy.array(data)
+print("Mean SER percentage for all Longread vs NYGC comparison: ", data.mean())
+
+## Plotting
+
+# create legend
+handles = []
+labels = []
+for pop,color in pop2color.items():
+    line = matplotlib.patches.Patch(color=color, label=pop)
+    handles.append(line)
+    labels.append(pop)
+
+fig = plt.figure(figsize =(10, 10))
+ax = fig.add_subplot(111)
+bp = ax.boxplot([non_trio_ser_values_by_pop[x] for x in non_trio_ser_values_by_pop.keys()], patch_artist = True)
+colors = [v for _,v in pop2color.items()]
+for patch, color in zip(bp['boxes'], colors):
+    patch.set_facecolor(color)
+for whisker in bp['whiskers']:
+    whisker.set(color ='black', linewidth = 1)
+for cap in bp['caps']:
+    cap.set(color ='black', linewidth = 1)
+for median in bp['medians']:
+    median.set(color ='black', linewidth = 1)
+for flier in bp['fliers']:
+    flier.set(marker ='o', color ='black', alpha = 1)    
+ax.set_xticklabels([x for x,_ in pop2color.items()])
+plt.title("SER between NYGC Statistical Phasing and WhatsHap Longread Phasing", fontsize=15)
+plt.ylabel("Switch Error Rate (%)", fontsize=15)
+plt.yticks(fontsize=15)
+plt.xticks(fontsize=15)
+plt.tight_layout()
+plt.legend(handles, labels, framealpha=1, frameon=True, fontsize=15)
+plt.savefig(args.output+'/no-trio-ser.svg')
+plt.savefig(args.output+'/no-trio-ser.pdf')

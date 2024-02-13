@@ -22,4 +22,7 @@ rule all:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/trio-comparision/{sample}/{vtype}/multiway.tsv', sample=family_sample_list, vtype=['snp']),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/no-trio-comparision/{sample}/{vtype}/multiway.tsv', sample=samples, vtype=['snp']),
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/no-trio-ser.pdf',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/trio-ser.pdf'
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/trio-ser.pdf',
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread_trio_phase/{family}/snp.stats.tsv', family=config['families']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/trio_phase/{family}/snp.stats.tsv', family=config['families']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread/{sample}/snp.stats.tsv', sample=samples)

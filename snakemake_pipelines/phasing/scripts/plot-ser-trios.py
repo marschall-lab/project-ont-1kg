@@ -61,6 +61,10 @@ for tsv in tsv_list:
     sample, data = read_tsv(tsv)
     sample_results[sample] = data
 
+child_samples = ['NA19828', 'HG01258', 'HG00420', 'NA19129']
+
+## Preparing data for plots
+
 # switch error rate against the nygc phasing
 longread_ser = {}
 trio_ser = {}
@@ -68,9 +72,41 @@ triolongread_ser = {}
 
 for sample in sample2family.keys():
     data = sample_results[sample]
-    longread_ser[sample] = data[('longread', 'nygc')][1]/data[('longread', 'nygc')][0]
-    trio_ser[sample] = data[('trio', 'nygc')][1]/data[('trio', 'nygc')][0]
-    triolongread_ser[sample] = data[('trio-longread', 'nygc')][1]/data[('trio-longread', 'nygc')][0]
+    longread_ser[sample] = data[('longread', 'nygc')][1]*100/data[('longread', 'nygc')][0]
+    trio_ser[sample] = data[('trio', 'nygc')][1]*100/data[('trio', 'nygc')][0]
+    triolongread_ser[sample] = data[('trio-longread', 'nygc')][1]*100/data[('trio-longread', 'nygc')][0]
+
+## Printing some stats
+
+parent_data = []
+child_data = []
+for sample in longread_ser.keys():
+        if sample in child_samples:
+            child_data.append(longread_ser[sample])
+        else:
+            parent_data.append(longread_ser[sample])
+print("Mean SER percentage for Longread phasing for parents: ", numpy.array(parent_data).mean())
+print("Mean SER percentage for Longread phasing for child: ", numpy.array(child_data).mean())
+
+parent_data = []
+child_data = []
+for sample in trio_ser.keys():
+        if sample in child_samples:
+            child_data.append(trio_ser[sample])
+        else:
+            parent_data.append(trio_ser[sample])
+print("Mean SER percentage for Trio phasing for parents: ", numpy.array(parent_data).mean())
+print("Mean SER percentage for Trio phasing for child: ", numpy.array(child_data).mean())
+
+parent_data = []
+child_data = []
+for sample in triolongread_ser.keys():
+        if sample in child_samples:
+            child_data.append(triolongread_ser[sample])
+        else:
+            parent_data.append(triolongread_ser[sample])
+print("Mean SER percentage for Trio+Longread phasing for parents: ", numpy.array(parent_data).mean())
+print("Mean SER percentage for Trio+Longread phasing for child: ", numpy.array(child_data).mean())
 
 
 ## Plotting
@@ -84,9 +120,8 @@ plt.plot(x_pos, [y for y in triolongread_ser.values()], 'go', label = 'Long-read
 plt.plot(x_pos, [y for y in trio_ser.values()], 'ro', label = 'Trio phasing')
 for x in [4,8,12]:
     plt.axvline(x=x, color='black', ls='--', lw=1)
-plt.ylim((0,0.020))
 plt.xticks(x_pos, labels=x_labels, rotation=45)
-plt.ylabel('Switch Error Rate', fontsize=15)
+plt.ylabel('Switch Error Rate (%)', fontsize=15)
 plt.title('WhatsHap compare against NYGC Statistical Phasing', fontsize=15)
 plt.legend()
 plt.tight_layout()
