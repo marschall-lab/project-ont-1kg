@@ -8,6 +8,8 @@ include: 'rules/prepare-nygc-genotypes.smk'
 
 family_sample_list = list(sample2family.keys())
 
+include: 'rules/plotting.smk'
+
 varianttype=['snp']
 flag_indel={'snp': '', 'indel': '--indels'}
 wh_compare_flag={'snp': '--only-snvs', 'indel': ''}
@@ -18,4 +20,6 @@ wildcard_constraints:
 rule all:
     input:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/trio-comparision/{sample}/{vtype}/multiway.tsv', sample=family_sample_list, vtype=['snp']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/no-trio-comparision/{sample}/{vtype}/multiway.tsv', sample=samples, vtype=['snp'])
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/no-trio-comparision/{sample}/{vtype}/multiway.tsv', sample=samples, vtype=['snp']),
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/no-trio-ser.pdf',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/trio-ser.pdf'
