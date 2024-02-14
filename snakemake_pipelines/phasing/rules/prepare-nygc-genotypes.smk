@@ -10,7 +10,7 @@ rule extract_families:
         vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/trios/{family}/{chr}.vcf.gz'),
         vcf_index=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/trios/{family}/{chr}.vcf.gz.tbi')
     conda:
-        '../envs/preprocessing.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 5 * attempt,
         runtime_min=0,
@@ -29,7 +29,7 @@ rule filter_families:
     output:
         vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/trios/{family}/{chr}_filtered.vcf')
     conda:
-        '../envs/preprocessing.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: attempt,
         runtime_min=0,
@@ -47,7 +47,7 @@ rule extract_samples:
         vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/no-trios/{sample}/{chr}.vcf.gz'),
         vcf_index=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/no-trios/{sample}/{chr}.vcf.gz.tbi')
     conda:
-        '../envs/preprocessing.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 5 * attempt,
         runtime_min=0,
@@ -66,7 +66,7 @@ rule filter_samples:
     output:
         vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/no-trios/{sample}/{chr}_filtered.vcf')
     conda:
-        '../envs/preprocessing.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: attempt,
         runtime_min=0,
@@ -85,7 +85,7 @@ rule extract_phased_trio:
     output:
         stat=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/trios/{family}/{chr}_filtered.vcf')
     conda:
-        '../envs/preprocessing.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 3 * attempt,
         runtime_min=0,
@@ -102,7 +102,7 @@ rule concat_stat_phased_trio:
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/trios/{family}/filtered.vcf')
     conda:
-        '../envs/preprocessing.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: attempt,
         runtime_min=0,
@@ -119,7 +119,7 @@ rule extract_phased_single:
     output:
         stat=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/no-trios/{sample}/{chr}_filtered.vcf')
     conda:
-        '../envs/preprocessing.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 3 * attempt,
         runtime_min=0,
@@ -135,7 +135,7 @@ rule concat_stat_phased_single:
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-phased/no-trios/{sample}/filtered.vcf')
     conda:
-        '../envs/preprocessing.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: attempt,
         runtime_min=0,

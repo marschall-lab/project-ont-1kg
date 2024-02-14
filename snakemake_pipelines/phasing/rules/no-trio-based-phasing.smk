@@ -33,7 +33,7 @@ rule concat_longread:
         sample='(?:NA|HG)\d{5}',
         vtype='[a-z]{3,5}'
     conda:
-        '../envs/preprocessing.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 3 * attempt,
         runtime_min=0,

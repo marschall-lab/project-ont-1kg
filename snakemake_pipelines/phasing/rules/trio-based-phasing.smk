@@ -32,7 +32,7 @@ rule concat_trio_phase:
         sample='(?:NA|HG)\d{5}',
         vtype='[a-z]{3,5}'
     conda:
-        '../envs/preprocessing.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 3 * attempt,
         runtime_min=0,
@@ -90,7 +90,7 @@ rule concat_longread_trio:
         sample='(?:NA|HG)\d{5}',
         vtype='[a-z]{3,5}'
     conda:
-        '../envs/preprocessing.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 3 * attempt,
         runtime_min=0,
