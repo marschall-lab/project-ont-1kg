@@ -53,6 +53,7 @@ rule stats_longread:
         '../envs/whatshap.yaml'
     resources:
         runtime_hrs=0,
-        runtime_min=10
+        runtime_min=30,
+        mem_total_mb=lambda wildcards, attempt: 2048 * attempt,
     shell:
         'whatshap stats --tsv={output} {input}' 
