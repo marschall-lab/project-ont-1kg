@@ -201,6 +201,9 @@ rule calc_and_plot_statistics:
         outdir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/'
     conda:
         '../envs/basic.yml'
+    resources:
+        mem_total_mb=5000,
+        runtime_hrs=3
     shell:
         'python {input.script} -table {input.table} -output {params.outdir} > {output.txt}'
 

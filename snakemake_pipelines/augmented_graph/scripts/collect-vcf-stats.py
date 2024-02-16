@@ -157,8 +157,8 @@ sys.stderr.write("Found %d variant IDs.\n"%(len(callset_stats)))
 
 # print stats for all IDs in genotypes VCF
 header = [ 	'variant_id',
-        'variant type',
-        'variant length',
+        'variant_type',
+        'variant_length',
         'panel_allele_freq',
         'panel_alternative_alleles',
         'panel_total_alleles',
