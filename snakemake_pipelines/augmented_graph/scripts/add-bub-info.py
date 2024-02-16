@@ -6,7 +6,7 @@ from cyvcf2 import VCF
 
 parser = argparse.ArgumentParser(prog='add-bub-info.py', description="Adding bubble info for each biallelic variant record.")
 parser.add_argument('-table', metavar='table', help='Sample population data')
-parser.add_argument('-panel', metavar='panel', help='Biallelic panel VCF.')
+parser.add_argument('-panel', metavar='panel', help='Multiallelic panel VCF.')
 parser.add_argument('-output', metavar='output', help='Output file.')
 args = parser.parse_args()
 

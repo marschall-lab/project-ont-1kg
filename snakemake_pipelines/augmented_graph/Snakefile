@@ -7,7 +7,6 @@ include: 'rules/bubble-tagging.smk'
 include: 'rules/common-rules.smk'
 include: 'rules/get-sample-list.smk'
 include: 'rules/self-genotyping.smk'
-include: 'rules/truvari-comparisons.smk'
 include: 'rules/callset-comparisons.smk'
 
 if config['pilot']:
@@ -23,11 +22,17 @@ rule all:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/genotypes/multisample-biallelic.vcf.gz', callset = [c for c in config['callsets'].keys()]),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-counts-boxplot/plot-sv-counts-boxplot.tsv', callset = [c for c in config['callsets'].keys()]),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/sv-length-boxplot/plot-sv-length-boxplot.tsv', callset = [c for c in config['callsets'].keys()]),
-        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/hwe.png', callset = [c for c in config['callsets'].keys()]),
-        #expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/qc/audano-curve.png', callset = [c for c in config['callsets'].keys()]),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/hwe-af/hwe.png', callset = [c for c in config['callsets'].keys()]),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/plots/qc/audano-curve.png', callset = [c for c in config['callsets'].keys()]),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/out-graph/{sample}-{min_af}-{max_af}/intersection-upsetplot.pdf', callset = [c for c in config['callsets'].keys()], sample = config['hgsvc_samples'], min_af=['0'], max_af=['1']),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/in-graph/HG01258-{min_af}-{max_af}/intersection-upsetplot.pdf', callset = [c for c in config['callsets'].keys()], min_af=['0'], max_af=['1']),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison/out-graph/{sample}-{source}-{min_af}-{max_af}/summary.json', 
+                    callset = [c for c in config['callsets'].keys()],
+                    sample = config['hgsvc_samples'],
+                    source = ['pangenie'],
+                    min_af=['0'],
+                    max_af=['1']),
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison-lenient/out-graph/{sample}-{source}-{min_af}-{max_af}/summary.json', 
                     callset = [c for c in config['callsets'].keys()],
                     sample = config['hgsvc_samples'],
                     source = ['pangenie'],

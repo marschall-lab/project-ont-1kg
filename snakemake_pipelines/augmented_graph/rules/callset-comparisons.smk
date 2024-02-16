@@ -238,7 +238,36 @@ rule truvari_outsample_compare:
         mv {params.tmp}/* {params.folder}/
         rm -r {params.tmp}
         '''
-        
+
+# compare giggles genotypes to pangenie genotypes
+rule truvari_outsample_compare_lenient:
+    input:
+        call='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/giggles-{sample}-{min_af}-{max_af}-tagged.vcf.gz',
+        base='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/callset-comparison/vcfs/{source}-{sample}-{min_af}-{max_af}-tagged.vcf.gz',
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/fasta/HPRC/reference/chm13v2.0_maskedY_rCRS.fa.gz'
+    output:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison-lenient/out-graph/{sample}-{source}-{min_af}-{max_af}/summary.json',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison-lenient/out-graph/{sample}-{source}-{min_af}-{max_af}/params.json',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison-lenient/out-graph/{sample}-{source}-{min_af}-{max_af}/tp-base.vcf.gz',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison-lenient/out-graph/{sample}-{source}-{min_af}-{max_af}/tp-comp.vcf.gz',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison-lenient/out-graph/{sample}-{source}-{min_af}-{max_af}/fp.vcf.gz',
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison-lenient/out-graph/{sample}-{source}-{min_af}-{max_af}/fn.vcf.gz'
+    params:
+        folder='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison-lenient/out-graph/{sample}-{source}-{min_af}-{max_af}',
+        tmp='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/augmented_graph/{callset}/truvari-comparison-lenient/out-graph/{sample}-{source}-{min_af}-{max_af}/tmp'
+    conda:
+        '../envs/truvari.yml'
+    resources:
+        mem_total_mb=4000,
+        runtime_hrs=2
+    shell:
+        '''
+        truvari bench -b {input.base} -c {input.call} -o {params.tmp} -f {input.ref} --multimatch -r 2000 --no-ref a -C 2000
+        mv {params.tmp}/* {params.folder}/
+        rm -r {params.tmp}
+        '''
+
+
 # compare giggles genotypes to pangenie panel (only for HG01258)
 rule truvari_HG01258_compare:
     input:

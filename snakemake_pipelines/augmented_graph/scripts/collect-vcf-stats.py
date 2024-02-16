@@ -36,7 +36,7 @@ def compute_panel_allele_statistics(record):
     af = ac / max(1.0, float(an))
     return AlleleStats(str(af), str(ac), str(an), str(unknown))
 
-def compute_callset_statistics(record, qualities=None, metadata=None, samples=None):
+def compute_callset_statistics(record, qualities=None, sample_pop_map=None, samples=None):
     """
     Compute genotype related statistics.
     """
@@ -53,8 +53,7 @@ def compute_callset_statistics(record, qualities=None, metadata=None, samples=No
 
     gqs = record.format('GQ') if qualities is not None else [None]*len(record.genotypes)
     for genotype, quality, sample in zip(record.genotypes, gqs, samples):
-        sample_metadata = metadata[metadata['Sample name'] ==  sample]
-        pop_code = sample_metadata["Superpopulation code"].values[0]
+        pop_code = sample_pop_map[sample]
         assert pop_code in ['AFR', 'AMR', 'EAS', 'EUR', 'SAS']
         alleles = genotype[:-1]
         assert 1 <= len(alleles) <= 2
@@ -120,6 +119,9 @@ args = parser.parse_args()
 # reading metadata (sample-to-population map and color coding)
 metadata = pandas.read_csv(args.meta, sep='\t', header=0)
 metadata = metadata[["Sample name", "Population code", "Superpopulation code"]]
+sample2pop = {}
+for line in metadata.to_numpy():
+    sample2pop[line[0]] = line[2]
 
 panel_reader = VCF(args.panel)
 panel_stats = {}
@@ -141,7 +143,7 @@ quals = [0,50,100,200]
 for n, variant in enumerate(callset_reader):
     assert len(variant.ALT) == 1
     var_id = variant.INFO['ID']
-    allele_stats, genotype_stats, counts = compute_callset_statistics(variant, qualities=quals, metadata=metadata, samples=callset_samples)
+    allele_stats, genotype_stats, counts = compute_callset_statistics(variant, qualities=quals, sample_pop_map=sample2pop, samples=callset_samples)
     assert list(allele_stats.keys()) == ['all', 'AFR', 'AMR', 'EAS', 'EUR', 'SAS']
     assert list(genotype_stats.keys()) == ['all', 'AFR', 'AMR', 'EAS', 'EUR', 'SAS']
     assert list(counts.keys()) == ['all', 'AFR', 'AMR', 'EAS', 'EUR', 'SAS']
