@@ -262,7 +262,7 @@ rule truvari_outsample_compare_lenient:
         runtime_hrs=2
     shell:
         '''
-        truvari bench -b {input.base} -c {input.call} -o {params.tmp} -f {input.ref} --multimatch -r 2000 --no-ref a -C 2000
+        truvari bench -b {input.base} -c {input.call} -o {params.tmp} -f {input.ref} --pick multi -r 2000 --no-ref a -C 2000
         mv {params.tmp}/* {params.folder}/
         rm -r {params.tmp}
         '''
