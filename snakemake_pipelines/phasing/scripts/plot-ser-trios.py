@@ -46,6 +46,8 @@ families = {
   'CLM16': 'HG01256_HG01257_HG01258'.split('_'),
   'SH006': 'HG00418_HG00419_HG00420'.split('_'),
   'Y077': 'NA19128_NA19127_NA19129'.split('_'),
+  '1463_Paternal': 'NA12889_NA12890_NA12877'.split('_'),
+  '1463_Maternal': 'NA12891_NA12892_NA12878'.split('_')
 }
 
 sample2family = {}
