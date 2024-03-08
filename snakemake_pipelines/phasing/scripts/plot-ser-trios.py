@@ -114,8 +114,12 @@ print("Mean SER percentage for Trio+Longread phasing for child: ", numpy.array(c
 ## Plotting
 
 fig = plt.figure(figsize =(10, 5))
-x_pos = [1,2,3,5,6,7,9,10,11,13,14,15]
 x_labels = list(sample2family.keys())
+x_pos = []
+for i in range(len(x_labels)):
+    x_pos.append(4*i+1)
+    x_pos.append(4*i+2)
+    x_pos.append(4*i+3)
 
 plt.plot(x_pos, [y for y in longread_ser.values()], 'bo', label='Long-read phasing')
 plt.plot(x_pos, [y for y in triolongread_ser.values()], 'go', label = 'Long-read + Trio phasing')
