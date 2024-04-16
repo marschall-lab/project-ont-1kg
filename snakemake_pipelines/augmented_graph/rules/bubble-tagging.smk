@@ -15,9 +15,11 @@ rule call_rGFA_bubbles:
         mem_total_mb=lambda wildcards, attempt: 10*1024 * attempt
     shell:
         '''
-        module load Python/3.11.4
+        set +u
+        source ~/.bashrc
+        conda activate gaftools-dev
+        set -u
         gaftools order_gfa --with-sequence --outdir {params.out_dir} {input.ref}
-        module unload Python/3.11.4
         '''
 
 # concat chromsome-wise tagged GFA

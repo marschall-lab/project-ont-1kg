@@ -63,7 +63,7 @@ for tsv in tsv_list:
     sample, data = read_tsv(tsv)
     sample_results[sample] = data
 
-child_samples = ['NA19828', 'HG01258', 'HG00420', 'NA19129']
+child_samples = ['NA19828', 'HG01258', 'HG00420', 'NA19129', 'NA12877', 'NA12878']
 
 ## Preparing data for plots
 
@@ -124,12 +124,13 @@ for i in range(len(families.keys())):
 plt.plot(x_pos, [y for y in longread_ser.values()], 'bo', label='Long-read phasing')
 plt.plot(x_pos, [y for y in triolongread_ser.values()], 'go', label = 'Long-read + Trio phasing')
 plt.plot(x_pos, [y for y in trio_ser.values()], 'ro', label = 'Trio phasing')
-for x in [4,8,12]:
+for x in [4*(i+1) for i in range(len(families.keys())-1)]:
     plt.axvline(x=x, color='black', ls='--', lw=1)
-plt.xticks(x_pos, labels=x_labels, rotation=45)
+plt.xticks(x_pos, labels=x_labels, rotation=60, fontsize=12)
+plt.yticks(fontsize=12)
 plt.ylabel('Switch Error Rate (%)', fontsize=15)
 plt.title('WhatsHap compare against NYGC Statistical Phasing', fontsize=15)
-plt.legend()
+plt.legend(fontsize=15, framealpha=1)
 plt.tight_layout()
 plt.savefig(args.output+'/trio-ser.svg')
 plt.savefig(args.output+'/trio-ser.pdf')

@@ -1,5 +1,6 @@
 configfile: 'config/config.yaml'
 
+include: 'rules/prepare-vcf.smk'
 include: 'rules/genotyping.smk'
 include: 'rules/discovery.smk'
 include: 'rules/common-rules.smk'
@@ -13,10 +14,15 @@ no_new_variant_samples = ['HG02661', 'HG01600', 'HG01308', 'NA19676']
 svarp_samples = [s for s in samples if s not in no_new_variant_samples]
 
 wildcard_constraints:
-    sample='|'.join(samples)
+    sample='|'.join(samples),
+    chr='chr[0-9A-Z]',
+    haplotype='(1)|(2)'
 
 rule genotype_experiment:
     input:
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518.check',
+        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/stats/{sample}_{haplotype}_{graph}.png', sample=config['samples'], haplotype=config['haplotypes'], graph=['dv', 'mapq', 'num_align', 'num_res_match', 'p_align']),
+        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/stats/text_stats.txt',
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-biallelic.vcf.gz', sample=samples),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/{sample}-multiallelic.vcf.gz', sample=samples),
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/svarp-giggles/chm13-90c.r518/genotypes/multisample-multiallelic.vcf.gz',

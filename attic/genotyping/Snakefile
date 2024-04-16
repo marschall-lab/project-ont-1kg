@@ -28,7 +28,7 @@ import subprocess
 import re
 
 #Finding sample list used for 1000GP project by us
-path='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/GRCh38/'
+path='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/hg38/'
 ls_command = 'ls '+path
 process = subprocess.Popen(ls_command.split(), stdout=subprocess.PIPE)
 ls_out, ls_err = process.communicate()
@@ -127,7 +127,7 @@ rule extract_base_vcf:
 rule genotype:
     input:
         vcf='/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/HPRC/temp/{sample}.vcf',
-        bam='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/GRCh38/{sample}/alignments/{sample}.cram',
+        bam='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/GRCh38/{sample}/alignments/{sample}.cram',
         ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
     output:
         vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/genotyping-results/whatshap/vcf/{sample}.vcf'),

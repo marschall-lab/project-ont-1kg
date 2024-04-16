@@ -8,7 +8,7 @@ import gzip
 import pandas as pd
 
 #Finding sample list used for 1000GP project by us
-path='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/fasta/'
+path='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/fasta/'
 ls_command = 'ls '+path
 process = subprocess.Popen(ls_command.split(), stdout=subprocess.PIPE)
 ls_out, ls_err = process.communicate()
@@ -52,7 +52,7 @@ rule all:
 # Merge FASTA files
 rule merge_fasta:
     input:
-        lambda wildcards: ['/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/fasta/{}'.format(fname) for fname in fasta_files[wildcards.sample]]
+        lambda wildcards: ['/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/fasta/{}'.format(fname) for fname in fasta_files[wildcards.sample]]
     output:
         fasta = temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}_merged.fasta.gz')
     conda:
@@ -86,7 +86,7 @@ rule minigraph_alignment:
 rule gaftools_phase:
     input:
         gaf = '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.gaf',
-        read_tag = '/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/read_tags/{sample}/{sample}_read_tags.tsv'
+        read_tag = '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/read_tags/{sample}/{sample}_read_tags.tsv'
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/minigraph-alignments/chm13-90c.r518/{sample}/{sample}.tagged.gaf')
     log:

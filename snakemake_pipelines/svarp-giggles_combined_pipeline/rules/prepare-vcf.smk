@@ -1,8 +1,3 @@
-"""
-Annotating the GFA with haplotype and reference path information
-"""
-configfile: './config.yaml'
-
 chromosomes = ['chr1','chr2','chr3','chr4','chr5','chr6','chr7','chr8','chr9','chr10','chr11','chr12','chr13','chr14','chr15','chr16','chr17','chr18','chr19','chr20','chr21','chr22','chrX','chrY','chrM']
 
 # Global Wildcard Constraints
@@ -10,21 +5,6 @@ wildcard_constraints:
     sample='(?:NA|HG)(?:\d{5}|\d{3})',
     chr='chr[0-9A-Z]',
     haplotype='(1)|(2)'
-
-#################
-##### Rules #####
-#################
-
-rule all:
-    input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518_tagged_withseq.gfa',
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/{sample}.{haplotype}.gaf', sample=config['samples'], haplotype=config['haplotypes']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/stats/{sample}_{haplotype}_{graph}.png', sample=config['samples'], haplotype=config['haplotypes'], graph=['dv', 'mapq', 'num_align', 'num_res_match', 'p_align']),
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/stats/text_stats.txt',
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/{sample}.{haplotype}.sorted.gaf', sample=config['samples'], haplotype=config['haplotypes']),
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518.vcf.gz',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518_filtered.vcf.gz',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518.check'
 
 ################################################
 ##### Aligning the Assemblies to the Graph #####
@@ -90,7 +70,7 @@ rule get_alignment_stats:
     params:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/stats/'
     conda:
-        'envs/basic.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=0,
         runtime_min=30,
@@ -106,22 +86,25 @@ rule get_alignment_stats:
 # conda environment should have networkx and whatshap. In this version, the tagged GFA does not have sequence info.
 rule call_rGFA_bubbles:
     input:
-        ref='/gpfs/project/projects/medbioinf/users/spani/files/gfa/1000GP/chm13-90c.r518.gfa',
-        script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/order_gfa.py'
+        ref='/gpfs/project/projects/medbioinf/users/spani/files/gfa/1000GP/chm13-90c.r518.gfa'
     output:
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518-{chr}.gfa', chr=chromosomes),
         expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging/chm13-90c.r518-{chr}.csv', chr=chromosomes)
     params:
         out_dir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging'
     conda:
-        'envs/preprocessing.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=0,
         runtime_min=30,
         mem_total_mb=lambda wildcards, attempt: 10*1024 * attempt
     shell:
         '''
-        python {input.script} --with-sequence --outdir {params.out_dir} {input.ref}
+        set +u
+        source ~/.bashrc
+        conda activate gaftools-dev
+        set -u
+        gaftools order_gfa --with-sequence --outdir {params.out_dir} {input.ref}
         '''
 
 #Concat the chromsome-wise tagged GFA produced
@@ -143,7 +126,7 @@ rule sort_GAF:
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/log/assembly_mappings/{sample}.{haplotype}.sorted.log'
     conda:
-        'envs/basic.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=1,
         runtime_min=0,
@@ -172,7 +155,7 @@ rule assemblies_to_vcf:
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/log/vcf/chm13-90c.r518.log'
     conda:
-        'envs/basic.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=1,
         runtime_min=0,
@@ -191,7 +174,7 @@ rule filtered_vcf:
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518_filtered.vcf.gz'
     conda:
-        'envs/basic.yaml'
+        '../envs/basic.yaml'
     resources:
         runtime_hrs=1,
         runtime_min=0,
@@ -212,6 +195,6 @@ rule vcf_correctness:
     log:
         log1='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518.check.log'
     conda:
-        'envs/basic.yaml'
+        '../envs/basic.yaml'
     shell:
         'bcftools norm --check-ref w -f {input.ref} {input.vcf} > /dev/null 2> {log.log1} && touch {output.out1}'

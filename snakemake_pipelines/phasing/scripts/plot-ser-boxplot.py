@@ -77,7 +77,7 @@ for pop,color in pop2color.items():
     handles.append(line)
     labels.append(pop)
 
-fig = plt.figure(figsize =(10, 10))
+fig = plt.figure(figsize =(10, 5))
 ax = fig.add_subplot(111)
 bp = ax.boxplot([non_trio_ser_values_by_pop[x] for x in non_trio_ser_values_by_pop.keys()], patch_artist = True)
 colors = [v for _,v in pop2color.items()]
@@ -94,7 +94,7 @@ for flier in bp['fliers']:
 ax.set_xticklabels([x for x,_ in pop2color.items()])
 plt.title("SER between NYGC Statistical Phasing and WhatsHap Longread Phasing", fontsize=15)
 plt.ylabel("Switch Error Rate (%)", fontsize=15)
-plt.yticks(fontsize=15)
+plt.yticks(fontsize=12)
 plt.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
 plt.tight_layout()
 plt.legend(handles, labels, framealpha=1, frameon=True, fontsize=15)

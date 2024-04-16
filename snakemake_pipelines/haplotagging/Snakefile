@@ -9,7 +9,7 @@ import gzip
 import pandas as pd
 
 #Finding sample list used for 1000GP project by us
-path='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/hg38/'
+path='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/hg38/'
 ls_command = 'ls '+path
 process = subprocess.Popen(ls_command.split(), stdout=subprocess.PIPE)
 ls_out, ls_err = process.communicate()
@@ -194,7 +194,7 @@ rule index_PARonly_vcf:
 # converting CRAMs to BAMs (since the CRAMs were creating some issues)
 rule convert_cram_to_bam:
     input:
-        reads='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/hg38/{sample}.hg38.cram',
+        reads='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/hg38/{sample}.hg38.cram',
         ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
     output:
         bam=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38_BAM/{sample}.bam'),
@@ -276,7 +276,7 @@ rule haplotag_males:
 rule add_nonPAR_haplotag_males:
     input:
         haplotag_list='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/GRCh38/males/{sample}_read_tags.tsv',
-        reads='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/hg38/{sample}.hg38.cram',
+        reads='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/hg38/{sample}.hg38.cram',
         script='/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/haplotagging/scripts/add_nonPAR_haplotag.py'
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/{sample}/{sample}.tsv'
@@ -325,7 +325,7 @@ rule haplotag_sex_yaml_file:
 # Need to get the fasta to count the total reads.
 rule cram_to_fasta:
     input:
-        reads='/gpfs/project/projects/medbioinf/data/share/globus/1000g-ont/hg38/{sample}.hg38.cram',
+        reads='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/hg38/{sample}.hg38.cram',
         ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
     output:
         temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/temp/fasta/{sample}.fasta')
