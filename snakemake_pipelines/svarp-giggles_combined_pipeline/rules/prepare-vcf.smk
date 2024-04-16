@@ -70,7 +70,7 @@ rule get_alignment_stats:
     params:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/assembly_mappings/stats/'
     conda:
-        '../envs/basic.yaml'
+        '../envs/basic.yml'
     resources:
         runtime_hrs=0,
         runtime_min=30,
@@ -93,7 +93,7 @@ rule call_rGFA_bubbles:
     params:
         out_dir='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/bubble_calling_and_tagging'
     conda:
-        '../envs/basic.yaml'
+        '../envs/basic.yml'
     resources:
         runtime_hrs=0,
         runtime_min=30,
@@ -126,7 +126,7 @@ rule sort_GAF:
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/log/assembly_mappings/{sample}.{haplotype}.sorted.log'
     conda:
-        '../envs/basic.yaml'
+        '../envs/basic.yml'
     resources:
         runtime_hrs=1,
         runtime_min=0,
@@ -155,7 +155,7 @@ rule assemblies_to_vcf:
     log:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/log/vcf/chm13-90c.r518.log'
     conda:
-        '../envs/basic.yaml'
+        '../envs/basic.yml'
     resources:
         runtime_hrs=1,
         runtime_min=0,
@@ -174,7 +174,7 @@ rule filtered_vcf:
     output:
         '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518_filtered.vcf.gz'
     conda:
-        '../envs/basic.yaml'
+        '../envs/basic.yml'
     resources:
         runtime_hrs=1,
         runtime_min=0,
@@ -195,6 +195,6 @@ rule vcf_correctness:
     log:
         log1='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/annotating-paths/vcf/chm13-90c.r518.check.log'
     conda:
-        '../envs/basic.yaml'
+        '../envs/basic.yml'
     shell:
         'bcftools norm --check-ref w -f {input.ref} {input.vcf} > /dev/null 2> {log.log1} && touch {output.out1}'
