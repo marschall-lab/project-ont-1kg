@@ -4,6 +4,8 @@ rule unzip_vamos_sites_list:
         'resources/vamos-sites-list.bed.gz'
     output:
         temp('resources/vamos-sites-list.bed')
+    conda:
+        '../envs/vamos.yml'
     shell:
         'gzip -dk {input}'
 
@@ -19,8 +21,8 @@ rule vamos_vienna:
     conda:
         '../envs/vamos.yml'
     resources:
-        runtime_hrs=0,
+        runtime_hrs=1,
         runtime_min=20,
-        mem_total_mb=256
+        mem_total_mb=5000
     shell:
         'vamos --read -b {input.alignment} -r {input.sites} -s {wildcards.sample} -o {output} > {log}'

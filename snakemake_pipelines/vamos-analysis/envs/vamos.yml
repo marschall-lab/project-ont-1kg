@@ -5,6 +5,4 @@ channels:
 
 dependencies:
   - vamos=1.2.6
-  - htslib>=1.13
-  - boost>=1.73.0
-  - libdeflate=1.7
+  - gzip=1.10
