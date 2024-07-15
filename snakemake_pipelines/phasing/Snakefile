@@ -10,19 +10,15 @@ family_sample_list = list(sample2family.keys())
 
 include: 'rules/plotting.smk'
 
-varianttype=['snp']
-flag_indel={'snp': '', 'indel': '--indels'}
-wh_compare_flag={'snp': '--only-snvs', 'indel': ''}
-
 wildcard_constraints:
     sample='|'.join(samples)
 
 rule all:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/trio-comparision/{sample}/{vtype}/multiway.tsv', sample=family_sample_list, vtype=['snp']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/no-trio-comparision/{sample}/{vtype}/multiway.tsv', sample=samples, vtype=['snp']),
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/no-trio-ser.pdf',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/trio-ser.pdf',
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread_trio_phase/{family}/snp.stats.tsv', family=config['families']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/trio_phase/{family}/snp.stats.tsv', family=config['families']),
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread/{sample}/snp.stats.tsv', sample=samples)
+        expand('results/trio-comparison/{sample}/multiway.tsv', sample=family_sample_list),
+        expand('results/no-trio-comparison/{sample}/multiway.tsv', sample=samples),
+        'results/plots/no-trio-ser.pdf',
+        'results/plots/trio-ser.pdf',
+        expand('results/phased-vcf/longread_trio_phase/{family}.stats.tsv', family=config['families']),
+        expand('results/phased-vcf/trio_phase/{family}.stats.tsv', family=config['families']),
+        expand('results/phased-vcf/longread/{sample}.stats.tsv', sample=samples)

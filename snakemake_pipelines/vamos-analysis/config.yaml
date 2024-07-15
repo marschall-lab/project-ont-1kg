@@ -1,0 +1,10 @@
+# samples in common between Miller set, Vienna set and the 1000GP unrelated set
+# HG03499
+# HG03548
+
+# path of the GRCh38 CRAMs
+# Files are available here https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/hg38/
+path_to_cram: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/hg38/'
+
+# The VAMOS vcf made from the NAPU assemblies of Gustafson et al can be downloaded at https://s3.amazonaws.com/1000g-ont/index.html?prefix=Gustafson_etal_2024_preprint_SUPPLEMENTAL/Supplemental_File_3.vcf.gz
+path_to_miller_vcf: ''

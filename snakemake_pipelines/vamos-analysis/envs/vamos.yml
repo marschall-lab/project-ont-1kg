@@ -1,0 +1,10 @@
+channels:
+  - http://conda.repo.test.hhu.de/conda-forge
+  - http://conda.repo.test.hhu.de/bioconda
+  - http://conda.repo.test.hhu.de/main
+
+dependencies:
+  - vamos=1.2.6
+  - htslib>=1.13
+  - boost>=1.73.0
+  - libdeflate=1.7

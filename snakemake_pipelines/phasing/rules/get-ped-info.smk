@@ -20,7 +20,7 @@ def merge_family(set1, set2):
         set2.add(member)
     return set2
 
-ped_file = np.loadtxt('/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/pedigree.ped', delimiter='\t',dtype=str)[:,1:4]
+ped_file = np.loadtxt('resources/pedigree.ped', delimiter='\t',dtype=str)[:,1:4]
 ped_dict = {line[0]: None for line in ped_file}
 for line in ped_file:
     if (line[1] == '0') and (line[2] == '0'):

@@ -1,0 +1,11 @@
+configfile: 'config.yaml'
+
+include: 'rules/vamos.smk'
+
+wildcard_constraints:
+    sample='|'.join(['HG03499','HG03548']),
+
+rule all:
+    input:
+        expand('results/vamos-results-vienna/{sample}.vcf', sample=['HG03499','HG03548'])
+        

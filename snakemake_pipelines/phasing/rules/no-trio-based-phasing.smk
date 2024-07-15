@@ -1,18 +1,13 @@
-flag_indel={'snp': '', 'indel': '--indels'}
-wh_compare_flag={'snp': '--only-snvs', 'indel': ''}
-
 rule phase_sample_longread:
     input:
-        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/no-trios/{sample}/{chr}_filtered.vcf',
-        bam='/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/hg38/{sample}.hg38.cram',
-        ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta'
+        vcf='results/data/nygc-genotypes/no-trios/{sample}/{chr}_filtered.vcf',
+        bam=config['path_to_cram']+'/{sample}.hg38.cram',
+        ref=config['reference_directory']+'/1KG_ONT_VIENNA_hg38.fa'
     output:
-        vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread/{sample}/{chr}_{vtype}.vcf'),
-        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread/{sample}/{chr}_{vtype}.out'
-    params:
-        indel_flag=lambda wildcards: flag_indel[wildcards.vtype]
+        vcf=temp('results/phased-vcf/longread/{sample}/{chr}.vcf'),
+        out='results/phased-vcf/longread/{sample}/{chr}.out'
     conda:
-        '../envs/whatshap.yaml'
+        '../envs/phasing.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: attempt,
         runtime_min=0,
@@ -20,20 +15,20 @@ rule phase_sample_longread:
         mem_per_cpu_mb=lambda wildcards, attempt: 2048 * attempt
     shell:
         '''
-        whatshap phase -o {output.vcf} --chromosome {wildcards.chr} --sample {wildcards.sample} {params.indel_flag} -r {input.ref} {input.vcf} {input.bam} 2>&1 | tee {output.out} 
+        whatshap phase -o {output.vcf} --chromosome {wildcards.chr} --sample {wildcards.sample} -r {input.ref} {input.vcf} {input.bam} 2>&1 | tee {output.out} 
         '''
 
 rule concat_longread:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread/{{sample}}/{chr}_{{vtype}}.vcf', chr=config['chromosome'])
+        expand('results/phased-vcf/longread/{{sample}}/{chr}.vcf', chr=config['chromosome'])
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread/{sample}/{vtype}.vcf'
+        'results/phased-vcf/longread/{sample}.vcf'
     wildcard_constraints:
         chr='[c][h][r][0-9X]{1,2}',
         sample='(?:NA|HG)\d{5}',
         vtype='[a-z]{3,5}'
     conda:
-        '../envs/basic.yaml'
+        '../envs/phasing.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 3 * attempt,
         runtime_min=0,
@@ -46,11 +41,11 @@ rule concat_longread:
 
 rule stats_longread:
     input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread/{sample}/{vtype}.vcf'
+        'results/phased-vcf/longread/{sample}.vcf'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread/{sample}/{vtype}.stats.tsv'
+        'results/phased-vcf/longread/{sample}.stats.tsv'
     conda:
-        '../envs/whatshap.yaml'
+        '../envs/phasing.yaml'
     resources:
         runtime_hrs=0,
         runtime_min=30,

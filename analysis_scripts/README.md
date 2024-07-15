@@ -1,1 +1,0 @@
-This folder contains the local scripts used to filter, analyze and generate plots for the genotypes.

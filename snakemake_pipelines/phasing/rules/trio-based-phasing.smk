@@ -1,38 +1,33 @@
-flag_indel={'snp': '', 'indel': '--indels'}
-wh_compare_flag={'snp': '--only-snvs', 'indel': ''}
-
 rule phase_trio:
     input:
-        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/trios/{family}/{chr}_filtered.vcf',
-        ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta',
-        ped='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/pedigree.ped'
+        vcf='results/data/nygc-genotypes/trios/{family}/{chr}_filtered.vcf',
+        ref=config['reference_directory']+'/1KG_ONT_VIENNA_hg38.fa',
+        ped='resources/pedigree.ped'
     output:
-        vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/trio_phase/{family}/{chr}_{vtype}.vcf'),
-        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/trio_phase/{family}/{chr}_{vtype}.out'
+        vcf=temp('results/phased-vcf/trio_phase/{family}/{chr}.vcf'),
+        out='results/phased-vcf/trio_phase/{family}/{chr}.out'
     conda:
-        '../envs/whatshap.yaml'
-    params:
-        indel_flag=lambda wildcards: flag_indel[wildcards.vtype]
+        '../envs/phasing.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 2,
         mem_total_mb=lambda wildcards, attempt: 2048 * attempt,
         mem_per_cpu_mb=lambda wildcards, attempt: 2048 * attempt
     shell:
         '''
-        whatshap phase -o {output.vcf} --chromosome {wildcards.chr} {params.indel_flag} -r {input.ref} --ped {input.ped} {input.vcf} 2>&1 | tee {output.out} 
+        whatshap phase -o {output.vcf} --chromosome {wildcards.chr} -r {input.ref} --ped {input.ped} {input.vcf} 2>&1 | tee {output.out} 
         '''
 
 rule concat_trio_phase:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/trio_phase/{{family}}/{chr}_{{vtype}}.vcf', chr=config['chromosome'])
+        expand('results/phased-vcf/trio_phase/{{family}}/{chr}.vcf', chr=config['chromosome'])
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/trio_phase/{family}/{vtype}.vcf'
+        'results/phased-vcf/trio_phase/{family}.vcf'
     wildcard_constraints:
         chr='[c][h][r][0-9X]{1,2}',
         sample='(?:NA|HG)\d{5}',
         vtype='[a-z]{3,5}'
     conda:
-        '../envs/basic.yaml'
+        '../envs/phasing.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 3 * attempt,
         runtime_min=0,
@@ -45,11 +40,11 @@ rule concat_trio_phase:
 
 rule stats_trio_phase:
     input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/trio_phase/{family}/{vtype}.vcf'
+        'results/phased-vcf/trio_phase/{family}.vcf'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/trio_phase/{family}/{vtype}.stats.tsv'
+        'results/phased-vcf/trio_phase/{family}.stats.tsv'
     conda:
-        '../envs/whatshap.yaml'
+        '../envs/phasing.yaml'
     resources:
         runtime_hrs=0,
         runtime_min=30,
@@ -60,37 +55,35 @@ rule stats_trio_phase:
 
 rule longread_trio_phase:
     input:
-        vcf='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/data/nygc-genotypes/trios/{family}/{chr}_filtered.vcf',
-        ref='/gpfs/project/projects/medbioinf/users/spani/files/ref/GCA_000001405.15_GRCh38_no_alt_analysis_set_maskedGRC_exclusions_v2.fasta',
-        bam= lambda wildcards: expand('/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/hg38/{sample}.hg38.cram', sample=wildcards.family.split('_')),
-        ped='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/pedigree.ped'
+        vcf='results/data/nygc-genotypes/trios/{family}/{chr}_filtered.vcf',
+        ref=config['reference_directory']+'/1KG_ONT_VIENNA_hg38.fa',
+        bam= lambda wildcards: expand(config['path_to_cram']+'/{sample}.hg38.cram', sample=wildcards.family.split('_')),
+        ped='resources/pedigree.ped'
     output:
-        vcf=temp('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread_trio_phase/{family}/{chr}_{vtype}.vcf'),
-        out='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread_trio_phase/{family}/{chr}_{vtype}.out'
+        vcf=temp('results/phased-vcf/longread_trio_phase/{family}/{chr}.vcf'),
+        out='results/phased-vcf/longread_trio_phase/{family}/{chr}.out'
     conda:
-        '../envs/whatshap.yaml'
-    params:
-        indel_flag=lambda wildcards: flag_indel[wildcards.vtype]
+        '../envs/phasing.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: attempt,
         mem_total_mb=lambda wildcards, attempt: 2048 * attempt,
         mem_per_cpu_mb=lambda wildcards, attempt: 2048 * attempt
     shell:
         '''
-        whatshap phase -o {output.vcf} --chromosome {wildcards.chr} {params.indel_flag} -r {input.ref} --ped {input.ped} {input.vcf} {input.bam} 2>&1 | tee {output.out} 
+        whatshap phase -o {output.vcf} --chromosome {wildcards.chr} -r {input.ref} --ped {input.ped} {input.vcf} {input.bam} 2>&1 | tee {output.out} 
         '''
 
 rule concat_longread_trio:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread_trio_phase/{{family}}/{chr}_{{vtype}}.vcf', chr=config['chromosome'])
+        expand('results/phased-vcf/longread_trio_phase/{{family}}/{chr}.vcf', chr=config['chromosome'])
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread_trio_phase/{family}/{vtype}.vcf'
+        'results/phased-vcf/longread_trio_phase/{family}.vcf'
     wildcard_constraints:
         chr='[c][h][r][0-9X]{1,2}',
         sample='(?:NA|HG)\d{5}',
         vtype='[a-z]{3,5}'
     conda:
-        '../envs/basic.yaml'
+        '../envs/phasing.yaml'
     resources:
         runtime_hrs=lambda wildcards, attempt: 3 * attempt,
         runtime_min=0,
@@ -103,11 +96,11 @@ rule concat_longread_trio:
 
 rule stats_longread_trio:
     input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread_trio_phase/{family}/{vtype}.vcf'
+        'results/phased-vcf/longread_trio_phase/{family}.vcf'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/phased-vcf/longread_trio_phase/{family}/{vtype}.stats.tsv'
+        'results/phased-vcf/longread_trio_phase/{family}.stats.tsv'
     conda:
-        '../envs/whatshap.yaml'
+        '../envs/phasing.yaml'
     resources:
         runtime_hrs=0,
         runtime_min=30,

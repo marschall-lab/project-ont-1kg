@@ -5,150 +5,121 @@ SHELL=/bin/bash
 # Note that the extra activate is needed to ensure that the activate floats env to the front of PATH
 CONDA_ACTIVATE=source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ; conda activate
 
-pre-filtering: plot-hwe-af-unfiltered boxplots-unfiltered rausch-curves-unfiltered audano-curves-unfiltered
+# Some metadata files provided along with the repository
+UNRELATED_SAMPLES="unrel.samples.tsv"
+IGSR_METADATA="igsr_sample_data.tsv"
+SAMPLE_METADATA="sample_sheet.tsv"
+COVERAGES_OVERVIEW="1k_ont_data_overview-samples_and_sequencing.tsv"
 
-tag-filter-vcfs:
-	bcftools view --min-ac 1 original-graph/multisample-genotypes/multisample-biallelic.vcf.gz | bcftools +fill-tags | bgzip -c > original-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz
-	bcftools view --min-ac 1 augmented-graph/multisample-genotypes/multisample-biallelic.vcf.gz | bcftools +fill-tags | bgzip -c > augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz
-	bcftools view -S unrel.samples.tsv original-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz | bgzip -c > original-graph/multisample-genotypes/biallelic.ac0-filtered.unrelated-samples.vcf.gz
-	bcftools view -S unrel.samples.tsv augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz | bgzip -c > augmented-graph/multisample-genotypes/biallelic.ac0-filtered.unrelated-samples.vcf.gz
+### Variables that need to be declared before the makefile is run.
 
-map-bub-ids:
-	python scripts/map-bub-ids-to-allele-ids.py -vcf original-graph/multisample-genotypes/multisample-multiallelic.vcf.gz > original-graph/map-bub_ids-to-allele_ids.tsv
-	python scripts/map-bub-ids-to-allele-ids.py -vcf augmented-graph/multisample-genotypes/multisample-multiallelic.vcf.gz > augmented-graph/map-bub_ids-to-allele_ids.tsv
+# Main project directory where all the files are present and where to put the joint plots
+PROJECT_DIR=""
 
-boxplots-unfiltered:
-	python scripts/boxplots-lengths.py -meta igsr_sample_data.tsv -coverages 1k_ont_data_overview-samples_and_sequencing.tsv -names original,augment -vcfs original-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz,augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz -output joint-plots/unfiltered/boxplot-lengths/
-	python scripts/boxplots-counts.py -meta igsr_sample_data.tsv -coverages 1k_ont_data_overview-samples_and_sequencing.tsv -names original,augment -vcfs original-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz,augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz -output joint-plots/unfiltered/boxplot-counts/
+# These are the genotypes from the genotyping pipeline
+# Biallelic panel made in the rule annotate_panel_giggles_ready of the "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/prepare-vcf.smk" file
+BI_PANEL=""
+# Multiallelic panel made in the rule annotate_panel_giggles_ready of the "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/prepare-vcf.smk" file
+MULTI_PANEL=""
 
-rausch-curves-unfiltered:
-	python scripts/rausch-curves.py -sample-sheet sample_sheet.tsv -names original,augment -vcfs original-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz,augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz -output joint-plots/unfiltered/rausch-curves/
+# Biallelic genotypes produced by Giggles on the HPRC_mg in the rule "convert_multisample_vcf_biallelic" of "hhu-snakemake-pipelines/pre-augmentation-giggles-svarp/rules/genotyping.smk" file
+ORIGINAL_GIGGLES_GTS_BA=""
+# Multiallelic genotypes produced by Giggles on the HPRC_mg in the rule "merge_vcf_to_multisample" of "hhu-snakemake-pipelines/pre-augmentation-giggles-svarp/rules/genotyping.smk" file
+ORIGINAL_GIGGLES_GTS_MA=""
+# The directory where the above two files are present
+ORIGINAL_GIGGLES_GTS_DIR=""
 
-audano-curves-unfiltered:
-	python scripts/audano-growth-curves.py -vcf original-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz -meta igsr_sample_data.tsv -map original-graph/map-bub_ids-to-allele_ids.tsv -sample-sheet sample_sheet.tsv -output original-graph/plots/growth-curves
-	python scripts/audano-growth-curves.py -vcf augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz -meta igsr_sample_data.tsv -map augmented-graph/map-bub_ids-to-allele_ids.tsv -sample-sheet sample_sheet.tsv -output augmented-graph/plots/growth-curves
+# Biallelic genotypes produced by Giggles on the HPRC_mg_44+966 in the rule "convert_multisample_vcf_biallelic" of "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/genotyping.smk" file
+AUGMENTED_GIGGLES_GTS_BA=""
+# Multiallelic genotypes produced by Giggles on the HPRC_mg_44+966 in the rule "merge_vcf_to_multisample" of "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/genotyping.smk" file
+AUGMENTED_GIGGLES_GTS_MA=""
+#The directory where the above two files are present
+AUGMENTED_GIGGLES_GTS_DIR=""
 
-create-sample-list-table:
-	python scripts/sample-list-supplementary-table.py > supplementary_table-sample_list.tsv
+# These are the biallelic genotypes from the post-phasing of the genotypes using ShapeIt5
+# These files were produced by Dr Tobias Rausch of EMBL and are not part of the pipeline. Please refer to the Methods section on how to generate them.
+PHASED_GTS=""
+# The directory of the phased genotypes
+PHASED_GTS_DIR=""
 
 
-# create-hwe-af-popwise-stats:
-# 	python scripts/hwe-af-popwise-stats.py -sample-sheet sample_sheet.tsv -meta igsr_sample_data.tsv -bi-panel augmented-graph/prepared-panel/giggles-ready_biallelic.vcf.gz -multi-panel augmented-graph/prepared-panel/giggles-ready_multiallelic.vcf.gz -callset augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz -coverages 1k_ont_data_overview-samples_and_sequencing.tsv -output hwe-af-stats/augmented
-# 	python scripts/hwe-af-popwise-stats.py -sample-sheet sample_sheet.tsv -meta igsr_sample_data.tsv -bi-panel original-graph/prepared-panel/panel-biallelic.vcf.gz -multi-panel original-graph/prepared-panel/panel-multiallelic.vcf.gz -callset original-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz -coverages 1k_ont_data_overview-samples_and_sequencing.tsv -output hwe-af-stats/original
+### Derived variables. These are files that will be produced as a result.
 
-# plot-hwe-af-popwise-stats:
-# 	python scripts/hwe-af-popwise-plot.py -table hwe-af-stats/augmented-all_cov.tsv -output plots/augmented/hwe_af-all
-# 	python scripts/hwe-af-popwise-plot.py -table hwe-af-stats/augmented-low_cov.tsv -output plots/augmented/hwe_af-low
-# 	python scripts/hwe-af-popwise-plot.py -table hwe-af-stats/augmented-high_cov.tsv -output plots/augmented/hwe_af-high
-# 	python scripts/hwe-af-popwise-plot.py -table hwe-af-stats/original-all_cov.tsv -output plots/original/hwe_af-all
-# 	python scripts/hwe-af-popwise-plot.py -table hwe-af-stats/original-low_cov.tsv -output plots/original/hwe_af-low
-# 	python scripts/hwe-af-popwise-plot.py -table hwe-af-stats/original-high_cov.tsv -output plots/original/hwe_af-high
+ORIGINAL_GIGGLES_GTS_FILTERED="$$(ORIGINAL_GIGGLES_GTS_DIR)/biallelic.filtered.all-samples.vcf.gz"
+AUGMENTED_GIGGLES_GTS_FILTERED="$$(AUGMENTED_GIGGLES_GTS_DIR)/biallelic.filtered.all-samples.vcf.gz"
 
-qc-table-unfiltered:
-	python scripts/qc-table-creation.py -sample-sheet sample_sheet.tsv -bi-panel augmented-graph/prepared-panel/giggles-ready_biallelic.vcf.gz -multi-panel augmented-graph/prepared-panel/giggles-ready_multiallelic.vcf.gz -bi-callset augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz > augmented-graph/qc-table.tsv
-	python scripts/qc-table-creation.py -sample-sheet sample_sheet.tsv -bi-panel original-graph/prepared-panel/panel-biallelic.vcf.gz -multi-panel original-graph/prepared-panel/panel-multiallelic.vcf.gz -bi-callset original-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz > original-graph/qc.final.tsv
+ORIGINAL_MAP_ID="$$(ORIGINAL_GIGGLES_GTS_DIR)/map-bub_ids-to-allele_ids.tsv"
+AUGMENTED_MAP_ID="$$(AUGMENTED_GIGGLES_GTS_DIR)/map-bub_ids-to-allele_ids.tsv"
+
+PHASED_GTS_TAGGED="$$(PHASED_GTS_DIR)/phased.gts.tagged.vcf.gz"
+
+# QC Tables
+PHASED_GTS_QC_TABLE="$$(PHASED_GTS_DIR)/phased.qc.tsv"
+AUGMENTED_GIGGLES_GTS_FILTERED_QC_TABLE="$$(AUGMENTED_GIGGLES_GTS_DIR)/filtered.qc.tsv"
+
+# removes all the files and folders made during the execution of the script
+remove:
+	rm -r $(PROJECT_DIR)/plots $(PHASED_GTS_DIR)/plots $(AUGMENTED_GIGGLES_GTS_DIR)/plots $(ORIGINAL_GIGGLES_GTS_DIR)/plots $(AUGMENTED_GIGGLES_GTS_DIR)/mendelian-consistency
+	rm sample-lists/*.svg
+	rm $(ORIGINAL_GIGGLES_GTS_FILTERED)
+	rm $(AUGMENTED_GIGGLES_GTS_FILTERED)
+	rm $(ORIGINAL_MAP_ID)
+	rm $(AUGMENTED_MAP_ID)
+	rm $(PHASED_GTS_TAGGED)
+	rm $(PHASED_GTS_QC_TABLE)
+	rm $(AUGMENTED_GIGGLES_GTS_FILTERED_QC_TABLE)
+
+# creates the inital directory structure where the output files can be stored
+directory-tree:
+	mkdir $(PROJECT_DIR)/plots
+	mkdir $(PHASED_GTS_DIR)/plots
+	mkdir $(AUGMENTED_GIGGLES_GTS_DIR)/plots
+	mkdir $(ORIGINAL_GIGGLES_GTS_DIR)/plots
+	mkdir $(AUGMENTED_GIGGLES_GTS_DIR)/mendelian-consistency
+
+# creating a map between the bubble ids and allele ids
+map-ids:
+	python scripts/map-bub-ids-to-allele-ids.py -vcf $(ORIGINAL_GIGGLES_GTS_MA) > $(ORIGINAL_MAP_ID)
+	python scripts/map-bub-ids-to-allele-ids.py -vcf $(AUGMENTED_GIGGLES_GTS_MA) > $(AUGMENTED_MAP_ID)
+
+# bcftools based filtering
+filtering:
+	bcftools +fill-tags $(AUGMENTED_GIGGLES_GTS_BA) -- -t all | bcftools filter -i 'INFO/AC >= 1 && INFO/F_MISSING <= 0.05' | bcftools view --min-ac 1 -m2 -M2 | bcftools +setGT - -- -t q -n . -i 'FMT/GQ<10' | bcftools +fill-tags - -- -t all | bcftools filter -O z -o $(AUGMENTED_GIGGLES_GTS_FILTERED) -i 'INFO/AC >= 1 && INFO/F_MISSING <= 0.05' -
+	bcftools +fill-tags $(ORIGINAL_GIGGLES_GTS_BA) -- -t all | bcftools filter -i 'INFO/AC >= 1 && INFO/F_MISSING <= 0.05' | bcftools view --min-ac 1 -m2 -M2 | bcftools +setGT - -- -t q -n . -i 'FMT/GQ<10' | bcftools +fill-tags - -- -t all | bcftools filter -O z -o $(ORIGINAL_GIGGLES_GTS_FILTERED) -i 'INFO/AC >= 1 && INFO/F_MISSING <= 0.05' -
 	
-merge-tables-unfiltered:
-	python scripts/merge-qc-tables.py augmented-graph/qc-table.tsv augmented-graph/qc-phased.table.tsv augmented-graph/qc.final.tsv
-	rm augmented-graph/qc-table.tsv
-
-plot-hwe-af-unfiltered:
-	python scripts/hwe-af-simple.py -table original-graph/qc.final.tsv -output original-graph/plots/hwe-af/
-	python scripts/hwe-af-simple.py -table augmented-graph/qc.final.tsv -output augmented-graph/plots/hwe-af/
-
-
-### BCFtools based filtering
-
-bcftools-based-regression: bcftools-filtering bcftools-filtered-qc-table bcftools-merge-table
-
-# cannot run directly here since it does not support conda activate
-bcftools-filtering:
-	$(CONDA_ACTIVATE) bcftools-latest
-	bcftools +fill-tags augmented-graph/multisample-genotypes/multisample-biallelic.vcf.gz -- -t all | bcftools filter -O z -o genotype-filtering/augmented/biallelic.maskgq10.dropsites.vcf.gz -i 'INFO/AC >= 1 && INFO/F_MISSING <= 0.05' -
-	bcftools view --min-ac 1 -m2 -M2 genotype-filtering/augmented/biallelic.maskgq10.dropsites.vcf.gz  | bcftools +setGT - -- -t q -n . -i 'FMT/GQ<10' | bcftools +fill-tags - -- -t all | bcftools filter -O z -o genotype-filtering/augmented/biallelic.filtered.all-samples.vcf.gz -i 'INFO/AC >= 1 && INFO/F_MISSING <= 0.05' -
-	rm genotype-filtering/augmented/biallelic.maskgq10.dropsites.vcf.gz
-	bcftools view -S unrel.samples.tsv genotype-filtering/augmented/biallelic.filtered.all-samples.vcf.gz | bgzip -c > genotype-filtering/augmented/biallelic.filtered.unrel-samples.vcf.gz
-	bcftools +fill-tags original-graph/multisample-genotypes/multisample-biallelic.vcf.gz -- -t all | bcftools filter -O z -o genotype-filtering/original/biallelic.maskgq10.dropsites.vcf.gz -i 'INFO/AC >= 1 && INFO/F_MISSING <= 0.05'
-	bcftools view --min-ac 1 -m2 -M2 genotype-filtering/original/biallelic.maskgq10.dropsites.vcf.gz  | bcftools +setGT - -- -t q -n . -i 'FMT/GQ<10' | bcftools +fill-tags - -- -t all | bcftools filter -O z -o genotype-filtering/original/biallelic.filtered.all-samples.vcf.gz -i 'INFO/AC >= 1 && INFO/F_MISSING <= 0.05' -
-	rm genotype-filtering/original/biallelic.maskgq10.dropsites.vcf.gz
-	bcftools view -S unrel.samples.tsv genotype-filtering/original/biallelic.filtered.all-samples.vcf.gz | bgzip -c > genotype-filtering/original/biallelic.filtered.unrel-samples.vcf.gz
-	$(CONDA_ACTIVATE) base
-
-# we need to generate the qc table for the other codes
-bcftools-filtered-qc-table:
-	python scripts/qc-table-creation.py -sample-sheet sample_sheet.tsv -bi-panel augmented-graph/prepared-panel/giggles-ready_biallelic.vcf.gz -multi-panel augmented-graph/prepared-panel/giggles-ready_multiallelic.vcf.gz -bi-callset genotype-filtering/augmented/biallelic.filtered.all-samples.vcf.gz > genotype-filtering/augmented/qc-table.tsv
-	python scripts/qc-table-creation.py -sample-sheet sample_sheet.tsv -bi-panel original-graph/prepared-panel/panel-biallelic.vcf.gz -multi-panel original-graph/prepared-panel/panel-multiallelic.vcf.gz -bi-callset genotype-filtering/original/biallelic.filtered.all-samples.vcf.gz > genotype-filtering/original/qc.final.tsv
-
-# need to merge the table with the stats from 
-bcftools-merge-table:
-	python scripts/merge-qc-tables.py genotype-filtering/augmented/qc-table.tsv augmented-graph/qc-phased.table.tsv genotype-filtering/augmented/qc.final.tsv
-	rm genotype-filtering/augmented/qc-table.tsv
-
-
-
-### All the plotting scripts after the filtering is done
-
-post-filtering: plot-hwe-af-filtered boxplots-filtered rausch-curves-filtered audano-curves-filtered boxplots-all rausch-curves-all
-
-plot-hwe-af-filtered:
-	python scripts/hwe-af-simple.py -table genotype-filtering/augmented/qc.final.tsv -output genotype-filtering/augmented/plots/hwe-af/
-	python scripts/hwe-af-simple.py -table genotype-filtering/original/qc.final.tsv -output genotype-filtering/original/plots/hwe-af/
-
-boxplots-filtered:
-	python scripts/boxplots-lengths.py -meta igsr_sample_data.tsv -coverages 1k_ont_data_overview-samples_and_sequencing.tsv -names original-filtered,augment-filtered -vcfs genotype-filtering/original/biallelic.filtered.all-samples.vcf.gz,genotype-filtering/augmented/biallelic.filtered.all-samples.vcf.gz -output joint-plots/filtered/boxplot-lengths/
-	python scripts/boxplots-counts.py -meta igsr_sample_data.tsv -coverages 1k_ont_data_overview-samples_and_sequencing.tsv -names original-filtered,augment-filtered -vcfs genotype-filtering/original/biallelic.filtered.all-samples.vcf.gz,genotype-filtering/augmented/biallelic.filtered.all-samples.vcf.gz -output joint-plots/filtered/boxplot-counts/
-
-rausch-curves-filtered:
-	python scripts/rausch-curves.py -sample-sheet sample_sheet.tsv -names original-filtered,augment-filtered -vcfs genotype-filtering/original/biallelic.filtered.all-samples.vcf.gz,genotype-filtering/augmented/biallelic.filtered.all-samples.vcf.gz -output joint-plots/filtered/rausch-curves/
-
-audano-curves-filtered:
-	python scripts/audano-growth-curves.py -vcf genotype-filtering/original/biallelic.filtered.all-samples.vcf.gz -meta igsr_sample_data.tsv -map original-graph/map-bub_ids-to-allele_ids.tsv -sample-sheet sample_sheet.tsv -output genotype-filtering/original/plots/growth-curves/
-	python scripts/audano-growth-curves.py -vcf genotype-filtering/augmented/biallelic.filtered.all-samples.vcf.gz -meta igsr_sample_data.tsv -map augmented-graph/map-bub_ids-to-allele_ids.tsv -sample-sheet sample_sheet.tsv -output genotype-filtering/augmented/plots/growth-curves/
-
-boxplots-all:
-	python scripts/boxplots-lengths.py -meta igsr_sample_data.tsv -coverages 1k_ont_data_overview-samples_and_sequencing.tsv -names original,original-filtered,augment,augment-filtered -vcfs original-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz,genotype-filtering/original/biallelic.filtered.all-samples.vcf.gz,augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz,genotype-filtering/augmented/biallelic.filtered.all-samples.vcf.gz -output joint-plots/all/boxplot-lengths/
-	python scripts/boxplots-counts.py -meta igsr_sample_data.tsv -coverages 1k_ont_data_overview-samples_and_sequencing.tsv -names original,original-filtered,augment,augment-filtered -vcfs original-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz,genotype-filtering/original/biallelic.filtered.all-samples.vcf.gz,augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz,genotype-filtering/augmented/biallelic.filtered.all-samples.vcf.gz -output joint-plots/all/boxplot-counts/
-
-rausch-curves-all:
-	python scripts/rausch-curves.py -sample-sheet sample_sheet.tsv -names original,original-filtered,augment,augment-filtered -vcfs original-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz,genotype-filtering/original/biallelic.filtered.all-samples.vcf.gz,augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz,genotype-filtering/augmented/biallelic.filtered.all-samples.vcf.gz -output joint-plots/all/rausch-curves/
-
-
-
-# All the scripts for analyzing the phased genotypes
-
-phased-genotypes-analyze: boxplot-phased rausch-curves-phased audano-curves-phased
-
-subset-tag-phased-vcf:
-	bcftools view phased-genotypes/phased.biallelic.bcf | awk '($1 ~ /^#/ || $3 != ".")' | bgzip -c > phased-genotypes/phased.biallelic.svs.vcf.gz
-	$(CONDA_ACTIVATE) bcftools-latest
-	bcftools view phased-genotypes/phased.biallelic.svs.vcf.gz | bcftools +fill-tags | bgzip -c > phased-genotypes/phased.biallelic.svs.tagged.vcf.gz
-	$(CONDA_ACTIVATE) base
-
-
-qc-table-phased:
-	python scripts/qc-table-creation-unrelated.py -sample-sheet sample_sheet.tsv -bi-panel augmented-graph/prepared-panel/giggles-ready_biallelic.vcf.gz -multi-panel augmented-graph/prepared-panel/giggles-ready_multiallelic.vcf.gz -bi-callset phased-genotypes/phased.biallelic.svs.tagged.vcf.gz > phased-genotypes/qc.final.tsv
-
-boxplot-phased:
-	python scripts/boxplots-lengths.py -meta igsr_sample_data.tsv -coverages 1k_ont_data_overview-samples_and_sequencing.tsv -names phased,augment-filtered-unrel,augment-filtered-all -vcfs phased-genotypes/phased.biallelic.svs.tagged.vcf.gz,genotype-filtering/augmented/biallelic.filtered.unrel-samples.vcf.gz,genotype-filtering/augmented/biallelic.filtered.all-samples.vcf.gz -output joint-plots/phased/boxplot-lengths/
-	python scripts/boxplots-counts.py -meta igsr_sample_data.tsv -coverages 1k_ont_data_overview-samples_and_sequencing.tsv -names phased,augment-filtered-unrel,augment-filtered-all -vcfs phased-genotypes/phased.biallelic.svs.tagged.vcf.gz,genotype-filtering/augmented/biallelic.filtered.unrel-samples.vcf.gz,genotype-filtering/augmented/biallelic.filtered.all-samples.vcf.gz -output joint-plots/phased/boxplot-counts/
-
-plot-hwe-af-phased:
-	python scripts/hwe-af-simple.py -table phased-genotypes/qc.final.tsv -output phased-genotypes/plots/hwe-af/
-
-rausch-curves-phased:
-	python scripts/rausch-curves.py -sample-sheet sample_sheet.tsv -names phased,augment-filtered-unrel -vcfs phased-genotypes/phased.biallelic.svs.tagged.vcf.gz,genotype-filtering/augmented/biallelic.filtered.unrel-samples.vcf.gz -output joint-plots/phased/rausch-curves/
-
-audano-curves-phased:
-	python scripts/audano-growth-curves.py -vcf phased-genotypes/phased.biallelic.svs.tagged.vcf.gz -meta igsr_sample_data.tsv -map augmented-graph/map-bub_ids-to-allele_ids.tsv -sample-sheet sample_sheet.tsv -output phased-genotypes/plots/growth-curves/
-
-
-# script for the mendelian consistency
-
-check-mendelian-consistency:
-	bash scripts/mendelian-check.sh
+# tagging the vcf with bcftools
+tag-phased-vcf:
+	bcftools view $(PHASED_GTS) | awk '($$1 ~ /^#/ || $$3 != ".")' | bcftools +fill-tags | bgzip -c > $(PHASED_GTS_TAGGED)
 	
-plot-mendelian-consistency:
-	python scripts/mendelian-consistency-upsetplot.py -children NA19828,HG01258,HG00420,NA19129,NA12877,NA12878 -out augmented-graph/mendelian-consistency/
-	python scripts/mendelian-consistency-upsetplot.py -children NA19828,HG01258,HG00420,NA19129,NA12877,NA12878 -out original-graph/mendelian-consistency/
-	python scripts/mendelian-consistency-upsetplot.py -children NA19828,HG01258,HG00420,NA19129,NA12877,NA12878 -out genotype-filtering/augmented/mendelian-consistency/
-	python scripts/mendelian-consistency-upsetplot.py -children NA19828,HG01258,HG00420,NA19129,NA12877,NA12878 -out genotype-filtering/original/mendelian-consistency/
+# creating quality check tables out of the vcfs
+qc-table:
+	python scripts/qc-table-creation-unrelated.py -sample-sheet $(SAMPLE_METADATA) -bi-panel $(BI_PANEL) -multi-panel $(MULTI_PANEL) -bi-callset $(PHASED_GTS_TAGGED) > $(PHASED_GTS_QC_TABLE)
+	python scripts/qc-table-creation.py -sample-sheet $(SAMPLE_METADATA) -bi-panel $(BI_PANEL) -multi-panel $(MULTI_PANEL) -bi-callset $(AUGMENTED_GIGGLES_GTS_FILTERED) > $(AUGMENTED_GIGGLES_GTS_FILTERED_QC_TABLE)
+
+# creating boxplot of SV lengths and SV counts
+boxplot:
+	python scripts/boxplots-lengths.py -meta $(IGSR_METADATA) -coverages $(COVERAGES_OVERVIEW) -names HPRC_mg,HPRC_mg_44+966 -vcfs $(ORIGINAL_GIGGLES_GTS_FILTERED),$(PHASED_GTS_TAGGED) -output $(PROJECT_DIR)/plots
+	python scripts/boxplots-counts.py -meta $(IGSR_METADATA) -coverages $(COVERAGES_OVERVIEW) -names HPRC_mg,HPRC_mg_44+966 -vcfs $(ORIGINAL_GIGGLES_GTS_FILTERED),$(PHASED_GTS_TAGGED) -output $(PROJECT_DIR)/plots
+
+# creating log(allele count) vs log(number of variant sites)
+rausch-curves:
+	python scripts/rausch-curves.py -sample-sheet $(SAMPLE_METADATA) -names HPRC_mg,HPRC_mg_44+966 -vcfs $(ORIGINAL_GIGGLES_GTS_FILTERED),$(PHASED_GTS_TAGGED) -output $(PROJECT_DIR)/plots
+
+# creating HWE (heterozygosity vs allele frequency) and AF (allele frequency in reference panel vs allele frequency in genotyped samples) plots
+hwe-af:
+	python scripts/hwe-af-simple.py -table $(PHASED_GTS_QC_TABLE) -output $(PHASED_GTS_DIR)/plots/
+	python scripts/hwe-af-simple.py -table $(AUGMENTED_GIGGLES_GTS_FILTERED_QC_TABLE) -output $(AUGMENTED_GIGGLES_GTS_DIR)/plots/
+
+# creating SV growth curves with AFR and non-AFR samples kept separate
+growth-curves:
+	python scripts/audano-growth-curves.py -vcf $(PHASED_GTS_TAGGED) -meta $(IGSR_METADATA) -map $(AUGMENTED_MAP_ID) -sample-sheet $(SAMPLE_METADATA) -output $(PHASED_GTS_DIR)/plots/
+	python scripts/audano-growth-curves.py -vcf $(ORIGINAL_GIGGLES_GTS_FILTERED) -meta $(IGSR_METADATA) -map $(ORIGINAL_MAP_ID) -sample-sheet $(SAMPLE_METADATA) -output $(ORIGINAL_GIGGLES_GTS_DIR)/plots/
+
+# creating Venn Diagram of different consortiums to show overlap of data
+venn-diagram:
+	python scripts/make-sample-venn.py
+
+# calculating number of mendelian inconsistent sites in the six families present in the data
+mendelian-consistency:
+	bash scripts/mendelian-check.sh $(AUGMENTED_MAP_ID) $(AUGMENTED_GIGGLES_GTS_FILTERED) $(AUGMENTED_GIGGLES_GTS_DIR)/mendelian-consistency
+	python scripts/mendelian-consistency-upsetplot.py -children NA19828,HG01258,HG00420,NA19129,NA12877,NA12878 -out $(AUGMENTED_GIGGLES_GTS_DIR)/mendelian-consistency

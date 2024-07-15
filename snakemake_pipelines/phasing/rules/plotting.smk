@@ -1,8 +1,8 @@
 rule list_trios:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/trio-comparision/{sample}/snp/pairwise.tsv', sample=family_sample_list)
+        expand('results/trio-comparison/{sample}/pairwise.tsv', sample=family_sample_list)
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/trio-comparision/pairwise-list.tsv'
+        'results/trio-comparison/pairwise-list.tsv'
     resources:
         runtime_hrs=0,
         runtime_min=10
@@ -14,23 +14,23 @@ rule list_trios:
 
 rule plot_trios:
     input:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/trio-comparision/pairwise-list.tsv'
+        'results/trio-comparison/pairwise-list.tsv'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/trio-ser.svg',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/trio-ser.pdf'
+        'results/plots/trio-ser.svg',
+        'results/plots/trio-ser.pdf'
     params:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/'
+        'results/plots/'
     conda:
-        '../envs/basic.yaml'
+        '../envs/phasing.yaml'
     shell:
         'python scripts/plot-ser-trios.py -tsvs {input} -output {params}'
 
 
 rule list_non_trios:
     input:
-        expand('/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/no-trio-comparision/{sample}/snp/pairwise.tsv', sample=samples)
+        expand('results/no-trio-comparison/{sample}/pairwise.tsv', sample=samples)
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/no-trio-comparision/pairwise-list.tsv'
+        'results/no-trio-comparison/pairwise-list.tsv'
     resources:
         runtime_hrs=0,
         runtime_min=10
@@ -42,15 +42,15 @@ rule list_non_trios:
 
 rule plot_non_trios:
     input:
-        tsv='/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/no-trio-comparision/pairwise-list.tsv',
-        meta='/gpfs/project/projects/medbioinf/users/spani/files/other/1000GP/igsr_sample_data.tsv'
+        tsv='results/no-trio-comparison/pairwise-list.tsv',
+        meta='resources/igsr_sample_data.tsv'
     output:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/no-trio-ser.svg',
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/no-trio-ser.pdf'
+        'results/plots/no-trio-ser.svg',
+        'results/plots/no-trio-ser.pdf'
     params:
-        '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/phasing-results/plots/'
+        'results/plots/'
     conda:
-        '../envs/basic.yaml'
+        '../envs/phasing.yaml'
     shell:
         'python scripts/plot-ser-boxplot.py -tsvs {input.tsv} -meta {input.meta} -output {params}'   
 
