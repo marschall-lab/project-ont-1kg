@@ -1,12 +1,19 @@
-# dictionary of paths
+# unzip the bed file
+rule unzip_vamos_sites_list:
+    input:
+        'resources/vamos-sites-list.bed.gz'
+    output:
+        temp('resources/vamos-sites-list.bed')
+    shell:
+        'gzip -dk {input}'
 
 # run vamos on the vienna data
 rule vamos_vienna:
     input:
         alignments=config['path_to_cram']+'/{sample}.hg38.cram',
-        sites='resources/vamos-sites-list.tsv'
+        sites='resources/vamos-sites-list.bed'
     output:
-        'results/vamos-results-vienna/{sample}.vcf'
+        vcf='results/vamos-results-vienna/{sample}.vcf'
     log:
         'results/vamos-results-vienna/{sample}.log'
     conda:
