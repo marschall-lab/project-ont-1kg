@@ -18,11 +18,12 @@ rule vamos_vienna:
         vcf='results/vamos-results-vienna/{sample}.vcf'
     log:
         'results/vamos-results-vienna/{sample}.log'
+    threads: 24
     conda:
         '../envs/vamos.yml'
     resources:
-        runtime_hrs=1,
+        runtime_hrs=24,
         runtime_min=20,
         mem_total_mb=5000
     shell:
-        'vamos --read -b {input.alignment} -r {input.sites} -s {wildcards.sample} -o {output} > {log}'
+        'vamos --read -b {input.alignment} -r {input.sites} -s {wildcards.sample} -o {output} -t {threads}> {log}'
