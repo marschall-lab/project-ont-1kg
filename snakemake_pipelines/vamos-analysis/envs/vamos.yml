@@ -4,6 +4,6 @@ channels:
   - http://conda.repo.test.hhu.de/main
 
 dependencies:
-  - vamos=1.2.6
+  - vamos=2.1.3
   - gzip=1.10
   - samtools

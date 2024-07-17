@@ -9,18 +9,26 @@ rule unzip_vamos_sites_list:
     shell:
         'gzip -dk {input}'
 
+rule sort_bed_file:
+    input:
+        'resources/vamos-sites-list.bed'
+    output:
+        temp('resources/vamos-sites-list.sorted.bed')
+    shell:
+        'sort -k 1,1 -k2,2n {input} > {output}'
+
 # convert crams to bams
 rule cram_to_bam:
     input:
-        reads=config['path_to_cram']+'/{sample}.hg38.cram',
-        ref=config['reference_directory']+'/1KG_ONT_VIENNA_hg38.fa'
+        reads=config['path_to_cram']+'{sample}.hg38.cram',
+        ref=config['reference_directory']+'1KG_ONT_VIENNA_hg38.fa'
     output:
         bam=temp('results/temp/{sample}.bam'),
         ind=temp('results/temp/{sample}.bam.bai')
     params:
         ref_dir=config['reference_directory']
     conda:
-        'envs/vamos.yml'
+        '../envs/vamos.yml'
     resources:
         runtime_hrs=12,
         runtime_min=0,
@@ -38,17 +46,18 @@ rule cram_to_bam:
 rule vamos_vienna:
     input:
         alignment='results/temp/{sample}.bam',
-        sites='resources/vamos-sites-list.bed'
+        alignment_index='results/temp/{sample}.bam.bai',
+        sites='resources/vamos-sites-list.sorted.bed'
     output:
         vcf='results/vamos-results-vienna/{sample}.vcf'
     log:
         'results/vamos-results-vienna/{sample}.log'
-    threads: 24
+    threads: 8
     conda:
         '../envs/vamos.yml'
     resources:
         runtime_hrs=24,
         runtime_min=20,
-        mem_total_mb=5000
+        mem_total_mb=500*1024
     shell:
         'vamos --read -b {input.alignment} -r {input.sites} -s {wildcards.sample} -o {output} -t {threads} > {log}'
