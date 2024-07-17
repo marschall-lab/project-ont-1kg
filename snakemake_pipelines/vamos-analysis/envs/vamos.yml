@@ -6,3 +6,4 @@ channels:
 dependencies:
   - vamos=1.2.6
   - gzip=1.10
+  - samtools
