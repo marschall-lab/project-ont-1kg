@@ -32,5 +32,7 @@ rule ru_scatterplot:
         vienna='results/analysis/vienna-tsv/{sample}.tsv'
     output:
         'results/plots/ru-scatter/{sample}.png'
+    conda:
+        '../envs/vamos.yml'
     shell:
         'python scripts/plot-ru-count-scatter.py -miller {input.miller} -vienna {input.vienna} -output {output}'
