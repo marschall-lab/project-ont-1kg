@@ -5,7 +5,7 @@ rule sort_miller_vcf:
     output:
         temp('results/analysis/vamos-miller.sorted.vcf')
     shell:
-        "cat {input} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' > {output}"
+        "zcat {input} | awk '$1 ~ /^#/ {{print $0;next}} {{print $0 | \"sort -k1,1 -k2,2n \"}}' > {output}"
 
 # create TSV of repeating unit counts of miller vcf
 rule ru_count_miller:

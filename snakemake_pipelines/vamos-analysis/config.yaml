@@ -13,4 +13,4 @@ path_to_cram: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/
 reference_directory: "/gpfs/project/projects/medbioinf/users/spani/files/ref/"
 
 # The VAMOS vcf made from the NAPU assemblies of Gustafson et al can be downloaded at https://s3.amazonaws.com/1000g-ont/index.html?prefix=Gustafson_etal_2024_preprint_SUPPLEMENTAL/Supplemental_File_3.vcf.gz
-path_to_miller_vcf: ''
+path_to_miller_vcf: '/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/MillerLab-Vamos/miller-vamos.vcf.gz'
