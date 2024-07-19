@@ -34,5 +34,9 @@ rule ru_scatterplot:
         'results/plots/ru-scatter/{sample}.png'
     conda:
         '../envs/vamos.yml'
+    resources:
+        runtime_hrs=1,
+        runtime_min=0,
+        mem_total_mb=5*1024
     shell:
         'python scripts/plot-ru-count-scatter.py -miller {input.miller} -vienna {input.vienna} -output {output}'
