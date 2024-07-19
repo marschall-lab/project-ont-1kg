@@ -1,6 +1,7 @@
 configfile: 'config.yaml'
 
 include: 'rules/vamos.smk'
+include: 'rules/analysis.smk'
 
 wildcard_constraints:
     sample='|'.join(['HG03499','HG03548']),
