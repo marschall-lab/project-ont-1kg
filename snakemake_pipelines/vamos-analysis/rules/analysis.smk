@@ -12,7 +12,7 @@ rule ru_count_miller:
     input:
         'results/analysis/vamos-miller.sorted.vcf'
     output:
-        'reulsts/analysis/miller-tsv/{sample}.tsv'
+        'results/analysis/miller-tsv/{sample}.tsv'
     shell:
         'python scripts/vamos-parse-miller.py -vcf {input} -sample {wildcards.sample} > {output}'
 
@@ -28,7 +28,7 @@ rule ru_count_vienna:
 # scatter plot to compare the count of repeating units in both vcfs
 rule ru_scatterplot:
     input:
-        miller='reulsts/analysis/miller-tsv/{sample}.tsv',
+        miller='results/analysis/miller-tsv/{sample}.tsv',
         vienna='results/analysis/vienna-tsv/{sample}.tsv'
     output:
         'results/plots/ru-scatter/{sample}.png'
