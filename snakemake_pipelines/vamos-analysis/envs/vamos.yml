@@ -7,3 +7,5 @@ dependencies:
   - vamos=2.1.3
   - gzip=1.10
   - samtools
+  - matplotlib
+  - scipy
