@@ -45,7 +45,7 @@ rule ru_densityplot:
         runtime_min=0,
         mem_total_mb=5*1024
     shell:
-        'python scripts/plot-ru-count-scatter.py -miller {input.miller} -vienna {input.vienna} -output {output}'
+        'python scripts/plot-ru-count-density.py -miller {input.miller} -vienna {input.vienna} -output {output}'
 
 # density plot to compare the count of repeating units in wrong sample combinations
 rule ru_densityplot_cross:
@@ -61,7 +61,7 @@ rule ru_densityplot_cross:
         runtime_min=0,
         mem_total_mb=5*1024
     shell:
-        'python scripts/plot-ru-count-scatter.py -miller {input.miller} -vienna {input.vienna} -output {output}'
+        'python scripts/plot-ru-count-density.py -miller {input.miller} -vienna {input.vienna} -output {output}'
 
 # histogram plot to compare the allele distance between VNTRs
 rule distance_histogram:
@@ -80,7 +80,7 @@ rule distance_histogram:
         runtime_min=0,
         mem_total_mb=5*1024
     shell:
-        'python scripts/plot-allele-distance-scatter.py -miller {input.miller} -vienna {input.vienna} -output {params.out_prefix}'
+        'python scripts/plot-allele-distance-histogram.py -miller {input.miller} -vienna {input.vienna} -output {params.out_prefix}'
 
 # histogram plot to compare the allele distance between VNTRs of mismatched sample vcfs
 rule distance_histogram_cross:
@@ -99,4 +99,4 @@ rule distance_histogram_cross:
         runtime_min=0,
         mem_total_mb=5*1024
     shell:
-        'python scripts/plot-allele-distance-scatter.py -miller {input.miller} -vienna {input.vienna} -output {params.out_prefix}'
+        'python scripts/plot-allele-distance-histogram.py -miller {input.miller} -vienna {input.vienna} -output {params.out_prefix}'
