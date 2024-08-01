@@ -36,9 +36,9 @@ def run(miller = None, vienna = None, output = None):
     g.plot_marginals(seaborn.histplot, bins=10)
     g.plot_joint(plt.hexbin, bins='log', gridsize=50, cmap='Blues')
     g.set_axis_labels("RU Counts from Miller VCF", "RU Counts from Vienna VCF")
-    cbar_ax = g.fig.add_axes([.85, .2, .02, .6])  # x, y, width, height
+    g.fig.suptitle(f'PCC: {pearsonr(miller_counts, vienna_counts)}')
+    cbar_ax = g.fig.add_axes([.95, .2, .02, .6])  # x, y, width, height
     plt.colorbar(cax=cbar_ax)
-    plt.title(f'PCC: {pearsonr(miller_counts, vienna_counts)}')
     g.savefig(output)
     
     
