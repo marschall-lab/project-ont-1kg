@@ -8,4 +8,6 @@ dependencies:
   - gzip=1.10
   - samtools
   - matplotlib
+  - seaborn
   - scipy
+  - pywfa
