@@ -8,8 +8,8 @@ wildcard_constraints:
 
 rule all:
     input:
-        expand('results/vamos-results-vienna/{sample}.vcf', sample=['HG03499','HG03548']),
         'results/reference-vntrs.bed',
+#        expand('results/vamos-results-vienna/{sample}.vcf', sample=['HG03499','HG03548']),
 #        expand('results/plots/ru-density/{sample}.png', sample=['HG03499','HG03548']),
 #        'results/plots/ru-density/HG03499_HG03548.png',
 #        'results/plots/ru-density/HG03548_HG03499.png',

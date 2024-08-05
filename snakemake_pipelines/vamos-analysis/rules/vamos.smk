@@ -76,5 +76,5 @@ rule extract_reference_sequence:
         runtime_min=20,
         mem_total_mb=5*1024
     shell:
-        'bedtools getfasta -bedOut {output} -fi {input.ref} -bed {input.sites}'
+        'bedtools getfasta -bedOut -fi {input.ref} -bed {input.sites} > {output}'
         
