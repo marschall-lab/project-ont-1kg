@@ -77,7 +77,7 @@ rule extract_reference_sequence:
         ref=config['reference_directory']+'1KG_ONT_VIENNA_hg38.fa',
         sites='resources/vamos-sites-list.sorted.first3columns.bed'
     output:
-        temp('results/reference-vntrs.bed')
+        'results/reference-vntrs.bed'
     conda:
         '../envs/vamos.yml'
     resources:
