@@ -62,11 +62,20 @@ rule vamos_vienna:
     shell:
         'vamos --read -b {input.alignment} -r {input.sites} -s {wildcards.sample} -o {output} -t {threads} > {log}'
 
+# process sites list to make it compatible with bedtools
+rule process_sites_list:
+    input:
+        'resources/vamos-sites-list.sorted.bed'
+    output:
+        temp('resources/vamos-sites-list.sorted.first3columns.bed')
+    shell:
+        'cat {input} | cut -f 1-3 > {output}'
+
 # extract VNTR sequence from the GRCh38 reference
 rule extract_reference_sequence:
     input:
         ref=config['reference_directory']+'1KG_ONT_VIENNA_hg38.fa',
-        sites='resources/vamos-sites-list.sorted.bed'
+        sites='resources/vamos-sites-list.sorted.first3columns.bed'
     output:
         temp('results/reference-vntrs.bed')
     conda:
