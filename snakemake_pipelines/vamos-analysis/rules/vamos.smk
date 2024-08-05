@@ -61,3 +61,20 @@ rule vamos_vienna:
         mem_total_mb=500*1024
     shell:
         'vamos --read -b {input.alignment} -r {input.sites} -s {wildcards.sample} -o {output} -t {threads} > {log}'
+
+# extract VNTR sequence from the GRCh38 reference
+rule extract_reference_sequence:
+    input:
+        ref=config['reference_directory']+'1KG_ONT_VIENNA_hg38.fa',
+        sites='resources/vamos-sites-list.sorted.bed'
+    output:
+        temp('results/reference-vntrs.bed')
+    conda:
+        '../envs/vamos.yml'
+    resources:
+        runtime_hrs=1,
+        runtime_min=20,
+        mem_total_mb=5*1024
+    shell:
+        'bedtools getfasta -bedOut {output} -fi {input.ref} -bed {input.sites}'
+        
