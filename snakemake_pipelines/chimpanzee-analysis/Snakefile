@@ -1,7 +1,7 @@
 configfile: 'config.yaml'
 
 include: 'rules/prepare-vcf.smk'
-include: 'alignment-experiment.smk'
+include: 'rules/alignment-experiment.smk'
 
 rule run_alignment_experiments:
     input:

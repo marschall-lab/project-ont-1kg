@@ -32,11 +32,11 @@ rule align_assemblies_experiments:
         'results/assembly-to-graph-alignment-experiments/alignment-{par1}-{par2}-{par3}-{par4}-{par5}-{par6}-{par7}-{par8}-{par9}-{par10}.gaf'
     log:
         'results/assembly-to-graph-alignment-experiments/alignment-{par1}-{par2}-{par3}-{par4}-{par5}-{par6}-{par7}-{par8}-{par9}-{par10}.log'
-    threads: 22
+    threads: 24
     resources:
-        runtime_hrs=6,
+        runtime_hrs=48,
         runtime_min=20,
-        mem_total_mb=100*1024
+        mem_total_mb=150*1024
     conda:
         '../envs/alignment.yml'
     shell:

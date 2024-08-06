@@ -7,11 +7,11 @@ rule align_assemblies:
         'results/assembly-to-graph-alignment/alignment.gaf'
     log:
         'results/assembly-to-graph-alignment/alignment.log'
-    threads: 22
+    threads: 24
     resources:
-        runtime_hrs=,
-        runtime_min=,
-        mem_total_mb=
+        runtime_hrs=48,
+        runtime_min=59,
+        mem_total_mb=150*1024
     conda:
         '../envs/alignment.yml'
     shell:
@@ -42,7 +42,7 @@ rule prepare_vcf:
     resources:
         runtime_hrs=0,
         runtime_min=59,
-        mem_total_mb=5000
+        mem_total_mb=5*1024
     shell:
         '''
         set +u
