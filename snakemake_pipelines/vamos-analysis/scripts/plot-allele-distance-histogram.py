@@ -3,12 +3,14 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 from pywfa import WavefrontAligner
 
-def run(miller = None, vienna = None, sample = None, output = None):
+def run(miller = None, vienna = None, reference = None, sample = None, output = None):
     
     miller_reader = open(miller, 'r')
     vienna_reader = open(vienna, 'r')
+    reference_reader = open(reference, 'r')
     miller_seq = defaultdict(lambda: [])
     vienna_seq = defaultdict(lambda: [])
+    reference_seq = defaultdict(lambda: None)
     while True:
         line = miller_reader.readline()
         if not line:
@@ -21,15 +23,25 @@ def run(miller = None, vienna = None, sample = None, output = None):
             break
         chrom, pos, seq = line.rstrip().split('\t')
         vienna_seq[(chrom, int(pos))].append(seq)
+    while True:
+        line = reference_reader.readline()
+        if not line:
+            break
+        chrom, pos, _, seq = line.rstrip().split('\t')
+        reference_seq[(chrom, int(pos))] = seq
     
     scores = []
     aligner = WavefrontAligner(scope='score', distance='affine2p', span='end-to-end', heuristic='adaptive')
     for info in vienna_seq.keys():
         v_seqs = vienna_seq[info]
         m_seqs = miller_seq[info]
+        ref_seq = reference_seq[info]
         if len(v_seqs) != len(m_seqs):
             continue
         if len(v_seqs) != 2:
+            continue
+        # removing the reference VNTRs
+        if v_seqs[0] == ref_seq and v_seqs[1] == ref_seq and m_seqs[0] == ref_seq and m_seqs[1] == ref_seq:
             continue
         score_matrix = [[None, None], [None, None]]
         for i, m in enumerate(m_seqs):
@@ -67,6 +79,7 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(prog='plot-allele-distance-histogram.py', description="Creates a scatter plot of the repeating unit counts comparing the vamos run on miller vcf and vienna vcf")
     parser.add_argument("-miller", required=True, help="Miller Vamos VCF file")
     parser.add_argument("-vienna", required=True, help="Vienna Vamos VCF file")
+    parser.add_argument("-reference", required=True, help="Reference VNTRs in a BED file")
     parser.add_argument("-sample", required=True, help="Sample label")
     parser.add_argument("-output", required=True, help="Output histogram prefix.")
 

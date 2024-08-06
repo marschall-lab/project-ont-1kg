@@ -8,16 +8,10 @@ wildcard_constraints:
 
 rule all:
     input:
-        'results/reference-vntrs.bed',
-#        expand('results/vamos-results-vienna/{sample}.vcf', sample=['HG03499','HG03548']),
-#        expand('results/plots/ru-density/{sample}.png', sample=['HG03499','HG03548']),
-#        'results/plots/ru-density/HG03499_HG03548.png',
-#        'results/plots/ru-density/HG03548_HG03499.png',
-#        expand('results/plots/distance-histogram/{sample}-subset1000.png', sample=['HG03499','HG03548']),
-#        expand('results/plots/distance-histogram/{sample}-full.png', sample=['HG03499','HG03548']),
-#        'results/plots/distance-histogram/HG03499_HG03548-subset1000.png',
-#        'results/plots/distance-histogram/HG03548_HG03499-subset1000.png',
-#        'results/plots/distance-histogram/HG03499_HG03548-full.png',
-#        'results/plots/distance-histogram/HG03548_HG03499-full.png',
-
-        
+        expand('results/vamos-results-vienna/{sample}.vcf', sample=['HG03499','HG03548']),
+        expand('results/plots/distance-histogram/{sample}-subset1000.png', sample=['HG03499','HG03548']),
+        expand('results/plots/distance-histogram/{sample}-full.png', sample=['HG03499','HG03548']),
+        'results/plots/distance-histogram/HG03499_HG03548-subset1000.png',
+        'results/plots/distance-histogram/HG03548_HG03499-subset1000.png',
+        'results/plots/distance-histogram/HG03499_HG03548-full.png',
+        'results/plots/distance-histogram/HG03548_HG03499-full.png'
