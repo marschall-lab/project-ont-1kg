@@ -18,6 +18,8 @@ def chop_sequence(seq, s, o):
 
 def run(size = None, overlap = None, ref = None):
     
+    print(f"Size of the synthetic reads = {size}", file=sys.stderr)
+    print(f"Length of overlap between the synthetic reads = {overlap}", file=sys.stderr)
     references = []
     sequence = ''
     fasta_reader = open(ref, 'r')
@@ -30,12 +32,16 @@ def run(size = None, overlap = None, ref = None):
         sequence += line
     references = references[1:]
     count = 1
-    for ref in references:
+    for ind, ref in enumerate(references):
+        print(f"\nWorking on reference {ind}", file=sys.stderr)
+        print(f"Length of reference {ind} = {len(ref)}", file=sys.stderr)
         start = 0
         while True:
-            try:
+            if start+size < len(ref):
                 read = ref[start:start+size]
-            except IndexError:
+                print(start, start+size)
+                print(read)
+            else:
                 read = ref[start:]
                 print(f">read_{count}")
                 print(read)
