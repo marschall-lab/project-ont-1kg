@@ -23,10 +23,26 @@ wildcard_constraints:
     par9 = '|'.join(overlap_incompatible_cutoff),
     par10 = '|'.join(max_trace_count)
 
+# chop the references into synthetic long reads
+rule extract_synthetic_reads:
+    input:
+        assembly=config['path_to_assembly']
+    output:
+        'results/chimp-long-reads.fa'
+    log:
+        'results/chimp-long-reads.log'
+    resources:
+        runtime_hrs=1,
+        runtime_min=20,
+        mem_total_mb=5*1024
+    shell:
+        'python scripts/chop-reference-to-reads.py -size 4000 -overlap 500 -ref {input} 1> {output} 2> {log}'
+    
+
 # align chimp assemblies to rGFA using various parameters
 rule align_assemblies_experiments:
     input:
-        assembly=config['path_to_assembly'],
+        reads='results/chimp-long-reads.fa',
         graph=config['path_to_rgfa']
     output:
         'results/assembly-to-graph-alignment-experiments/alignment-{par1}-{par2}-{par3}-{par4}-{par5}-{par6}-{par7}-{par8}-{par9}-{par10}.gaf'
@@ -52,7 +68,7 @@ rule align_assemblies_experiments:
                      --overlap-incompatible-cutoff {wildcards.par9} \
                      --max-trace-count {wildcards.par10} \
                      -g {input.graph} \
-                     -f {input.assembly} \
+                     -f {input.reads} \
                      -a {output} \
                      -t {threads} > {log}
         '''

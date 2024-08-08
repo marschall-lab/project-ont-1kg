@@ -1,5 +1,24 @@
-# align chimp assemblies to rGFA
-rule align_assemblies:
+# align chimp assemblies to rGFA using GraphAligner
+# rule graphaligner_align_assemblies:
+#     input:
+#         assembly=config['path_to_assembly'],
+#         graph=config['path_to_rgfa']
+#     output:
+#         'results/assembly-to-graph-alignment/alignment.gaf'
+#     log:
+#         'results/assembly-to-graph-alignment/alignment.log'
+#     threads: 24
+#     resources:
+#         runtime_hrs=48,
+#         runtime_min=59,
+#         mem_total_mb=150*1024
+#     conda:
+#         '../envs/alignment.yml'
+#     shell:
+#         'GraphAligner -g {input.graph} -f {input.assembly} -a {output} -t {threads} > {log}'
+
+# align chimp reference to rGFA using minigraph
+rule minigraph_align_assemblies:
     input:
         assembly=config['path_to_assembly'],
         graph=config['path_to_rgfa']
