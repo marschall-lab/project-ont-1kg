@@ -7,9 +7,9 @@ def chop_sequence(seq, s, o):
     reads = []
     while True:
         try:
-            read = seq[start:start+s]
+            read = seq[start:start+s].upper()
         except IndexError:
-            read = seq[start:]
+            read = seq[start:].upper()
             reads.append(read)
             break
         reads.append(read)
