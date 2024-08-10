@@ -1,21 +1,6 @@
 import argparse
 import sys
 
-def chop_sequence(seq, s, o):
-    
-    start = 0
-    reads = []
-    while True:
-        try:
-            read = seq[start:start+s].upper()
-        except IndexError:
-            read = seq[start:].upper()
-            reads.append(read)
-            break
-        reads.append(read)
-        start = start + s - o
-    return reads
-
 def run(size = None, overlap = None, ref = None):
     
     print(f"Size of the synthetic reads = {size}", file=sys.stderr)
@@ -38,14 +23,12 @@ def run(size = None, overlap = None, ref = None):
         start = 0
         while True:
             if start+size < len(ref):
-                read = ref[start:start+size]
-                print(start, start+size)
-                print(read)
+                read = ref[start:start+size].upper()
             else:
-                read = ref[start:]
+                read = ref[start:].upper()
                 print(f">read_{count}")
                 print(read)
-                count += 1    
+                count += 1
                 break
             start = start + size - overlap        
             print(f">read_{count}")
