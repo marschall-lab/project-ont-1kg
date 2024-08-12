@@ -74,7 +74,7 @@ rule align_assemblies_experiments:
         '''
 
 # get statistics using gaftools stats
-rule alignment_statistics:
+rule alignment_statistics_experiments:
     input:
         'results/assembly-to-graph-alignment-experiments/alignment-{par1}-{par2}-{par3}-{par4}-{par5}-{par6}-{par7}-{par8}-{par9}-{par10}.gaf'
     output:
