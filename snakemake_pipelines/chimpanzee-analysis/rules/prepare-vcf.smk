@@ -20,7 +20,7 @@
 # align chimp reference to rGFA using minigraph
 rule minigraph_align_assemblies:
     input:
-        assembly=config['path_to_assembly'],
+        assembly='results/chimp-long-reads.fa',
         graph=config['path_to_rgfa']
     output:
         'results/assembly-to-graph-alignment/alignment.gaf'
@@ -68,12 +68,45 @@ rule make_list_of_file_names:
             print(abspath(name), file=f)
         f.close()
 
+chromosomes = ['chr1','chr2','chr3','chr4','chr5','chr6','chr7','chr8','chr9','chr10','chr11','chr12','chr13','chr14','chr15','chr16','chr17','chr18','chr19','chr20','chr21','chr22','chrX','chrY','chrM']
+
+# tag rGFA chromosome-wise
+rule call_rGFA_bubbles:
+    input:
+        ref=config['path_to_rgfa']
+    output:
+        expand('results/rgfa-tagging/{chr}.gfa', chr=chromosomes),
+        expand('results/rgfa-tagging/{chr}.csv', chr=chromosomes)
+    params:
+        out_dir='results/rgfa-tagging'
+    resources:
+        runtime_hrs=0,
+        runtime_min=30,
+        mem_total_mb=lambda wildcards, attempt: 10*1024 * attempt
+    shell:
+        '''
+        set +u
+        source ~/.bashrc
+        conda activate gaftools-env
+        set -u
+        gaftools order_gfa --with-sequence --outdir {params.out_dir} {input.ref}
+        '''
+
+# concat chromsome-wise tagged GFA
+rule concat_tagged_GFA:
+    input:
+        expand('results/rgfa-tagging/{chr}.gfa', chr=chromosomes)
+    output:
+        'results/graph-tagged.gfa'
+    shell:
+        'cat {input} > {output}'    
+
 # process the GAF using the rGFA to find the alleles
 rule prepare_vcf:
     input:
         fofn='results/assembly-to-graph-alignment/fofn.txt',
         stats='results/assembly-to-graph-alignment/alignment.stats',
-        graph=config['path_to_rgfa']
+        graph='results/graph-tagged.gfa'
     output:
         'results/assembly-vcf/chimp.vcf'
     log:
