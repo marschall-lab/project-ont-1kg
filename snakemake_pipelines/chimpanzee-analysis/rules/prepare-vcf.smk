@@ -43,9 +43,9 @@ rule alignment_statistics:
     output:
         'results/assembly-to-graph-alignment/alignment.stats'
     resources:
-        runtime_hrs=0,
+        runtime_hrs=1,
         runtime_min=20,
-        mem_total_mb=256
+        mem_total_mb=2048
     shell:
         '''
         set +u
@@ -75,8 +75,9 @@ rule call_rGFA_bubbles:
     input:
         ref=config['path_to_rgfa']
     output:
-        expand('results/rgfa-tagging/{chr}.gfa', chr=chromosomes),
-        expand('results/rgfa-tagging/{chr}.csv', chr=chromosomes)
+        expand('results/rgfa-tagging/%s-{chr}.gfa'%(config['path_to_rgfa'].split("/")[-1][:-4]), chr=chromosomes),
+        'results/rgfa-tagging/%s-complete.gfa'%(config['path_to_rgfa'].split("/")[-1][:-4]),
+        expand('results/rgfa-tagging/%s-{chr}.csv'%(config['path_to_rgfa'].split("/")[-1][:-4]), chr=chromosomes)
     params:
         out_dir='results/rgfa-tagging'
     resources:
@@ -95,7 +96,7 @@ rule call_rGFA_bubbles:
 # concat chromsome-wise tagged GFA
 rule concat_tagged_GFA:
     input:
-        expand('results/rgfa-tagging/{chr}.gfa', chr=chromosomes)
+        expand('results/rgfa-tagging/%s-{chr}.gfa'%(config['path_to_rgfa'].split("/")[-1][:-4]), chr=chromosomes)
     output:
         'results/graph-tagged.gfa'
     shell:
@@ -106,7 +107,7 @@ rule prepare_vcf:
     input:
         fofn='results/assembly-to-graph-alignment/fofn.txt',
         stats='results/assembly-to-graph-alignment/alignment.stats',
-        graph='results/graph-tagged.gfa'
+        graph='results/rgfa-tagging/%s-complete.gfa'%(config['path_to_rgfa'].split("/")[-1][:-4])
     output:
         'results/assembly-vcf/chimp.vcf'
     log:
