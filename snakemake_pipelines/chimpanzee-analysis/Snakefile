@@ -9,5 +9,5 @@ rule run_alignment_experiments:
 
 rule all:
     input:
-        'results/assembly-vcf/chimp.vcf'
+        'results/ancestral-allele-annotations.bed'
         

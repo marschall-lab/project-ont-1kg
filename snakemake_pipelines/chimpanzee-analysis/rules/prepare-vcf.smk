@@ -23,9 +23,9 @@ rule minigraph_align_assemblies:
         assembly='results/chimp-long-reads.fa',
         graph=config['path_to_rgfa']
     output:
-        'results/assembly-to-graph-alignment/alignment.gaf'
+        'results/assembly-to-graph-alignment/chimp.gaf'
     log:
-        'results/assembly-to-graph-alignment/alignment.log'
+        'results/assembly-to-graph-alignment/chimp.log'
     threads: 24
     resources:
         runtime_hrs=24,
@@ -39,9 +39,9 @@ rule minigraph_align_assemblies:
 # get statistics using gaftools stats
 rule alignment_statistics:
     input:
-        'results/assembly-to-graph-alignment/alignment.gaf'
+        'results/assembly-to-graph-alignment/chimp.gaf'
     output:
-        'results/assembly-to-graph-alignment/alignment.stats'
+        'results/assembly-to-graph-alignment/chimp.stats'
     resources:
         runtime_hrs=1,
         runtime_min=20,
@@ -58,7 +58,7 @@ rule alignment_statistics:
 # create FOFN for the prepare vcf script
 rule make_list_of_file_names:
     input:
-        'results/assembly-to-graph-alignment/alignment.gaf'
+        'results/assembly-to-graph-alignment/chimp.gaf'
     output:
         'results/assembly-to-graph-alignment/fofn.txt'
     run:
@@ -106,7 +106,7 @@ rule concat_tagged_GFA:
 rule prepare_vcf:
     input:
         fofn='results/assembly-to-graph-alignment/fofn.txt',
-        stats='results/assembly-to-graph-alignment/alignment.stats',
+        stats='results/assembly-to-graph-alignment/chimp.stats',
         graph='results/rgfa-tagging/%s-complete.gfa'%(config['path_to_rgfa'].split("/")[-1][:-4])
     output:
         'results/assembly-vcf/chimp.vcf'
@@ -122,6 +122,16 @@ rule prepare_vcf:
         source ~/.bashrc
         conda activate giggles-env
         set -u
-        giggles prepare_vcf --gfa {input.graph} --haploid {input.fofn} 1> {output} 2> {log}
+        giggles prepare_vcf --gfa {input.graph} --haploid {input.fofn} --keep-all-records 1> {output} 2> {log}
         '''
-    
+
+# create a BED file with the ancestral allele annotations
+rule annotate_ancestral_allele:
+    input:
+        'results/assembly-vcf/chimp.vcf'
+    output:
+        'results/ancestral-allele-annotations.bed'
+    log:
+        'results/ancestral-allele-annotations.log'
+    shell:
+        'python scripts/annotate-ancestral-allele.py -vcf {input} 1> {output} 2> {log}'
