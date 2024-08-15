@@ -5,7 +5,7 @@ import sys
 def run(vcf = None):
     
     vcfreader = open(vcf, 'r')
-    print("#chr\tref_start\tref_end\tbubble_id\is_alternate\ttancestral_allele\tancestral_allele_bubble_path")
+    print("#chr\tref_start\tref_end\tbubble_id\tis_alternate\tancestral_allele\tancestral_allele_bubble_path")
     counts = defaultdict(lambda: 0)
     for line in vcfreader:
         if line.startswith('#'):
