@@ -7,7 +7,7 @@
    viewBox="0 0 828.83314 481.28974"
    version="1.1"
    id="svg5"
-   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   inkscape:version="1.3.2 (1:1.3.2+202311252150+091e20ef0f)"
    sodipodi:docname="ont-1kg-overview.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -24,12 +24,12 @@
      inkscape:document-units="mm"
      showgrid="true"
      inkscape:zoom="0.70710678"
-     inkscape:cx="1402.1927"
+     inkscape:cx="1401.4856"
      inkscape:cy="871.86266"
-     inkscape:window-width="2880"
-     inkscape:window-height="1703"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-width="3840"
+     inkscape:window-height="2091"
+     inkscape:window-x="1920"
+     inkscape:window-y="32"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1"
      fit-margin-top="0"
@@ -42,7 +42,11 @@
        type="xygrid"
        id="grid824"
        originx="157.01438"
-       originy="79.874996" />
+       originy="79.874996"
+       spacingy="1"
+       spacingx="1"
+       units="mm"
+       visible="true" />
   </sodipodi:namedview>
   <defs
      id="defs2">
@@ -331,94 +335,6 @@
            x="89.759583"
            y="89.886528">SVarp</tspan></text>
     </g>
-    <rect
-       style="fill:#8ec8ee;fill-opacity:1;stroke:#001dca;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="rect848-3-6-0-65-5"
-       width="305.32916"
-       height="179.91667"
-       x="365.98959"
-       y="220.99808" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:9.87777px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.352999;stroke-linecap:round;stroke-linejoin:round"
-       x="368.46432"
-       y="234.22964"
-       id="text16398-6-0-3-6-9"><tspan
-         sodipodi:role="line"
-         id="tspan16396-7-6-6-9-7"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="234.22964">Evaluation</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="246.57686"
-         id="tspan213961"> - Upset Plots of SV Callsets</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="258.92407"
-         id="tspan209548"> - SV Discovery:</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="271.27127"
-         id="tspan213009">    - Sensitivity: NYGC set (genotypable set)</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="283.6185"
-         id="tspan213011">    - Specificity: 17 HGSVC assemblies</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="295.9657"
-         id="tspan215564">    - Null sample: HPRC graph sample --&gt; zero SVs (HG01258)</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="308.31293"
-         id="tspan213007"> - SV Genotyping</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="320.66013"
-         id="tspan213013">   - PanGenie comparison</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="333.00735"
-         id="tspan213015">   - NYGC (genotype concordance)</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="345.35455"
-         id="tspan2659">   - Mendelian consistency (for calls as well as for nodes)</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="357.70178"
-         id="tspan213017"> - inversions: pooled strandseq (subset)</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="370.04898"
-         id="tspan4485"> - Check statistics for original vs amended graph:</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="382.39621"
-         id="tspan4487">    - Do we have better read mapping stats?</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="394.74341"
-         id="tspan4489">    - Do the new nodes have coverage (from the expected samples)?</tspan><tspan
-         sodipodi:role="line"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.353"
-         x="368.46432"
-         y="407.09064"
-         id="tspan212058" /></text>
     <g
        id="g2947"
        transform="translate(-47.095857)">
@@ -1297,11 +1213,6 @@
            y="185.65897"
            id="tspan137129-3-5" /></text>
     </g>
-    <path
-       style="fill:#000000;fill-opacity:0.996596;stroke:#000002;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 566.20557,243.67968 v 3.96875"
-       id="path158708-7-15-0"
-       sodipodi:nodetypes="cc" />
     <g
        id="g245373"
        transform="translate(24.534209,-64.514891)">
