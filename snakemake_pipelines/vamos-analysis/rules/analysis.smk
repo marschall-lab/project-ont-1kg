@@ -70,8 +70,8 @@ rule distance_histogram:
         vienna='results/analysis/vienna-tsv/{sample}-sequence.tsv',
         reference='results/reference-vntrs.bed'
     output:
-        'results/plots/distance-histogram/{sample}-subset1000.png',
-        'results/plots/distance-histogram/{sample}-full.png'
+        'results/plots/distance-histogram/{sample}-{af}-subset1000.png',
+        'results/plots/distance-histogram/{sample}-{af}-full.png'
     params:
         out_prefix='results/plots/distance-histogram/{sample}'
     conda:
@@ -81,7 +81,7 @@ rule distance_histogram:
         runtime_min=0,
         mem_total_mb=5*1024
     shell:
-        'python scripts/plot-allele-distance-histogram.py -miller {input.miller} -vienna {input.vienna} -reference {input.reference} -sample {wildcards.sample} -output {params.out_prefix}'
+        'python scripts/plot-allele-distance-histogram.py -miller {input.miller} -vienna {input.vienna} -reference {input.reference} -af-cutoff {wildcards.af} -sample {wildcards.sample} -output {params.out_prefix}'
 
 # histogram plot to compare the allele distance between VNTRs of mismatched sample vcfs
 rule distance_histogram_cross:
@@ -90,8 +90,8 @@ rule distance_histogram_cross:
         vienna='results/analysis/vienna-tsv/{sample2}-sequence.tsv',
         reference='results/reference-vntrs.bed'
     output:
-        'results/plots/distance-histogram/{sample1}_{sample2}-subset1000.png',
-        'results/plots/distance-histogram/{sample1}_{sample2}-full.png'
+        'results/plots/distance-histogram/{sample1}_{sample2}-{af}-subset1000.png',
+        'results/plots/distance-histogram/{sample1}_{sample2}-{af}-full.png'
     params:
         out_prefix='results/plots/distance-histogram/{sample1}_{sample2}'
     conda:
@@ -101,4 +101,4 @@ rule distance_histogram_cross:
         runtime_min=0,
         mem_total_mb=5*1024
     shell:
-        'python scripts/plot-allele-distance-histogram.py -miller {input.miller} -vienna {input.vienna} -reference {input.reference} -sample {wildcards.sample1}_{wildcards.sample2} -output {params.out_prefix}'
+        'python scripts/plot-allele-distance-histogram.py -miller {input.miller} -vienna {input.vienna} -reference {input.reference} -af-cutoff {wildcards.af} -sample {wildcards.sample1}_{wildcards.sample2} -output {params.out_prefix}'

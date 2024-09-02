@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 from pywfa import WavefrontAligner
 
-def run(miller = None, vienna = None, reference = None, sample = None, output = None):
+def run(miller = None, vienna = None, reference = None, af_cutoff = None, sample = None, output = None):
     
     miller_reader = open(miller, 'r')
     vienna_reader = open(vienna, 'r')
@@ -15,8 +15,9 @@ def run(miller = None, vienna = None, reference = None, sample = None, output = 
         line = miller_reader.readline()
         if not line:
             break
-        chrom, pos, seq = line.rstrip().split('\t')
-        miller_seq[(chrom, int(pos))].append(seq)    
+        chrom, pos, seq, _, af = line.rstrip().split('\t')
+        if float(af) < float(af_cutoff):
+            miller_seq[(chrom, int(pos))].append(seq)    
     while True:
         line = vienna_reader.readline()
         if not line:
@@ -77,9 +78,10 @@ def run(miller = None, vienna = None, reference = None, sample = None, output = 
 if __name__=='__main__':
     
     parser = argparse.ArgumentParser(prog='plot-allele-distance-histogram.py', description="Creates a scatter plot of the repeating unit counts comparing the vamos run on miller vcf and vienna vcf")
-    parser.add_argument("-miller", required=True, help="Miller Vamos VCF file")
-    parser.add_argument("-vienna", required=True, help="Vienna Vamos VCF file")
+    parser.add_argument("-miller", required=True, help="Miller Vamos TSV file")
+    parser.add_argument("-vienna", required=True, help="Vienna Vamos TSV file")
     parser.add_argument("-reference", required=True, help="Reference VNTRs in a BED file")
+    parser.add_argument("-af-cutoff", required=True, help="Allele frequency cutoff for the VNTRs. AF less than the given value will be considered.")
     parser.add_argument("-sample", required=True, help="Sample label")
     parser.add_argument("-output", required=True, help="Output histogram prefix.")
 
