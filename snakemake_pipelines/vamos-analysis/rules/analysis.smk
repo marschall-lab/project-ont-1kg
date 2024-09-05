@@ -73,7 +73,7 @@ rule distance_histogram:
         'results/plots/distance-histogram/{sample}-{af}-subset1000.png',
         'results/plots/distance-histogram/{sample}-{af}-full.png'
     params:
-        out_prefix='results/plots/distance-histogram/{sample}'
+        out_prefix='results/plots/distance-histogram/{sample}-{af}'
     conda:
         '../envs/vamos.yml'
     resources:
@@ -93,7 +93,7 @@ rule distance_histogram_cross:
         'results/plots/distance-histogram/{sample1}_{sample2}-{af}-subset1000.png',
         'results/plots/distance-histogram/{sample1}_{sample2}-{af}-full.png'
     params:
-        out_prefix='results/plots/distance-histogram/{sample1}_{sample2}'
+        out_prefix='results/plots/distance-histogram/{sample1}_{sample2}-{af}'
     conda:
         '../envs/vamos.yml'
     resources:
