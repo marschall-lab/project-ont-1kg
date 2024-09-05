@@ -15,14 +15,14 @@ rule bin_sample_data:
         'resources/1k_ont_data_overview-samples_and_sequencing.tsv'
     output:
         expand('results/coverage-experiments/sample-by-coverage_{cov_range}.tsv', cov_range=coverage_ranges)
-    log:
-        'results/coverage-experiments/sample-by-coverage_{binsize}.log'
+    params:
+        bs=binsize
     resources:
         runtime_hrs=1,
         runtime_min=20,
         mem_total_mb=5*1024
     shell:
-        'python scripts/bin-sample-data-by-coverage.py -binsize {wildcards.binsize} -tsv {input} 1> {output} 2> {log}'
+        'python scripts/bin-sample-data-by-coverage.py -binsize {params.bs} -tsv {input} 1> {output} 2> {log}'
 
 # subsetting vcf to samples based on coverage
 rule subset_vcf:
