@@ -16,13 +16,14 @@ rule bin_sample_data:
     output:
         expand('results/coverage-experiments/sample-by-coverage_{cov_range}.tsv', cov_range=coverage_ranges)
     params:
+        outprefix='results/coverage-experiments/sample-by-coverage',
         bs=binsize
     resources:
         runtime_hrs=1,
         runtime_min=20,
         mem_total_mb=5*1024
     shell:
-        'python scripts/bin-sample-data-by-coverage.py -binsize {params.bs} -tsv {input} > {output}'
+        'python scripts/bin-sample-data-by-coverage.py -binsize {params.bs} -tsv {input} -output {params.outprefix}'
 
 # subsetting vcf to samples based on coverage
 rule subset_vcf:

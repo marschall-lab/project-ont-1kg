@@ -12,7 +12,7 @@ def run(binsize = None, tsv = None, output = None):
     while x < max_cov:
         samples = cov_data.loc[(cov_data['cov'] < x+binsize) & (cov_data['cov'] >= x)]['sample'].to_list()
         print(f'Coverages: {x}-{x+binsize-1}\tNumber of Samples: {len(samples)}', file=sys.stderr)
-        with open(f'{output}_{x}-{x+binsize-1}.txt', 'w') as outfile:
+        with open(f'{output}_{x}-{x+binsize-1}.tsv', 'w') as outfile:
             for s in samples:
                 print(s, file=outfile)
         x += binsize
