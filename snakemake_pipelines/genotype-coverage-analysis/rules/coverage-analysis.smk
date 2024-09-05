@@ -72,7 +72,7 @@ rule make_plots:
     input:
         'results/coverage-experiments/qc-tables-selected/{cov_ranges}.tsv'
     output:
-        expand('results/coverage-experiments/plots/{cov_range}/{sv_type}.pdf', sv_type=sv_types)
+        expand('results/coverage-experiments/plots/{{cov_range}}/{sv_type}.pdf', sv_type=sv_types)
     params:
         out='results/coverage-experiments/plots/{cov_range}/'
     conda:
