@@ -1,7 +1,7 @@
 # list of parameters with their values
 binsize = 10
 max_coverage = 140      # hardcoded maximum coverage to create coverage ranges
-coverage_ranges = [f'{cov}-{cov+binsize-1}' for cov in range(0, max_coverage, binsize)]
+coverage_ranges = [f'{str(cov)}-{str(cov+binsize-1)}' for cov in range(0, max_coverage, binsize)]
 sv_types = ['large_deletions', 'large_insertions', 'large_complex', 'all']
 
 # global wildcard constraints
@@ -22,7 +22,7 @@ rule bin_sample_data:
         runtime_min=20,
         mem_total_mb=5*1024
     shell:
-        'python scripts/bin-sample-data-by-coverage.py -binsize {params.bs} -tsv {input} 1> {output} 2> {log}'
+        'python scripts/bin-sample-data-by-coverage.py -binsize {params.bs} -tsv {input} > {output}'
 
 # subsetting vcf to samples based on coverage
 rule subset_vcf:

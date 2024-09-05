@@ -8,6 +8,5 @@ dependencies:
   - cyvcf2
   - pandas
   - scipy
-  - pylab
   - seaborn
   - matplotlib
