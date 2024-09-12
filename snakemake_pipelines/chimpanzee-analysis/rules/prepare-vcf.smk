@@ -135,3 +135,36 @@ rule annotate_ancestral_allele:
         'results/ancestral-allele-annotations.log'
     shell:
         'python scripts/annotate-ancestral-allele.py -vcf {input} 1> {output} 2> {log}'
+
+# create map between sv alleles and the bubble ids
+rule bub_sv_map:
+    input:
+        config['path_to_multiallelic_callset']
+    output:
+        'results/bub-sv-map.tsv'
+    conda:
+        '../envs/analysis.yml'
+    shell:
+        'python script/map-bub-ids-to-allele-ids.py -vcf {input} > {output}'
+
+# unzip phased callset vcf
+rule unzip_phased_vcf:
+    input:
+        config['path_to_callset_vcf']
+    output:
+        temp('results/tmp/phased-callset.vcf')
+    shell:
+        'gzip -d -c {input} > {output}'
+
+# match the ancestral alleles to the sv alleles and modify the vcf
+rule match_ancestral_allele:
+    input:
+        bed='results/ancestral-allele-annotations.bed',
+        bmap='results/bub-sv-map.tsv',
+        vcf='results/tmp/phased-callset.vcf'
+    output:
+        'results/annotated-callset.vcf'
+    log:
+        'results/annotated-callset.log'
+    shell:
+        'python scripts/match-ancestral-alleles.py -bed {input.bed} -map {input.bmap} -vcf {input.vcf} 1> {output} 2> {log}'

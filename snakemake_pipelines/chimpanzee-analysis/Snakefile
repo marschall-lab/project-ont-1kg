@@ -9,5 +9,6 @@ rule run_alignment_experiments:
 
 rule all:
     input:
-        'results/ancestral-allele-annotations.bed'
+        'results/ancestral-allele-annotations.bed',
+        'results/annotated-callset.vcf'
         

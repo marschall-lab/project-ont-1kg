@@ -34,6 +34,7 @@ def run(vcf = None):
             ancestral_allele_path = '.'
             counts['Number of Bubble with Unknown Ancestral Allele'] += 1
         print(f"{chr}\t{pos}\t{int(pos)+len(ref_seq)}\t{bub_id}\t{gt}\t{ancestral_allele}\t{ancestral_allele_path}")
+    vcfreader.close()
     for key, value in counts.items():
         print(f"{key}: {value}", file=sys.stderr)
 

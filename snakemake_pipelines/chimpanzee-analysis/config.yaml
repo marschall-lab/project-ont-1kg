@@ -5,3 +5,9 @@ path_to_assembly: '/gpfs/project/projects/medbioinf/users/spani/files/ref/GCF_02
 # path to the rGFA
 # this the rGFA produced using the graph augmentation pipeline
 path_to_rgfa: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/rgfa-augmented-graph/minigraph-extended_all.gfa'
+
+# path to the multiallelic callset vcf produced by giggles in the rule "merge_vcf_to_multisample" of "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/genotyping.smk" file
+path_to_multiallelic_callset: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/multisample-genotypes/multisample-multiallelic.vcf.gz'
+
+# path to the final phased callset
+path_to_callset_vcf: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/final-vcf.phased.vcf.gz'
