@@ -48,7 +48,9 @@ rule evaluate_vcf_recovery:
         panel_vcf=config['path_to_panel_vcf'],
         callset_vcf=config['path_to_callset_vcf']
     output:
-        'results/recovery-stats.txt'
+        'results/stats.txt',
+        'results/counts.svg',
+        'results/length-dist.svg'
     params:
         'results/'
     shell:

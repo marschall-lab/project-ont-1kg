@@ -2,10 +2,8 @@ configfile: 'config.yaml'
 
 include: 'rules/analysis.smk'
 
-wildcard_constraints:
-    sample='|'.join(samples),
-    af='|'.join(afs)
-
 rule all:
     input:
-        
+        'results/stats.txt',
+        'results/counts.svg',
+        'results/length-dist.svg'
