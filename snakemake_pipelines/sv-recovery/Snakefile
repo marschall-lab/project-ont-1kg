@@ -1,0 +1,11 @@
+configfile: 'config.yaml'
+
+include: 'rules/analysis.smk'
+
+wildcard_constraints:
+    sample='|'.join(samples),
+    af='|'.join(afs)
+
+rule all:
+    input:
+        
