@@ -57,7 +57,7 @@ rule create_qc_table:
         runtime_min=20,
         mem_total_mb=5*1024
     shell:
-        'python scripts/qc-table.py -bi-panel {input.panel_bi} -bi-callset {input.vcf} -multi-panel {input.panel_multi} -sample-sheet {input.sample_sheet}'
+        'python scripts/qc-table.py -bi-panel {input.panel_bi} -bi-callset {input.vcf} -multi-panel {input.panel_multi} -sample-sheet {input.sample_sheet} -output {params.outprefix} > {params.outprefix}.tsv'
 
 # creating a checkpoint with all the TSV files that have been generated
 checkpoint aggregate_tsvs:
