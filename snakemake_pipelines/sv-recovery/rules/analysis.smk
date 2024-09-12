@@ -45,7 +45,7 @@ rule get_bubbles_from_gfa:
 rule evaluate_vcf_recovery:
     input:
         bubbles_bed='results/gfa-bubbles.bed',
-        panel_vcf=config['path_to_panel_vcf']
+        panel_vcf=config['path_to_panel_vcf'],
         callset_vcf=config['path_to_callset_vcf']
     output:
         'results/recovery-stats.txt'
