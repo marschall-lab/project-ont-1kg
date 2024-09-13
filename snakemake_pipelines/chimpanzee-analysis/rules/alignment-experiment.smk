@@ -32,11 +32,11 @@ rule extract_synthetic_reads:
     log:
         'results/chimp-long-reads.log'
     resources:
-        runtime_hrs=1,
+        runtime_hrs=2,
         runtime_min=20,
         mem_total_mb=5*1024
     shell:
-        'python scripts/chop-reference-to-reads.py -size 4000 -overlap 500 -ref {input} 1> {output} 2> {log}'
+        'python scripts/chop-reference-to-reads.py -size 4000,20000,50000 -overlap 500,4000,10000 -ref {input} 1> {output} 2> {log}'
     
 
 # align chimp assemblies to rGFA using various parameters
