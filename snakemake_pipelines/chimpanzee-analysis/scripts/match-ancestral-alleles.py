@@ -49,7 +49,7 @@ def run(bed=None, map=None, vcf=None):
             continue
         assert aa[0] == '1'
         assert aa[1] != '.'
-        sv_path = sv_id.spilt('-')[3]
+        sv_path = sv_id.split('-')[3]
         aa_path = aa[1]
         if sv_path in aa_path:
             # the bubble path of the sv allele is found in the ancestral allele path
