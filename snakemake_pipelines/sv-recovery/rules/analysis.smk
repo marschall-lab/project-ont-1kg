@@ -41,12 +41,30 @@ rule get_bubbles_from_gfa:
     shell:
         'python scripts/extract-bubbles.py -gfa {input} > {output}'
 
+# rule unzip panel vcf
+rule unzip_panel:
+    input:
+        config['path_to_panel_vcf']
+    output:
+        temp('results/panel.vcf')
+    shell:
+        'gzip -d -c {input} > {output}'
+
+# rule unzip callset vcf
+rule unzip_callset:
+    input:
+        config['path_to_callset_vcf']
+    output:
+        temp('results/callset.vcf')
+    shell:
+        'gzip -d -c {input} > {output}'
+
 # evaluate recovery of SVs
 rule evaluate_vcf_recovery:
     input:
         bubbles_bed='results/gfa-bubbles.bed',
-        panel_vcf=config['path_to_panel_vcf'],
-        callset_vcf=config['path_to_callset_vcf']
+        panel_vcf='results/panel.vcf',
+        callset_vcf='results/callset.vcf'
     output:
         'results/stats.txt',
         'results/counts.svg',
