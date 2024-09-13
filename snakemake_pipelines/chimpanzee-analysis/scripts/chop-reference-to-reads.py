@@ -44,7 +44,7 @@ if __name__=='__main__':
     
     parser = argparse.ArgumentParser(prog='chop-reference-to-reads.py', description="Converts the reference into synthetic reads")
     parser.add_argument("-size", required=True, help="Comma-separated list of sizes of synthetic reads")
-    parser.add_argument("-overlap", required=True, type=int, help="Comma-separated list of base overlap between sythetic reads for each lenght")
+    parser.add_argument("-overlap", required=True, help="Comma-separated list of base overlap between sythetic reads for each lenght")
     parser.add_argument("-ref", required=True, help="Reference FASTA")
 
     options = parser.parse_args()
