@@ -53,5 +53,7 @@ rule evaluate_vcf_recovery:
         'results/length-dist.svg'
     params:
         'results/'
+    conda:
+        '../envs/analysis.yml'
     shell:
         'python scripts/evaluate-sv-recovery.py -bed {input.bubbles_bed} -panel {input.panel_vcf} -callset {input.callset_vcf} -outdir {params}'

@@ -145,7 +145,7 @@ rule bub_sv_map:
     conda:
         '../envs/analysis.yml'
     shell:
-        'python script/map-bub-ids-to-allele-ids.py -vcf {input} > {output}'
+        'python scripts/map-bub-ids-to-allele-ids.py -vcf {input} > {output}'
 
 # unzip phased callset vcf
 rule unzip_phased_vcf:

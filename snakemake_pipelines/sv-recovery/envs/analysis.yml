@@ -4,9 +4,7 @@ channels:
   - http://conda.repo.test.hhu.de/main
 
 dependencies:
-  - samtools
-  - bedtools
   - matplotlib
-  - seaborn
-  - scipy
-  - pywfa
+  - numpy
+  - bcftools
+  - samtools
