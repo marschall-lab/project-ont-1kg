@@ -66,7 +66,7 @@ checkpoint aggregate_tsvs:
     output:
         directory('results/coverage-experiments/qc-tables-selected/')
     shell:
-        'cp results/coverage-experiments/qc-tables/*.tsv results/coverage-experiments/qc-tables-selected'
+        'mkdir {output} && cp results/coverage-experiments/qc-tables/*.tsv {output}'
 
 # creating the plots of the selected tsvs
 rule make_plots:
