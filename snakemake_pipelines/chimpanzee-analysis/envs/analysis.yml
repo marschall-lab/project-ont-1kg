@@ -5,3 +5,5 @@ channels:
 
 dependencies:
   - cyvcf2
+  - matplotlib
+  - numpy

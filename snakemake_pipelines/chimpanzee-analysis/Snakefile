@@ -1,14 +1,18 @@
 configfile: 'config.yaml'
 
-include: 'rules/prepare-vcf.smk'
-include: 'rules/alignment-experiment.smk'
+size_list = ['4000', '4000,20000,50000', '4000,20000,50000,100000,200000']
+overlap_dict = {'4000': '500',
+                '4000,20000,50000': '500,1000,2500'
+                '4000,20000,50000,100000,200000': '500,1000,2500,5000,10000'}
 
-rule run_alignment_experiments:
-    input:
-        'results/assembly-to-graph-alignment-experiments/collated-statistics.tsv'
+include: 'rules/prepare-vcf.smk'
+
+wildcard_constraints:
+    size_list = '|'.join(size_list)
 
 rule all:
     input:
-        'results/ancestral-allele-annotations.bed',
-        'results/annotated-callset.vcf'
+        expand('results/{size_list}/ancestral-allele-annotations.bed', size_list=size_list),
+        expand('results/{size_list}/annotated-callset.vcf', size_list=size_list),
+        expand('results/{size_list}/sv-length-dist.svg', size_list=size_list)
         

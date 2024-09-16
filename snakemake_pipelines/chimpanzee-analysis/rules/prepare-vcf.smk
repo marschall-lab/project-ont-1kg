@@ -1,31 +1,29 @@
-# align chimp assemblies to rGFA using GraphAligner
-# rule graphaligner_align_assemblies:
-#     input:
-#         assembly=config['path_to_assembly'],
-#         graph=config['path_to_rgfa']
-#     output:
-#         'results/assembly-to-graph-alignment/alignment.gaf'
-#     log:
-#         'results/assembly-to-graph-alignment/alignment.log'
-#     threads: 24
-#     resources:
-#         runtime_hrs=48,
-#         runtime_min=59,
-#         mem_total_mb=150*1024
-#     conda:
-#         '../envs/alignment.yml'
-#     shell:
-#         'GraphAligner -g {input.graph} -f {input.assembly} -a {output} -t {threads} > {log}'
+# chop the references into synthetic long reads
+rule extract_synthetic_reads:
+    input:
+        assembly=config['path_to_assembly']
+    output:
+        'results/{size_list}/chimp-long-reads.fa'
+    log:
+        'results/{size_list}/chimp-long-reads.log'
+    params:
+        overlap_list = lambda wildcards: overlap_dict[wildcards.size_list]
+    resources:
+        runtime_hrs=2,
+        runtime_min=20,
+        mem_total_mb=5*1024
+    shell:
+        'python scripts/chop-reference-to-reads.py -size {wildcards.size_list} -overlap {params.overlap_list} -ref {input} 1> {output} 2> {log}'
 
 # align chimp reference to rGFA using minigraph
 rule minigraph_align_assemblies:
     input:
-        assembly='results/chimp-long-reads.fa',
+        assembly='results/{size_list}/chimp-long-reads.fa',
         graph=config['path_to_rgfa']
     output:
-        'results/assembly-to-graph-alignment/chimp.gaf'
+        'results/{size_list}/assembly-to-graph-alignment/chimp.gaf'
     log:
-        'results/assembly-to-graph-alignment/chimp.log'
+        'results/{size_list}/assembly-to-graph-alignment/chimp.log'
     threads: 24
     resources:
         runtime_hrs=24,
@@ -39,9 +37,9 @@ rule minigraph_align_assemblies:
 # get statistics using gaftools stats
 rule alignment_statistics:
     input:
-        'results/assembly-to-graph-alignment/chimp.gaf'
+        'results/{size_list}/assembly-to-graph-alignment/chimp.gaf'
     output:
-        'results/assembly-to-graph-alignment/chimp.stats'
+        'results/{size_list}/assembly-to-graph-alignment/chimp.stats'
     resources:
         runtime_hrs=1,
         runtime_min=20,
@@ -58,9 +56,9 @@ rule alignment_statistics:
 # create FOFN for the prepare vcf script
 rule make_list_of_file_names:
     input:
-        'results/assembly-to-graph-alignment/chimp.gaf'
+        'results/{size_list}/assembly-to-graph-alignment/chimp.gaf'
     output:
-        'results/assembly-to-graph-alignment/fofn.txt'
+        'results/{size_list}/assembly-to-graph-alignment/fofn.txt'
     run:
         from os.path import abspath
         f = open(output[0], 'w')
@@ -105,13 +103,13 @@ rule concat_tagged_GFA:
 # process the GAF using the rGFA to find the alleles
 rule prepare_vcf:
     input:
-        fofn='results/assembly-to-graph-alignment/fofn.txt',
-        stats='results/assembly-to-graph-alignment/chimp.stats',
+        fofn='results/{size_list}/assembly-to-graph-alignment/fofn.txt',
+        stats='results/{size_list}/assembly-to-graph-alignment/chimp.stats',
         graph='results/rgfa-tagging/%s-complete.gfa'%(config['path_to_rgfa'].split("/")[-1][:-4])
     output:
-        'results/assembly-vcf/chimp.vcf'
+        'results/{size_list}/assembly-vcf/chimp.vcf'
     log:
-        'results/assembly-vcf/chimp.log'
+        'results/{size_list}/assembly-vcf/chimp.log'
     resources:
         runtime_hrs=0,
         runtime_min=59,
@@ -128,11 +126,11 @@ rule prepare_vcf:
 # create a BED file with the ancestral allele annotations
 rule annotate_ancestral_allele:
     input:
-        'results/assembly-vcf/chimp.vcf'
+        'results/{size_list}/assembly-vcf/chimp.vcf'
     output:
-        'results/ancestral-allele-annotations.bed'
+        'results/{size_list}/ancestral-allele-annotations.bed'
     log:
-        'results/ancestral-allele-annotations.log'
+        'results/{size_list}/ancestral-allele-annotations.log'
     shell:
         'python scripts/annotate-ancestral-allele.py -vcf {input} 1> {output} 2> {log}'
 
@@ -159,12 +157,24 @@ rule unzip_phased_vcf:
 # match the ancestral alleles to the sv alleles and modify the vcf
 rule match_ancestral_allele:
     input:
-        bed='results/ancestral-allele-annotations.bed',
+        bed='results/{size_list}/ancestral-allele-annotations.bed',
         bmap='results/bub-sv-map.tsv',
         vcf='results/tmp/phased-callset.vcf'
     output:
-        'results/annotated-callset.vcf'
+        'results/{size_list}/annotated-callset.vcf'
     log:
-        'results/annotated-callset.log'
+        'results/{size_list}/annotated-callset.log'
     shell:
         'python scripts/match-ancestral-alleles.py -bed {input.bed} -map {input.bmap} -vcf {input.vcf} 1> {output} 2> {log}'
+
+rule plot_annotated_sv_length:
+    input:
+        'results/{size_list}/annotated-callset.vcf'
+    output:
+        'results/{size_list}/sv-length-dist.svg'
+    params:
+        'results/{size_list}/'
+    conda:
+        '../envs/analysis.smk'
+    shell:
+        'python scripts/plot-sv-lengths.py -vcf {input} -outdir {params}'
