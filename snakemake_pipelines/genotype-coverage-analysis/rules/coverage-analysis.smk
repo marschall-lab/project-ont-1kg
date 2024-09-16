@@ -57,7 +57,7 @@ rule create_qc_table:
         runtime_min=20,
         mem_total_mb=5*1024
     shell:
-        'python scripts/qc-table.py -bi-panel {input.panel_bi} -bi-callset {input.vcf} -multi-panel {input.panel_multi} -sample-sheet {input.sample_sheet} -output {params.outprefix} > {params.outprefix}.tsv'
+        'python scripts/qc-table.py -bi-panel {input.panel_bi} -bi-callset {input.vcf} -multi-panel {input.panel_multi} -sample-sheet {input.sample_sheet} -output {params.outprefix}'
 
 # creating a checkpoint with all the TSV files that have been generated
 checkpoint aggregate_tsvs:
@@ -66,7 +66,7 @@ checkpoint aggregate_tsvs:
     output:
         directory('results/coverage-experiments/qc-tables-selected/')
     shell:
-        'mkdir {output} && cp results/coverage-experiments/qc-tables/*.tsv {output}'
+        'mkdir -p {output} && cp results/coverage-experiments/qc-tables/*.tsv {output}'
 
 # creating the plots of the selected tsvs
 rule make_plots:
@@ -88,7 +88,8 @@ rule make_plots:
 # aggregating all the pdfs generated (only for the all category of sv types)
 def aggregate_pdfs(wildcards):
     chk_out=checkpoints.aggregate_tsvs.get(**wildcards).output[0]
-    outfiles=[i for i in expand('results/coverage-experiments/plots/{cov_range}/all.pdf', cov_range=glob_wildcards(os.path.join(chk_out, "{cov_range}.tsv")).cov_range)]
+    RNG, _ = glob_wildcards(os.path.join(chk_out, "{rng}.tsv"))
+    outfiles=[i for i in expand('results/coverage-experiments/plots/{RANGE}/all.pdf', RANGE=RNG)]
     return outfiles
 
 # making a single pdf with all the images

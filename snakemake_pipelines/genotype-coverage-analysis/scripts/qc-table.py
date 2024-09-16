@@ -217,7 +217,9 @@ if len(callset_samples) < 10:
 
 panel_HG01258_gts = {}
 
-print('\t'.join(header))
+tsv_writer = open(args.output+'.tsv', 'w')
+
+print('\t'.join(header), file=tsv_writer)
 
 for variant in panel_reader:
     # require bi-allelic vcf with IDs
@@ -264,9 +266,11 @@ for n, variant in enumerate(callset_reader):
     table_data[var_id]['HWE_CHI_P_VALUE'] = hwe_stats[2]
 
     line = '\t'.join([str(table_data[var_id][key]) for key in header])
-    print(line)
+    print(line, file=tsv_writer)
     if (n)%1000 == 0:
         sys.stderr.write("\tRead %d variant records.\n"%(n))
+
+tsv_writer.close()
 
 with open(args.output+'.chk', 'w') as chkfile:
     print('Processing Complete.', file=chkfile)
