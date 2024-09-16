@@ -7,13 +7,14 @@ rule extract_synthetic_reads:
     log:
         'results/{size_list}/chimp-long-reads.log'
     params:
+        size_list = lambda wildcards: ','.join(wildcards.size_list.split('-')),
         overlap_list = lambda wildcards: overlap_dict[wildcards.size_list]
     resources:
         runtime_hrs=2,
         runtime_min=20,
         mem_total_mb=5*1024
     shell:
-        'python scripts/chop-reference-to-reads.py -size {wildcards.size_list} -overlap {params.overlap_list} -ref {input} 1> {output} 2> {log}'
+        'python scripts/chop-reference-to-reads.py -size {params.size_list} -overlap {params.overlap_list} -ref {input} 1> {output} 2> {log}'
 
 # align chimp reference to rGFA using minigraph
 rule minigraph_align_assemblies:

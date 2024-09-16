@@ -1,18 +1,18 @@
 configfile: 'config.yaml'
 
-size_list = ['4000', '4000,20000,50000', '4000,20000,50000,100000,200000']
+size_lists = ['4000', '4000-20000-50000', '4000-20000-50000-100000-200000']
 overlap_dict = {'4000': '500',
-                '4000,20000,50000': '500,1000,2500',
-                '4000,20000,50000,100000,200000': '500,1000,2500,5000,10000'}
+                '4000-20000-50000': '500,1000,2500',
+                '4000-20000-50000-100000-200000': '500,1000,2500,5000,10000'}
 
 include: 'rules/prepare-vcf.smk'
 
 wildcard_constraints:
-    size_list = '|'.join(size_list)
+    size_list = '|'.join(size_lists)
 
 rule all:
     input:
-        expand('results/{size_list}/ancestral-allele-annotations.bed', size_list=size_list),
-        expand('results/{size_list}/annotated-callset.vcf', size_list=size_list),
-        expand('results/{size_list}/sv-length-dist.svg', size_list=size_list)
+        expand('results/{size_list}/ancestral-allele-annotations.bed', size_list=size_lists),
+        expand('results/{size_list}/annotated-callset.vcf', size_list=size_lists),
+        expand('results/{size_list}/sv-length-dist.svg', size_list=size_lists)
         
