@@ -91,6 +91,7 @@ rule make_plots:
 def aggregate_pdfs(wildcards):
     chk_out=checkpoints.aggregate_tsvs.get(**wildcards).output[0]
     RNG, _ = glob_wildcards(os.path.join(chk_out, "{rng}.tsv"))
+    print(RNG)
     return expand('results/coverage-experiments/plots/{RANGE}/all.pdf', RANGE=RNG)
 
 # making a single pdf with all the images
