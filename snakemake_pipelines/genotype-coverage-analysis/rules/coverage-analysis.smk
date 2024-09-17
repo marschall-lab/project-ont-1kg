@@ -90,9 +90,8 @@ rule make_plots:
 # aggregating all the pdfs generated (only for the all category of sv types)
 def aggregate_pdfs(wildcards):
     chk_out=checkpoints.aggregate_tsvs.get(**wildcards).output[0]
-    RNG, _ = glob_wildcards(os.path.join(chk_out, "{rng}.tsv"))
-    print(RNG)
-    return expand('results/coverage-experiments/plots/{RANGE}/all.pdf', RANGE=RNG)
+    RNG = glob_wildcards(os.path.join(chk_out, "{rng}.tsv"))
+    return expand('results/coverage-experiments/plots/{RANGE}/all.pdf', RANGE=RNG.rng)
 
 # making a single pdf with all the images
 rule plot_to_one_pdf:
