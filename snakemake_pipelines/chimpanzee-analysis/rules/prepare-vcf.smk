@@ -176,6 +176,6 @@ rule plot_annotated_sv_length:
     params:
         'results/{size_list}/'
     conda:
-        '../envs/analysis.smk'
+        '../envs/analysis.yml'
     shell:
         'python scripts/plot-sv-lengths.py -vcf {input} -outdir {params}'
