@@ -1,3 +1,5 @@
+# This pipeline is for separating samples based on coverage and analysing the coverage ranges.
+
 # list of parameters with their values
 binsize = 10
 max_coverage = 140      # hardcoded maximum coverage to create coverage ranges
@@ -89,8 +91,7 @@ rule make_plots:
 def aggregate_pdfs(wildcards):
     chk_out=checkpoints.aggregate_tsvs.get(**wildcards).output[0]
     RNG, _ = glob_wildcards(os.path.join(chk_out, "{rng}.tsv"))
-    outfiles=[i for i in expand('results/coverage-experiments/plots/{RANGE}/all.pdf', RANGE=RNG)]
-    return outfiles
+    return expand('results/coverage-experiments/plots/{RANGE}/all.pdf', RANGE=RNG)
 
 # making a single pdf with all the images
 rule plot_to_one_pdf:
