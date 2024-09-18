@@ -30,19 +30,32 @@ rule bin_sample_data:
 # subsetting vcf to samples based on coverage
 rule subset_vcf:
     input:
-        vcf=config['path_to_phased_vcf'],
+        callset_vcf=config['path_to_phased_vcf'],
+        sniffles_vcf=config['path_to_sniffles_vcf'],
+        delly_vcf=config['path_to_delly_vcf'],
+        svarp_vcf=config['path_to_svarp_vcf'],
         tsv='results/coverage-experiments/sample-by-coverage_{cov_range}.tsv'
     output:
-        vcf=temp('results/coverage-experiments/subsampled-vcf/{cov_range}.vcf')
+        'results/coverage-experiments/subsampled-vcf/{cov_range}-callset.vcf',
+        'results/coverage-experiments/subsampled-vcf/{cov_range}-sniffles.vcf',
+        'results/coverage-experiments/subsampled-vcf/{cov_range}-delly.vcf',
+        'results/coverage-experiments/subsampled-vcf/{cov_range}-svarp.vcf'
+    params:
+        outdir='results/coverage-experiments/subsampled-vcf/{cov_range}'
     conda:
         '../envs/coverage-analysis.yml'
     shell:
-        'bcftools view --force-samples -S {input.tsv} {input.vcf} > {output.vcf}'
+        '''
+        bcftools view --force-samples -S {input.tsv} {input.callset_vcf} > {params.outdir}-callset.vcf
+        bcftools view --force-samples -S {input.tsv} {input.sniffles_vcf} > {params.outdir}-sniffles.vcf
+        bcftools view --force-samples -S {input.tsv} {input.delly_vcf} > {params.outdir}-delly.vcf
+        bcftools view --force-samples -S {input.tsv} {input.svarp_vcf} > {params.outdir}-svarp.vcf
+        '''
 
 # creating the QC table
 rule create_qc_table:
     input:
-        vcf='results/coverage-experiments/subsampled-vcf/{cov_range}.vcf',
+        vcf='results/coverage-experiments/subsampled-vcf/{cov_range}-callset.vcf',
         panel_bi=config['path_to_panel_bi'],
         panel_multi=config['path_to_panel_multi'],
         sample_sheet='resources/sample_sheet.tsv'
@@ -88,15 +101,15 @@ rule make_plots:
         'python scripts/plot-hwe-af.py -table {input} -output {params.out}'
     
 # aggregating all the pdfs generated (only for the all category of sv types)
-def aggregate_pdfs(wildcards):
+def aggregate_ranges(wildcards):
     chk_out=checkpoints.aggregate_tsvs.get(**wildcards).output[0]
     RNG = glob_wildcards(os.path.join(chk_out, "{rng}.tsv"))
-    return expand('results/coverage-experiments/plots/{RANGE}/all.pdf', RANGE=RNG.rng)
+    return RNG.rng
 
 # making a single pdf with all the images
 rule plot_to_one_pdf:
     input:
-        aggregate_pdfs
+        expand('results/coverage-experiments/plots/{RANGE}/all.pdf', RANGE=aggregate_ranges)
     output:
         'results/coverage-experiments/plots/all.pdf'
     shell:
