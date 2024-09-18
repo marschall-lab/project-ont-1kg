@@ -100,16 +100,20 @@ rule make_plots:
     shell:
         'python scripts/plot-hwe-af.py -table {input} -output {params.out}'
     
-# aggregating all the pdfs generated (only for the all category of sv types)
-def aggregate_ranges(wildcards):
+# aggregating all the relevant coverage ranges
+def get_ranges(wildcards):
     chk_out=checkpoints.aggregate_tsvs.get(**wildcards).output[0]
     RNG = glob_wildcards(os.path.join(chk_out, "{rng}.tsv"))
     return RNG.rng
 
+def aggregate_pdfs(wildcards):
+    ranges=get_ranges(wildcards)
+    return expand('results/coverage-experiments/plots/{cov_range}/all.pdf', cov_range=ranges)
+
 # making a single pdf with all the images
 rule plot_to_one_pdf:
     input:
-        expand('results/coverage-experiments/plots/{RANGE}/all.pdf', RANGE=aggregate_ranges)
+        aggregate_pdfs
     output:
         'results/coverage-experiments/plots/all.pdf'
     shell:
