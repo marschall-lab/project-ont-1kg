@@ -36,10 +36,10 @@ rule subset_vcf:
         svarp_vcf=config['path_to_svarp_vcf'],
         tsv='results/coverage-experiments/sample-by-coverage_{cov_range}.tsv'
     output:
-        'results/coverage-experiments/subsampled-vcf/{cov_range}-callset.vcf',
-        'results/coverage-experiments/subsampled-vcf/{cov_range}-sniffles.vcf',
-        'results/coverage-experiments/subsampled-vcf/{cov_range}-delly.vcf',
-        'results/coverage-experiments/subsampled-vcf/{cov_range}-svarp.vcf'
+        temp('results/coverage-experiments/subsampled-vcf/{cov_range}-callset.vcf'),
+        temp('results/coverage-experiments/subsampled-vcf/{cov_range}-sniffles.vcf'),
+        temp('results/coverage-experiments/subsampled-vcf/{cov_range}-delly.vcf'),
+        temp('results/coverage-experiments/subsampled-vcf/{cov_range}-svarp.vcf')
     params:
         outdir='results/coverage-experiments/subsampled-vcf/{cov_range}'
     conda:
@@ -117,4 +117,36 @@ rule plot_to_one_pdf:
     output:
         'results/coverage-experiments/plots/all.pdf'
     shell:
-        'pdfunite {input} {output}'
+        'pdfcombine --force -o {output} {input}'
+
+# process the sub-sampled vcfs to get the number of SVs per sample
+rule sv_number_per_sample:
+    input:
+        callset='results/coverage-experiments/subsampled-vcf/{cov_range}-callset.vcf',
+        sniffles='results/coverage-experiments/subsampled-vcf/{cov_range}-sniffles.vcf',
+        delly='results/coverage-experiments/subsampled-vcf/{cov_range}-delly.vcf',
+        svarp='results/coverage-experiments/subsampled-vcf/{cov_range}-svarp.vcf'
+    output:
+        'results/sv_count_per_sample/{cov_range}.tsv'
+    conda:
+        '../envs/coverage-analysis.yml'
+    shell:
+        'python scripts/count-svs-per-sample.py -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} -range {wildcards.range} > {output}'
+
+
+def aggregate_sv_count_tsvs(wildcards):
+    ranges=get_ranges(wildcards)
+    return expand('results/sv_count_per_sample/{cov_range}.tsv', cov_range=ranges)
+
+# plot all the sv numbers for various coverage ranges
+rule plot_sv_counts:
+    input:
+        aggregate_sv_count_tsvs
+    output:
+        'results/sv_count_per_sample/plot.pdf'
+    params:
+        ','.join(aggregate_sv_count_tsvs)
+    conda:
+        '../envs/coverage-analysis.yml'
+    shell:
+        'python scripts/plot-sv-counts.py -vcfs {params} -output {output}'
