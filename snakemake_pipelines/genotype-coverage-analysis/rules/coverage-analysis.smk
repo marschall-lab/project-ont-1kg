@@ -145,7 +145,7 @@ rule plot_sv_counts:
     output:
         'results/sv_count_per_sample/plot.pdf'
     params:
-        ','.join(aggregate_sv_count_tsvs)
+        lambda wildcards: ','.join([i for i in aggregate_sv_count_tsvs(wildcards)])
     conda:
         '../envs/coverage-analysis.yml'
     shell:
