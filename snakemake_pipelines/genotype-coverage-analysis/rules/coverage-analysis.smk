@@ -149,4 +149,4 @@ rule plot_sv_counts:
     conda:
         '../envs/coverage-analysis.yml'
     shell:
-        'python scripts/plot-sv-counts.py -vcfs {params} -output {output}'
+        'python scripts/plot-sv-counts.py -tsvs {params} -output {output}'
