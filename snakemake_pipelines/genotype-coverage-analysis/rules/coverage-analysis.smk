@@ -137,7 +137,7 @@ rule sv_number_per_sample:
     conda:
         '../envs/coverage-analysis.yml'
     shell:
-        'python scripts/count-svs-per-sample.py -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} -range {wildcards.cov_range} > {output}'
+        'python scripts/count-svs-per-sample.py -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} > {output}'
 
 
 def aggregate_sv_count_tsvs(wildcards):

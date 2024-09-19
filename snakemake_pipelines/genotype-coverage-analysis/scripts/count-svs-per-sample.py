@@ -27,7 +27,7 @@ def read_gts(line):
     
     return counter
 
-def run(callset=None, sniffles=None, delly=None, svarp=None, range=None):
+def run(callset=None, sniffles=None, delly=None, svarp=None):
     
     sv_counter = {'callset': None,
                   'sniffles': None,
@@ -46,13 +46,13 @@ def run(callset=None, sniffles=None, delly=None, svarp=None, range=None):
             if line[0] == '#':
                 # count samples
                 n_samples = len(line.strip().split('\t')[9:])
-                sv_counter[vcf_type] = [0 for _ in range(n_samples)]
+                sv_counter[vcf_type] = [0 for i in range(n_samples)]
                 continue
             gts = read_gts(line)
             assert len(gts) == n_samples
             sv_counter[vcf_type] = list(map(add, sv_counter[vcf_type], gts))
         reader.close()
-        print(f'{vcf_type}\t{','.join([str(i) for i in sv_counter[vcf_type]])}')
+        print(f'{vcf_type}\t{",".join([str(i) for i in sv_counter[vcf_type]])}')
 
 
     
@@ -63,8 +63,7 @@ if __name__=='__main__':
     parser.add_argument("-sniffles", required=True, help="Sniffles vcf")
     parser.add_argument("-delly", required=True, help="Delly vcf")
     parser.add_argument("-svarp", required=True, help="Svarp vcf")
-    parser.add_argument("-range", required=True, help="coverage range")
-
+    
     options = parser.parse_args()
 
     run(**vars(options))
