@@ -120,6 +120,8 @@ rule plot_to_one_pdf:
         aggregate_pdfs
     output:
         'results/coverage-experiments/plots/all.pdf'
+    conda:
+        '../envs/coverage-analysis.yml'
     shell:
         'pdfcombine --force -o {output} {input}'
 
@@ -135,7 +137,7 @@ rule sv_number_per_sample:
     conda:
         '../envs/coverage-analysis.yml'
     shell:
-        'python scripts/count-svs-per-sample.py -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} -range {wildcards.range} > {output}'
+        'python scripts/count-svs-per-sample.py -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} -range {wildcards.cov_range} > {output}'
 
 
 def aggregate_sv_count_tsvs(wildcards):
