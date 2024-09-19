@@ -136,6 +136,10 @@ rule sv_number_per_sample:
         'results/sv_count_per_sample/{cov_range}.tsv'
     conda:
         '../envs/coverage-analysis.yml'
+    resources:
+        runtime_hrs=1,
+        runtime_min=20,
+        mem_total_mb=5*1024
     shell:
         'python scripts/count-svs-per-sample.py -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} > {output}'
 
