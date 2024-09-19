@@ -12,9 +12,8 @@ latency-wait: 300
 keep-going: True
 rerun-incomplete: True
 restart-times: 0
-max-status-checks-per-second: 0.001
+max-status-checks-per-second: 10
 use-conda: True
-conda-frontend: conda
 nolock: False
 default-resources:
   - mem_per_cpu_mb=1024
