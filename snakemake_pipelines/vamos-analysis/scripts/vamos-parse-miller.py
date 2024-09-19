@@ -21,9 +21,8 @@ def run(vcf = None, sample = None, output = None):
                 #n_samples = len(list(set(samples)))
                 #print(f"Number of Samples = {n_samples}")
                 for idx, s in enumerate(samples):
-                    if sample != s:
-                        continue
-                    sample_to_idx.append(9+idx)
+                    if sample in s:
+                        sample_to_idx.append(9+idx)
                 continue
             line = line.rstrip().split('\t')
             chrom = line[0]
