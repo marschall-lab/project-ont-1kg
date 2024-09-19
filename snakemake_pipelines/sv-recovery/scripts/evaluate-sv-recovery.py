@@ -101,8 +101,8 @@ def run(bed=None, panel=None, callset=None, outdir=None):
     ax.set_title('Pseudohaplotype SV Count in Panel vs Callset')
     ax.set_xticks(x_pos+(width/2), sv_types)
     ax.legend(loc='upper right')
-    xmin, xmax, ymin, ymax = plt.axis()
-    plt.ylim([0, ymax])
+    ymin, ymax = ax.get_ylim()
+    ax.set_ylim(0, ymax)
     plt.yscale('log')
     plt.savefig(outdir+'counts.svg')
     
