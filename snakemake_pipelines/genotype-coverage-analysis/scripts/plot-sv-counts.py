@@ -29,13 +29,13 @@ def run(tsvs=None, output=None):
         count += 1
     # preparing data
     data = {}
-    for file, range in zip(tsvs, ranges):
+    for file, cov_range in zip(tsvs, ranges):
         counter = read_tsv(file)
-        data[range] = counter
+        data[cov_range] = counter
     # plotting
-    fig = plt.figure(figsize =(10, 10))
+    fig = plt.figure(figsize =(20, 10))
     bp = {}
-    tick_pos = [(i*(len(categories)+1))/2 for i in range(len(ranges))]
+    tick_pos = [(i*(len(categories)+1))+(len(categories)+1)/2 for i in range(len(ranges))]
     for index, cat in enumerate(categories):
         d = [data[i][cat] for i in ranges]
         bp[cat] = plt.boxplot(d, positions=[(index+1)+(i*(len(categories)+1)) for i in range(len(ranges))], patch_artist=True, notch=False, widths=0.9)
@@ -50,14 +50,23 @@ def run(tsvs=None, output=None):
             median.set(color ='black', linewidth = 1)
         for flier in bp[cat]['fliers']:
             flier.set(marker ='o', color ='black', alpha = 1)
+    for index in range(len(ranges)):
+        if index == 0:
+            continue
+        plt.axvline(x = index*(len(categories)+1), color = 'black', linewidth = 1, linestyle='--')
     
     plt.title('SV Count for Discovery vs Final Genotypes (coverage-wise)')
-    plt.xticks(tick_pos, ranges, fontsize=15)
-    plt.yticks(fontsize=15)
+    plt.xticks(tick_pos, ranges, fontsize=10)
+    xmin, xmax, _, _ = plt.axis()
+    plt.xlim([xmin-1, xmax+1])
+    plt.xlabel('Coverage Ranges')
+    plt.ylabel('Number of SVs')
+    plt.yticks(fontsize=10)
+    plt.tight_layout()
     plt.legend(handles, labels)
     plt.savefig(output)
     plt.close()
-    
+
 
 if __name__=='__main__':
     
