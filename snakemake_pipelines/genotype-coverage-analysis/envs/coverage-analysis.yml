@@ -4,7 +4,7 @@ channels:
   - http://conda.repo.test.hhu.de/main
 
 dependencies:
-  - bcftools
+  - bcftools=1.20
   - cyvcf2
   - pandas
   - scipy
