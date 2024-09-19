@@ -44,6 +44,10 @@ rule subset_vcf:
         outdir='results/coverage-experiments/subsampled-vcf/{cov_range}'
     conda:
         '../envs/coverage-analysis.yml'
+    resources:
+        runtime_hrs=1,
+        runtime_min=20,
+        mem_total_mb=3*1024
     shell:
         '''
         bcftools view --force-samples -S {input.tsv} {input.callset_vcf} > {params.outdir}-callset.vcf
