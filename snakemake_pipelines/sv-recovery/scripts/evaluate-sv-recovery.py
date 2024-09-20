@@ -102,8 +102,7 @@ def run(bed=None, panel=None, callset=None, outdir=None):
     ax.set_xticks(x_pos+(width/2), sv_types)
     ax.legend(loc='upper right')
     ymin, ymax = ax.get_ylim()
-    ax.set_ylim(0, ymax)
-    plt.yscale('log')
+    ax.set_ylim([0, ymax])
     plt.savefig(outdir+'counts.svg')
     
     # Plotting length histograms
