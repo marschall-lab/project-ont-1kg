@@ -57,8 +57,16 @@ def run(miller = None, vienna = None, reference = None, af_cutoff = None, sample
         else:
             scores.append([score_matrix[0][1], score_matrix[1][0]])
     
+    total_scores_100 = [x[0]+x[1] for x in scores if x[0]+x[1] > -100]
     total_scores_1000 = [x[0]+x[1] for x in scores if x[0]+x[1] > -1000]
     total_scores = [x[0]+x[1] for x in scores]
+    
+    plt.figure(figsize=(10,10), dpi=200)
+    plt.hist(total_scores_100, bins=100)
+    plt.xlabel("WFA Score")
+    plt.title(f"{sample}-subset100")
+    plt.yscale('log')
+    plt.savefig(output+'-subset100.png')
     
     plt.figure(figsize=(10,10), dpi=200)
     plt.hist(total_scores_1000, bins=100)

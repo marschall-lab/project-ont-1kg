@@ -70,6 +70,7 @@ rule distance_histogram:
         vienna='results/analysis/vienna-tsv/{sample}-sequence.tsv',
         reference='results/reference-vntrs.bed'
     output:
+        'results/plots/distance-histogram/{sample}-{af}-subset100.png',
         'results/plots/distance-histogram/{sample}-{af}-subset1000.png',
         'results/plots/distance-histogram/{sample}-{af}-full.png'
     params:
@@ -90,6 +91,7 @@ rule distance_histogram_cross:
         vienna='results/analysis/vienna-tsv/{sample2}-sequence.tsv',
         reference='results/reference-vntrs.bed'
     output:
+        'results/plots/distance-histogram/{sample1}_{sample2}-{af}-subset100.png',
         'results/plots/distance-histogram/{sample1}_{sample2}-{af}-subset1000.png',
         'results/plots/distance-histogram/{sample1}_{sample2}-{af}-full.png'
     params:
