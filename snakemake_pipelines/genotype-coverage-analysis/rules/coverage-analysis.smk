@@ -30,7 +30,7 @@ rule bin_sample_data:
 # subsetting vcf to samples based on coverage
 rule subset_vcf:
     input:
-        callset_vcf=config['path_to_phased_vcf'],
+        callset_vcf=config['path_to_callset_vcf'],
         sniffles_vcf=config['path_to_sniffles_vcf'],
         delly_vcf=config['path_to_delly_vcf'],
         svarp_vcf=config['path_to_svarp_vcf'],

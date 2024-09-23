@@ -7,7 +7,7 @@ path_to_assembly: '/gpfs/project/projects/medbioinf/users/spani/files/ref/GCF_02
 path_to_rgfa: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/rgfa-augmented-graph/minigraph-extended_all.gfa'
 
 # path to the final callset of the paper whose genotypes needs to be analysed
-path_to_phased_vcf: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/final-vcf.phased.vcf.gz'
+path_to_callset_vcf: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/final-vcf.unphased.vcf.gz'
 
 # path to the multiallelic panel VCF
 # Biallelic panel made in the rule annotate_panel_giggles_ready of the "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/prepare-vcf.smk" file
