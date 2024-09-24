@@ -153,7 +153,7 @@ rule plot_sv_counts:
     input:
         aggregate_sv_count_tsvs
     output:
-        'results/sv_count_per_sample/plot.pdf'
+        'results/sv_count_per_sample/plot.svg'
     params:
         lambda wildcards: ','.join([i for i in aggregate_sv_count_tsvs(wildcards)])
     conda:
