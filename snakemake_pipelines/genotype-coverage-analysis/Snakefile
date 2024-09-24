@@ -6,7 +6,7 @@ include: 'rules/coverage-analysis.smk'
 rule coverage_experiments:
     input:
         'results/coverage-experiments/plots/all.pdf',
-        'results/sv_count_per_sample/plot.pdf'
+        'results/sv_count_per_sample/plot.svg'
 
 # downsampling a high coverage sample and genotyping it
 # samples with coverage > 100 is HG02013 and HG00377.
