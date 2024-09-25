@@ -156,7 +156,7 @@ rule unzip_phased_vcf:
         'gzip -d -c {input} > {output}'
 
 # unzip unphased callset vcf
-rule unzip_phased_vcf:
+rule unzip_unphased_vcf:
     input:
         config['path_to_unphased_callset_vcf']
     output:
