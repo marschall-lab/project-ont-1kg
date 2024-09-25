@@ -149,28 +149,50 @@ rule bub_sv_map:
 # unzip phased callset vcf
 rule unzip_phased_vcf:
     input:
-        config['path_to_callset_vcf']
+        config['path_to_phased_callset_vcf']
     output:
         temp('results/tmp/phased-callset.vcf')
     shell:
         'gzip -d -c {input} > {output}'
 
-# match the ancestral alleles to the sv alleles and modify the vcf
-rule match_ancestral_allele:
+# unzip unphased callset vcf
+rule unzip_phased_vcf:
+    input:
+        config['path_to_unphased_callset_vcf']
+    output:
+        temp('results/tmp/unphased-callset.vcf')
+    shell:
+        'gzip -d -c {input} > {output}'
+
+# match the ancestral alleles to the sv alleles and modify the phased vcf
+rule match_ancestral_allele_phased:
     input:
         bed='results/{size_list}/ancestral-allele-annotations.bed',
         bmap='results/bub-sv-map.tsv',
         vcf='results/tmp/phased-callset.vcf'
     output:
-        'results/{size_list}/annotated-callset.vcf'
+        'results/{size_list}/annotated-callset.phased.vcf'
     log:
-        'results/{size_list}/annotated-callset.log'
+        'results/{size_list}/annotated-callset.phased.log'
+    shell:
+        'python scripts/match-ancestral-alleles.py -bed {input.bed} -map {input.bmap} -vcf {input.vcf} 1> {output} 2> {log}'
+
+# match the ancestral alleles to the sv alleles and modify the unphased vcf
+rule match_ancestral_allele_unphased:
+    input:
+        bed='results/{size_list}/ancestral-allele-annotations.bed',
+        bmap='results/bub-sv-map.tsv',
+        vcf='results/tmp/unphased-callset.vcf'
+    output:
+        'results/{size_list}/annotated-callset.unphased.vcf'
+    log:
+        'results/{size_list}/annotated-callset.unphased.log'
     shell:
         'python scripts/match-ancestral-alleles.py -bed {input.bed} -map {input.bmap} -vcf {input.vcf} 1> {output} 2> {log}'
 
 rule plot_annotated_sv_length:
     input:
-        'results/{size_list}/annotated-callset.vcf'
+        'results/{size_list}/annotated-callset.phased.vcf'
     output:
         'results/{size_list}/sv-length-dist.svg'
     params:

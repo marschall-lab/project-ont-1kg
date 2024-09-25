@@ -14,6 +14,7 @@ wildcard_constraints:
 rule all:
     input:
         expand('results/{size_list}/ancestral-allele-annotations.bed', size_list=size_lists),
-        expand('results/{size_list}/annotated-callset.vcf', size_list=size_lists),
+        expand('results/{size_list}/annotated-callset.phased.vcf', size_list=size_lists),
+        expand('results/{size_list}/annotated-callset.unphased.vcf', size_list=size_lists),
         expand('results/{size_list}/sv-length-dist.svg', size_list=size_lists)
         
