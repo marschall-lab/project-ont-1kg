@@ -11,8 +11,8 @@ def run(binsize = None, tsv = None, output = None):
     x=0
     while x < max_n50:
         samples = n50_data.loc[(n50_data['n50'] < x+binsize) & (n50_data['n50'] >= x)]['sample'].to_list()
-        print(f'Coverages: {x}-{x+binsize-1}\tNumber of Samples: {len(samples)}', file=sys.stderr)
-        with open(f'{output}_{x}-{x+binsize-1}.tsv', 'w') as outfile:
+        print(f'Coverages: {x}-{x+binsize}\tNumber of Samples: {len(samples)}', file=sys.stderr)
+        with open(f'{output}_{x}-{x+binsize}.tsv', 'w') as outfile:
             for s in samples:
                 print(s, file=outfile)
         x += binsize

@@ -3,7 +3,7 @@
 # list of parameters with their values
 binsize = 10
 max_n50 = 60      # hardcoded maximum n50 to create n50 ranges
-n50_ranges = [str(n50)+'-'+str(n50+binsize-1) for n50 in range(0, max_n50, binsize)]
+n50_ranges = [str(n50)+'-'+str(n50+binsize) for n50 in range(0, max_n50, binsize)]
 sv_types = ['large_deletions', 'large_insertions', 'large_complex', 'all']
 
 # global wildcard constraints
