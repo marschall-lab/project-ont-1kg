@@ -147,7 +147,7 @@ rule sv_number_per_sample_coverage:
 
 
 def aggregate_sv_count_tsvs_coverage(wildcards):
-    ranges=get_ranges(wildcards)
+    ranges=get_ranges_coverage(wildcards)
     return expand('results/coverage-experiments/sv_count_per_sample/{cov_range}.tsv', cov_range=ranges)
 
 # plot all the sv numbers for various coverage ranges

@@ -147,7 +147,7 @@ rule sv_number_per_sample_n50:
 
 
 def aggregate_sv_count_tsvs_n50(wildcards):
-    ranges=get_ranges(wildcards)
+    ranges=get_ranges_n50(wildcards)
     return expand('results/n50-experiments/sv_count_per_sample/{n50_range}.tsv', n50_range=ranges)
 
 # plot all the sv numbers for various n50 ranges
