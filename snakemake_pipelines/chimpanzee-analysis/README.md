@@ -36,11 +36,16 @@ Running the pipeline on our data will require downloading the entire dataset. Re
 
 ### Output
 
+The pipeline was run for various sets of synthetic reads produced from the chimpanzee reference assembly. The best result was obtained from a set of overlapping synthetic reads ranging from 4kbp to 500kbp.
+
 The main outputs of this pipeline are:
 
-- Annotated BED file with all the bubbles and its ancestral allele information at `results/ancestral-allele-annotations.bed`
-- VCF with the alleles present in the chimp reference at `results/assembly-vcf/chimp.vcf`
-- Alignment GAF for the chimp reference to the augmented rGFA at `results/assembly-to-graph-alignment/chimp.gaf`
+- Annotated BED file with all the bubbles and its ancestral allele information at `results/4000-20000-50000-100000-200000-500000/ancestral-allele-annotations.bed`
+- VCF with the alleles present in the chimp reference at `results/4000-20000-50000-100000-200000-500000/assembly-vcf/chimp.vcf`
+- Alignment GAF for the chimp reference to the augmented rGFA at `results/4000-20000-50000-100000-200000-500000/assembly-to-graph-alignment/chimp.gaf`
+- Updated callset VCFs. The phased and unphased callsets released as part of the study have been updated with the Ancestral Allele information
+    - path to the updated phased VCF: `results/4000-20000-50000-100000-200000-500000/annotated-callset.phased.vcf`
+    - path to the updated unphased VCF: `results/4000-20000-50000-100000-200000-500000/annotated-callset.unphased.vcf`
 
 ### Reproduction instructions
 

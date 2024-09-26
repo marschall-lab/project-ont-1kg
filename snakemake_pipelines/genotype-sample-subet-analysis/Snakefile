@@ -1,0 +1,22 @@
+configfile: 'config.yaml'
+
+include: 'rules/coverage-analysis.smk'
+include: 'rules/n50-analysis.smk'
+
+# bin samples based on coverage and compare
+rule coverage_experiments:
+    input:
+        'results/coverage-experiments/qc-plots/all.pdf',
+        'results/coverage-experiments/sv_count_per_sample/plot.svg'
+
+rule n50_experiments:
+    input:
+        'results/n50-experiments/qc-plots/all.pdf',
+        'results/n50-experiments/sv_count_per_sample/plot.svg'
+
+# downsampling a high coverage sample and genotyping it
+# samples with coverage > 100 is HG02013 and HG00377.
+#rule downsampling_experiments:
+#    input:
+#        'results/downsampling-experiments/'
+        

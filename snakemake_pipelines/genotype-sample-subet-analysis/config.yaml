@@ -1,0 +1,27 @@
+# path to the Chimpanzee reference.
+# Reference can be downloaded from https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_028858775.2/ and the fasta can be extracted under ncbi_dataset/data/GCF_028858775.2
+path_to_assembly: '/gpfs/project/projects/medbioinf/users/spani/files/ref/GCF_028858775.2_NHGRI_mPanTro3-v2.0_pri_genomic.fna'
+
+# path to the rGFA
+# this the rGFA produced using the graph augmentation pipeline
+path_to_rgfa: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/rgfa-augmented-graph/minigraph-extended_all.gfa'
+
+# path to the final callset of the paper whose genotypes needs to be analysed
+path_to_callset_vcf: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/final-vcf.unphased.vcf.gz'
+
+# path to the multiallelic panel VCF
+# Biallelic panel made in the rule annotate_panel_giggles_ready of the "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/prepare-vcf.smk" file
+path_to_panel_bi: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/prepared-panel/giggles-ready_biallelic.vcf.gz'
+
+# path to the biallelic panel VCF
+# Multiallelic panel made in the rule annotate_panel_giggles_ready of the "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/prepare-vcf.smk" file
+path_to_panel_multi: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/prepared-panel/giggles-ready_multiallelic.vcf.gz'
+
+# path to the sniffles discovery set
+path_to_sniffles_vcf: '/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/data/population-vcfs/delins.sniffles.hg38.liftedT2T.13Nov2023.nygc.vcf.gz'
+
+# path to the delly discovery set
+path_to_delly_vcf: '/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/data/population-vcfs/delins.delly.hg38.liftedT2T.13Nov2023.nygc.vcf.gz'
+
+# path to the svarp discovery set
+path_to_svarp_vcf: '/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/prepare-SVarp-callset/SVarp-hg38/merged-vcfs/SVarp-hg38_biallelic_truvari_filtered.vcf.gz'
