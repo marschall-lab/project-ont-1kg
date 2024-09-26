@@ -9,6 +9,7 @@ rule coverage_experiments:
         'results/coverage-experiments/qc-plots/all.pdf',
         'results/coverage-experiments/sv_count_per_sample/plot.svg'
 
+# bin samples based on n50 and compare
 rule n50_experiments:
     input:
         'results/n50-experiments/qc-plots/all.pdf',
@@ -19,4 +20,8 @@ rule n50_experiments:
 #rule downsampling_experiments:
 #    input:
 #        'results/downsampling-experiments/'
-        
+
+rule all:
+    input:
+        rules.coverage_experiments.input,
+        rules.n50_experiments.input
