@@ -135,7 +135,7 @@ rule sv_number_per_sample_coverage:
         delly='results/coverage-experiments/subsampled-vcf/{cov_range}-delly.vcf',
         svarp='results/coverage-experiments/subsampled-vcf/{cov_range}-svarp.vcf',
         sample_list='results/coverage-experiments/sample-by-coverage_{cov_range}.tsv',
-        'results/ss_delly_vcfs/done.chk'
+        convert_check='results/ss_delly_vcfs/done.chk'
     output:
         out='results/coverage-experiments/sv_count_per_sample/{cov_range}.tsv',
         ss_delly=temp('results/coverage-experiments/sv_count_per_sample/{cov_range}-ss-delly.tsv')
