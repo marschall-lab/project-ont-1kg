@@ -1,6 +1,6 @@
 configfile: 'config.yaml'
 
-inlcude: 'rules/extract-sample-list.smk'
+include: 'rules/extract-sample-list.smk'
 include: 'rules/coverage-analysis.smk'
 include: 'rules/n50-analysis.smk'
 
