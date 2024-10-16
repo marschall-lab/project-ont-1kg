@@ -1,3 +1,5 @@
+import subprocess
+
 #Finding sample list used for 1000GP project by us
 path=config['path_to_ss_delly']
 ls_command = 'ls '+path
