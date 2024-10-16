@@ -18,7 +18,7 @@ rule convert_bcf_to_vcf:
     output:
         'results/ss_delly_vcfs/{sample}.vcf'
     conda:
-        '../envs/analysis.smk'
+        '../envs/analysis.yml'
     shell:
         'bcftools view {input} > {output}'
 
