@@ -19,7 +19,7 @@ def run(tsv = None, delly = None):
     delly_reader.close()
 
     for line in lines:
-        print(f'{line[0]}\t{','.join(line[1])}')
+        print(f'{line[0]}\t{line[1]}')
 
 if __name__=='__main__':
     

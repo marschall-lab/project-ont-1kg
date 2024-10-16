@@ -30,8 +30,8 @@ def read_gts(line):
 def run(sample_list=None, path=None):
        
     with open(sample_list, 'r') as sample_list_reader:
+        sv_counter_list = []
         for sample in sample_list_reader:
-            sv_counter_list = []
             sv_counter = None
             try:
                 reader=open(path+sample.strip()+'.vcf', 'r')
