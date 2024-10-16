@@ -27,13 +27,13 @@ def read_gts(line):
     
     return counter
 
-def run(vcf_list=None, path=None):
+def run(sample_list=None, path=None):
        
-    with open(vcf_list, 'r') as vcf_list_reader:
-        for vcf in vcf_list_reader:
+    with open(sample_list, 'r') as sample_list_reader:
+        for sample in sample_list_reader:
             sv_counter_list = []
             sv_counter = None
-            reader=open(path+vcf+'.vcf', 'r')
+            reader=open(path+sample+'.vcf', 'r')
             for line in reader:
                 if line.startswith('##'):
                     continue
