@@ -15,7 +15,7 @@ def run(tsv = None, delly = None):
     for line in delly_reader:
         line = line.strip().split('\t')
         assert len(line) == 1
-        lines.append(['ss_delly', line])
+        lines.append(['ss_delly', line[0]])
     delly_reader.close()
 
     for line in lines:
