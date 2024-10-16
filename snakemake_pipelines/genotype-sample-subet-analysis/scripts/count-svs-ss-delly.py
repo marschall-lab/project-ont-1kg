@@ -33,7 +33,7 @@ def run(sample_list=None, path=None):
         for sample in sample_list_reader:
             sv_counter_list = []
             sv_counter = None
-            reader=open(path+sample+'.vcf', 'r')
+            reader=open(path+sample.strip()+'.vcf', 'r')
             for line in reader:
                 if line.startswith('##'):
                     continue
