@@ -133,18 +133,26 @@ rule sv_number_per_sample_coverage:
         callset='results/coverage-experiments/subsampled-vcf/{cov_range}-callset.vcf',
         sniffles='results/coverage-experiments/subsampled-vcf/{cov_range}-sniffles.vcf',
         delly='results/coverage-experiments/subsampled-vcf/{cov_range}-delly.vcf',
-        svarp='results/coverage-experiments/subsampled-vcf/{cov_range}-svarp.vcf'
+        svarp='results/coverage-experiments/subsampled-vcf/{cov_range}-svarp.vcf',
+        sample_list='results/coverage-experiments/sample-by-coverage_{cov_range}.tsv'
+        'results/ss_delly_vcfs/done.chk'
     output:
-        'results/coverage-experiments/sv_count_per_sample/{cov_range}.tsv'
+        out='results/coverage-experiments/sv_count_per_sample/{cov_range}.tsv',
+        ss_delly=temp('results/coverage-experiments/sv_count_per_sample/{cov_range}-ss-delly.tsv')
+    params:
+        ss_delly_dir='results/ss_delly_vcfs/'
     conda:
         '../envs/analysis.yml'
     resources:
-        runtime_hrs=1,
+        runtime_hrs=2,
         runtime_min=20,
         mem_total_mb=5*1024
     shell:
-        'python scripts/count-svs-per-sample.py -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} > {output}'
-
+        '''
+        python scripts/count-svs-per-sample.py -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} > {output.out}
+        python scripts/count-svs-ss-delly.py -sample-list {input.sample_list} -path {params.ss_delly_dir} > {output.ss_delly}
+        python scripts/add-ss-delly-counts.py -tsv {output.out} -delly {output.ss_delly} > {output.out}
+        '''
 
 def aggregate_sv_count_tsvs_coverage(wildcards):
     ranges=get_ranges_coverage(wildcards)

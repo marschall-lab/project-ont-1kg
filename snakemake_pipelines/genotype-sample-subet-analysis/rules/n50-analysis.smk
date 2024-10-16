@@ -133,18 +133,26 @@ rule sv_number_per_sample_n50:
         callset='results/n50-experiments/subsampled-vcf/{n50_range}-callset.vcf',
         sniffles='results/n50-experiments/subsampled-vcf/{n50_range}-sniffles.vcf',
         delly='results/n50-experiments/subsampled-vcf/{n50_range}-delly.vcf',
-        svarp='results/n50-experiments/subsampled-vcf/{n50_range}-svarp.vcf'
+        svarp='results/n50-experiments/subsampled-vcf/{n50_range}-svarp.vcf',
+        sample_list='results/n50-experiments/sample-by-n50_{n50_range}.tsv'
+        'results/ss_delly_vcfs/done.chk'
     output:
-        'results/n50-experiments/sv_count_per_sample/{n50_range}.tsv'
+        out='results/n50-experiments/sv_count_per_sample/{n50_range}.tsv',
+        ss_delly=temp('results/n50-experiments/sv_count_per_sample/{n50_range}-ss-delly.tsv')
+    params:
+        ss_delly_dir='results/ss_delly_vcfs/'
     conda:
         '../envs/analysis.yml'
     resources:
-        runtime_hrs=1,
+        runtime_hrs=2,
         runtime_min=20,
         mem_total_mb=5*1024
     shell:
-        'python scripts/count-svs-per-sample.py -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} > {output}'
-
+        '''
+        python scripts/count-svs-per-sample.py -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} > {output.out}
+        python scripts/count-svs-ss-delly.py -sample-list {input.sample_list} -path {params.ss_delly_dir} > {output.ss_delly}
+        python scripts/add-ss-delly-counts.py -tsv {output.out} -delly {output.ss_delly} > {output.out}
+        '''
 
 def aggregate_sv_count_tsvs_n50(wildcards):
     ranges=get_ranges_n50(wildcards)

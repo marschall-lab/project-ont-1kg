@@ -16,11 +16,11 @@ def run(tsvs=None, output=None):
     tsvs = tsvs.split(',')
     ranges = [i.split('/')[-1].split('.')[0] for i in tsvs]
     ranges.sort(key = lambda range: int(range.split('-')[0]))
-    categories = ['callset', 'sniffles', 'delly', 'svarp']
+    categories = ['callset', 'sniffles', 'delly', 'svarp', 'ss_delly']
     # create legend
     handles = []
     labels = []
-    colors = sns.color_palette("tab10", 4)
+    colors = sns.color_palette("tab10", len(categories))
     count = 0
     for name in categories:
         line = matplotlib.patches.Patch(color=colors[count], label=name)
@@ -55,7 +55,7 @@ def run(tsvs=None, output=None):
             continue
         plt.axvline(x = index*(len(categories)+1), color = 'black', linewidth = 1, linestyle='--')
     
-    plt.title('SV Count for Discovery vs Final Genotypes (coverage-wise)')
+    plt.title('SV Count for Discovery vs Final Genotypes')
     plt.xticks(tick_pos, ranges, fontsize=10)
     xmin, xmax, _, _ = plt.axis()
     plt.xlim([xmin-1, xmax+1])

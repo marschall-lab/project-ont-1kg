@@ -25,3 +25,6 @@ path_to_delly_vcf: '/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/d
 
 # path to the svarp discovery set
 path_to_svarp_vcf: '/gpfs/project/projects/medbioinf/users/ebler/long-read-1kg/prepare-SVarp-callset/SVarp-hg38/merged-vcfs/SVarp-hg38_biallelic_truvari_filtered.vcf.gz'
+
+# path to the single sample delly calls
+path_to_ss_delly: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/single_sample_delly/t2t_delly/'
