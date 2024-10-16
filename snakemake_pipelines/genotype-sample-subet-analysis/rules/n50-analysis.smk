@@ -134,7 +134,7 @@ rule sv_number_per_sample_n50:
         sniffles='results/n50-experiments/subsampled-vcf/{n50_range}-sniffles.vcf',
         delly='results/n50-experiments/subsampled-vcf/{n50_range}-delly.vcf',
         svarp='results/n50-experiments/subsampled-vcf/{n50_range}-svarp.vcf',
-        sample_list='results/n50-experiments/sample-by-n50_{n50_range}.tsv'
+        sample_list='results/n50-experiments/sample-by-n50_{n50_range}.tsv',
         'results/ss_delly_vcfs/done.chk'
     output:
         out='results/n50-experiments/sv_count_per_sample/{n50_range}.tsv',
