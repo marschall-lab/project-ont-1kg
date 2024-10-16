@@ -137,8 +137,9 @@ rule sv_number_per_sample_coverage:
         sample_list='results/coverage-experiments/sample-by-coverage_{cov_range}.tsv',
         convert_check='results/ss_delly_vcfs/done.chk'
     output:
-        out='results/coverage-experiments/sv_count_per_sample/{cov_range}.tsv',
-        ss_delly=temp('results/coverage-experiments/sv_count_per_sample/{cov_range}-ss-delly.tsv')
+        tmp='results/coverage-experiments/sv_count_per_sample/{cov_range}-tmp.tsv',
+        ss_delly='results/coverage-experiments/sv_count_per_sample/{cov_range}-ss-delly.tsv',
+        final='results/coverage-experiments/sv_count_per_sample/{cov_range}.tsv'
     params:
         ss_delly_dir='results/ss_delly_vcfs/'
     conda:
@@ -149,9 +150,9 @@ rule sv_number_per_sample_coverage:
         mem_total_mb=5*1024
     shell:
         '''
-        python scripts/count-svs-per-sample.py -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} > {output.out}
+        python scripts/count-svs-per-sample.py -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} > {output.tmp}
         python scripts/count-svs-ss-delly.py -sample-list {input.sample_list} -path {params.ss_delly_dir} > {output.ss_delly}
-        python scripts/add-ss-delly-counts.py -tsv {output.out} -delly {output.ss_delly} > {output.out}
+        python scripts/add-ss-delly-counts.py -tsv {output.tmp} -delly {output.ss_delly} > {output.final}
         '''
 
 def aggregate_sv_count_tsvs_coverage(wildcards):
