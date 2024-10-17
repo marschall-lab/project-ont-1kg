@@ -56,7 +56,7 @@ def run(sample_list=None, path=None):
 
 if __name__=='__main__':
     
-    parser = argparse.ArgumentParser(prog='count-svs-ss-delly.py', description="count svs from single sample delly bcfs")
+    parser = argparse.ArgumentParser(prog='count-svs-single-sample-delly.py', description="count svs from single sample delly bcfs")
     parser.add_argument("-sample-list", required=True, help="List of single sample delly variants")
     parser.add_argument("-path", required=True, help="Path to the VCF files")
     

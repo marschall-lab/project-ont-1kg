@@ -1,7 +1,7 @@
 import subprocess
 
 #Finding sample list used for 1000GP project by us
-path=config['path_to_ss_delly']
+path=config['path_to_single_sample_delly']
 ls_command = 'ls '+path
 process = subprocess.Popen(ls_command.split(), stdout=subprocess.PIPE)
 ls_out, ls_err = process.communicate()
@@ -14,9 +14,9 @@ for s in ls_out.decode('utf-8').split('\n'):
 
 rule convert_bcf_to_vcf:
     input:
-        config['path_to_ss_delly']+'{sample}.bcf'
+        config['path_to_single_sample_delly']+'{sample}.bcf'
     output:
-        'results/ss_delly_vcfs/{sample}.vcf'
+        'results/single_sample_delly_vcfs/{sample}.vcf'
     conda:
         '../envs/analysis.yml'
     shell:
@@ -24,8 +24,8 @@ rule convert_bcf_to_vcf:
 
 rule convert_all:
     input:
-        expand('results/ss_delly_vcfs/{sample}.vcf', sample=sample_list)
+        expand('results/single_sample_delly_vcfs/{sample}.vcf', sample=sample_list)
     output:
-        'results/ss_delly_vcfs/done.chk'
+        'results/single_sample_delly_vcfs/done.chk'
     shell:
         'echo "All done" > {output}'

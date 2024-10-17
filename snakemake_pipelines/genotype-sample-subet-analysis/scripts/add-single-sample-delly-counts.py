@@ -15,7 +15,7 @@ def run(tsv = None, delly = None):
     for line in delly_reader:
         line = line.strip().split('\t')
         assert len(line) == 1
-        lines.append(['ss_delly', line[0]])
+        lines.append(['single_sample_delly', line[0]])
     delly_reader.close()
 
     for line in lines:
@@ -23,7 +23,7 @@ def run(tsv = None, delly = None):
 
 if __name__=='__main__':
     
-    parser = argparse.ArgumentParser(prog='add-ss-delly-counts.py', description="adding sv counts from single sample delly calls")
+    parser = argparse.ArgumentParser(prog='add-single-sample-delly-counts.py', description="adding sv counts from single sample delly calls")
     parser.add_argument("-tsv", required=True, help="Original output tsv")
     parser.add_argument("-delly", required=True, help="Delly output")
 
