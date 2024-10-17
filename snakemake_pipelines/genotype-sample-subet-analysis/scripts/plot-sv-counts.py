@@ -12,7 +12,7 @@ def read_tsv(file):
             sv_counter[line[0]] = [int(i) for i in line[1].split(',')]
     return sv_counter
 
-def run(tsvs=None, output=None):
+def run(tsvs=None, output=None, title=None):
     tsvs = tsvs.split(',')
     ranges = [i.split('/')[-1].split('.')[0] for i in tsvs]
     ranges.sort(key = lambda range: int(range.split('-')[0]))
@@ -55,11 +55,11 @@ def run(tsvs=None, output=None):
             continue
         plt.axvline(x = index*(len(categories)+1), color = 'black', linewidth = 1, linestyle='--')
     
-    plt.title('SV Count for Discovery vs Final Genotypes')
+    plt.title(f'SV Count for Discovery vs Final Genotypes - {title}')
     plt.xticks(tick_pos, ranges, fontsize=10)
     xmin, xmax, _, _ = plt.axis()
     plt.xlim([xmin-1, xmax+1])
-    plt.xlabel('Coverage Ranges')
+    plt.xlabel('Ranges')
     plt.ylabel('Number of SVs')
     plt.yticks(fontsize=10)
     plt.tight_layout()
@@ -70,9 +70,10 @@ def run(tsvs=None, output=None):
 
 if __name__=='__main__':
     
-    parser = argparse.ArgumentParser(prog='count-svs-per-sample.py', description="count svs per sample for some coverage run")
+    parser = argparse.ArgumentParser(prog='count-svs-per-sample.py', description="count svs per sample")
     parser.add_argument("-tsvs", required=True, help="comma-separated list of tsvs with the count information")
     parser.add_argument("-output", required=True, help="output plot")
+    parser.add_argument("-title", required=True, help="plot title")
 
     options = parser.parse_args()
 
