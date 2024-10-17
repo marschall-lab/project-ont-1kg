@@ -138,7 +138,7 @@ rule sv_number_per_sample_coverage:
         convert_check='results/single_sample_delly_vcfs/done.chk'
     output:
         tmp='results/coverage-experiments/sv_count_per_sample/{cov_range}-tmp.tsv',
-        single_sample_delly='results/coverage-experiments/sv_count_per_sample/{cov_range}-ss-delly.tsv',
+        single_sample_delly='results/coverage-experiments/sv_count_per_sample/{cov_range}-single-sample-delly.tsv',
         final='results/coverage-experiments/sv_count_per_sample/{cov_range}.tsv'
     params:
         single_sample_delly_dir='results/single_sample_delly_vcfs/'

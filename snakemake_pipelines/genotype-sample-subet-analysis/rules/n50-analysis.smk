@@ -138,7 +138,7 @@ rule sv_number_per_sample_n50:
         convert_check='results/single_sample_delly_vcfs/done.chk'
     output:
         tmp='results/n50-experiments/sv_count_per_sample/{n50_range}-tmp.tsv',
-        single_sample_delly='results/n50-experiments/sv_count_per_sample/{n50_range}-ss-delly.tsv',
+        single_sample_delly='results/n50-experiments/sv_count_per_sample/{n50_range}-single-sample-delly.tsv',
         final='results/n50-experiments/sv_count_per_sample/{n50_range}.tsv'
     params:
         single_sample_delly_dir='results/single_sample_delly_vcfs/'
