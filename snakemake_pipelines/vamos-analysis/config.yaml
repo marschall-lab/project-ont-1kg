@@ -14,3 +14,10 @@ reference_directory: "/gpfs/project/projects/medbioinf/users/spani/files/ref/"
 
 # The VAMOS vcf made from the NAPU assemblies of Gustafson et al can be downloaded at https://drive.google.com/file/d/1nykyQtunVptujJc_lkEUZUYZczASL0mb/view?usp=drive_link
 path_to_miller_vcf: '/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/MillerLab-Vamos/S3_1kgp_updated_combined.vcf.gz'
+
+# path to the filtered unphased genotypes which SVAN is based on
+path_to_gts: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/final-vcf.unphased.vcf.gz'
+
+# path to the SVAN insertion and deletion annotations
+path_to_svan_ins: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/18_10_2024_1KGP-ONT/1KGP_ONT.INS.SV_annot.vcf'
+path_to_svan_del: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/18_10_2024_1KGP-ONT/1KGP_ONT.DEL.SV_annot.vcf'
