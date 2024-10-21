@@ -60,7 +60,7 @@ rule prepare_svan_annot:
         bcftools view -i "DTYPE_N=\'VNTR\'" {output.del_gts} | bcftools sort | bgzip -c > {output.vntr_con}
         tabix -p vcf {output.vntr_con}
         
-        bcftools -a concat {output.vntr_exp} {output.vntr_con} > {output.vntrs}
+        bcftools concat -a {output.vntr_exp} {output.vntr_con} > {output.vntrs}
         '''
 
 # extract samples from the SVAN vntrs
