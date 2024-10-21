@@ -1,5 +1,6 @@
 configfile: 'config.yaml'
 
+include: 'rules/compare-vcf.smk'
 include: 'rules/vamos.smk'
 include: 'rules/analysis.smk'
 
