@@ -28,8 +28,14 @@ rule prepare_svan_annot:
         deletions=config['path_to_svan_del'],
         gts=config['path_to_gts']
     output:
-        ins_gts=temp('results/callset-comparison/svan-vcfs/ins-gts.vcf'),
-        del_gts=temp('results/callset-comparison/svan-vcfs/del-gts.vcf'),
+        ins_zip=temp('results/callset-comparison/svan-vcfs/ins.vcf.gz'),
+        del_zip=temp('results/callset-comparison/svan-vcfs/del.vcf.gz'),
+        ins_zip_tbi=temp('results/callset-comparison/svan-vcfs/ins.vcf.gz.tbi'),
+        del_zip_tbi=temp('results/callset-comparison/svan-vcfs/del.vcf.gz.tbi'),
+        ins_gts=temp('results/callset-comparison/svan-vcfs/ins-gts.vcf.gz'),
+        del_gts=temp('results/callset-comparison/svan-vcfs/del-gts.vcf.gz'),
+        ins_gts_tbi=temp('results/callset-comparison/svan-vcfs/ins-gts.vcf.gz.tbi'),
+        del_gts_tbi=temp('results/callset-comparison/svan-vcfs/del-gts.vcf.gz.tbi'),
         vntr_exp=temp('results/callset-comparison/svan-vcfs/vntrs-exp.vcf'),
         vntr_con=temp('results/callset-comparison/svan-vcfs/vntrs-con.vcf'),
         vntrs='results/callset-comparison/svan-vcfs/vntrs.vcf'
@@ -37,8 +43,16 @@ rule prepare_svan_annot:
         '../envs/comparison.yml'
     shell:
         '''
-        bcftools annotate -c INFO -a {input.insertions} {input.gts} > {output.ins_gts}
-        bcftools annotate -c INFO -a {input.deletions} {input.gts} > {output.del_gts}
+        bgzip -c {input.insertions} > {output.ins_zip}
+        tabix -p vcf {output.ins_zip}
+        bgzip -c {input.deletions} > {output.del_zip}
+        tabix -p vcf {output.del_zip}
+        
+        bcftools annotate -c INFO -a {output.ins_zip} {input.gts} | bgzip -c > {output.ins_gts}
+        tabix -p vcf {output.ins_gts}
+        bcftools annotate -c INFO -a {output.del_zip} {input.gts} | bgzip -c > {output.del_gts}
+        tabix -p vcf {output.del_gts}
+        
         bcftools view -i "ITYPE_N=\'VNTR\'" {output.ins_gts} | bcftools sort > {output.vntr_exp}
         bcftools view -i "DTYPE_N=\'VNTR\'" {output.del_gts} | bcftools sort > {output.vntr_con}
         bcftools concat {output.vntr_exp} {output.vntr_con} > {output.vntrs}
