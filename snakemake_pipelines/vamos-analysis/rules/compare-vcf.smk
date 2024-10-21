@@ -43,9 +43,9 @@ rule prepare_svan_annot:
         '../envs/comparison.yml'
     shell:
         '''
-        bgzip -c {input.insertions} > {output.ins_zip}
+        bcftools sort {input.insertions} | bgzip -c > {output.ins_zip}
         tabix -p vcf {output.ins_zip}
-        bgzip -c {input.deletions} > {output.del_zip}
+        bcftools sort {input.deletions} | bgzip -c > {output.del_zip}
         tabix -p vcf {output.del_zip}
         
         bcftools annotate -c INFO -a {output.ins_zip} {input.gts} | bgzip -c > {output.ins_gts}
