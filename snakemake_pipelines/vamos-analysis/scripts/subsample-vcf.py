@@ -34,7 +34,7 @@ def run(vcf=None, sample=None, reference=None):
             line = line.split('\t')
             hap1_index = line.index(sample+'_hp1')
             hap2_index = line.index(sample+'_hp2')
-            header = line[0:8]+[sample]
+            header = line[0:9]+[sample]
             print('\t'.join(header))
             continue
         line = line.split('\t')
