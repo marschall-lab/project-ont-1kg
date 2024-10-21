@@ -36,8 +36,10 @@ rule prepare_svan_annot:
         del_gts=temp('results/callset-comparison/svan-vcfs/del-gts.vcf.gz'),
         ins_gts_tbi=temp('results/callset-comparison/svan-vcfs/ins-gts.vcf.gz.tbi'),
         del_gts_tbi=temp('results/callset-comparison/svan-vcfs/del-gts.vcf.gz.tbi'),
-        vntr_exp=temp('results/callset-comparison/svan-vcfs/vntrs-exp.vcf'),
-        vntr_con=temp('results/callset-comparison/svan-vcfs/vntrs-con.vcf'),
+        vntr_exp=temp('results/callset-comparison/svan-vcfs/vntrs-exp.vcf.gz'),
+        vntr_con=temp('results/callset-comparison/svan-vcfs/vntrs-con.vcf.gz'),
+        vntr_exp_tbi=temp('results/callset-comparison/svan-vcfs/vntrs-exp.vcf.gz.tbi'),
+        vntr_con_tbi=temp('results/callset-comparison/svan-vcfs/vntrs-con.vcf.gz.tbi'),
         vntrs='results/callset-comparison/svan-vcfs/vntrs.vcf'
     conda:
         '../envs/comparison.yml'
@@ -53,9 +55,12 @@ rule prepare_svan_annot:
         bcftools annotate -c INFO -a {output.del_zip} {input.gts} | bgzip -c > {output.del_gts}
         tabix -p vcf {output.del_gts}
         
-        bcftools view -i "ITYPE_N=\'VNTR\'" {output.ins_gts} | bcftools sort > {output.vntr_exp}
-        bcftools view -i "DTYPE_N=\'VNTR\'" {output.del_gts} | bcftools sort > {output.vntr_con}
-        bcftools concat {output.vntr_exp} {output.vntr_con} > {output.vntrs}
+        bcftools view -i "ITYPE_N=\'VNTR\'" {output.ins_gts} | bcftools sort | bgzip -c > {output.vntr_exp}
+        tabix -p vcf {output.vntr_exp}
+        bcftools view -i "DTYPE_N=\'VNTR\'" {output.del_gts} | bcftools sort | bgzip -c > {output.vntr_con}
+        tabix -p vcf {output.vntr_con}
+        
+        bcftools -a concat {output.vntr_exp} {output.vntr_con} > {output.vntrs}
         '''
 
 # extract samples from the SVAN vntrs
