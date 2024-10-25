@@ -1,3 +1,5 @@
+## Running VAMOS on hg38 for comparison against Miller vcf
+
 # unzip the bed file
 rule unzip_vamos_sites_list:
     input:
@@ -18,13 +20,13 @@ rule sort_bed_file:
         'sort -k 1,1 -k2,2n {input} > {output}'
 
 # convert crams to bams
-rule cram_to_bam:
+rule cram_to_bam_hg38:
     input:
-        reads=config['path_to_cram']+'{sample}.hg38.cram',
+        reads=config['path_to_hg38_cram']+'{sample}.hg38.cram',
         ref=config['reference_directory']+'1KG_ONT_VIENNA_hg38.fa'
     output:
-        bam=temp('results/temp/{sample}.bam'),
-        ind=temp('results/temp/{sample}.bam.bai')
+        bam=temp('results/temp/{sample}.hg38.bam'),
+        ind=temp('results/temp/{sample}.hg38.bam.bai')
     params:
         ref_dir=config['reference_directory']
     conda:
@@ -45,13 +47,13 @@ rule cram_to_bam:
 # run vamos on the vienna data
 rule vamos_vienna:
     input:
-        alignment='results/temp/{sample}.bam',
-        alignment_index='results/temp/{sample}.bam.bai',
+        alignment='results/temp/{sample}.hg38.bam',
+        alignment_index='results/temp/{sample}.hg38.bam.bai',
         sites='resources/vamos-sites-list.sorted.bed'
     output:
-        vcf='results/vamos-results-vienna/{sample}.vcf'
+        vcf='results/miller-comparison/vamos-results-vienna/{sample}.vcf'
     log:
-        'results/vamos-results-vienna/{sample}.log'
+        'results/miller-comparison/vamos-results-vienna/{sample}.log'
     threads: 8
     conda:
         '../envs/vamos.yml'
@@ -77,7 +79,7 @@ rule extract_reference_sequence:
         ref=config['reference_directory']+'1KG_ONT_VIENNA_hg38.fa',
         sites='resources/vamos-sites-list.sorted.first3columns.bed'
     output:
-        'results/reference-vntrs.bed'
+        'results/miller-comparison/reference-vntrs.bed'
     conda:
         '../envs/vamos.yml'
     resources:
@@ -87,3 +89,59 @@ rule extract_reference_sequence:
     shell:
         'bedtools getfasta -bedOut -fi {input.ref} -bed {input.sites} > {output}'
         
+
+## Running Vamos cohort-wide on T2T
+
+# processing T2T sites list
+rule process_t2t_sites_list:
+    input:
+        'resources/vamos.effMotifs-0.1.T2T-CHM13.tsv.gz'
+    output:
+        temp('resources/vamos.T2T.processed.tsv')
+    shell:
+        'zcat {input} | grep VNTR | sort -k 1,1 -k2,2n > {output}'
+
+# convert crams to bams
+rule cram_to_bam_t2t:
+    input:
+        reads=config['path_to_t2t_cram']+'{sample}.t2t.cram',
+        ref=config['reference_directory']+'1KG_ONT_VIENNA_t2t.fa'
+    output:
+        bam=temp('results/temp/{sample}.t2t.bam'),
+        ind=temp('results/temp/{sample}.t2t.bam.bai')
+    params:
+        ref_dir=config['reference_directory']
+    conda:
+        '../envs/vamos.yml'
+    resources:
+        runtime_hrs=12,
+        runtime_min=0,
+        mem_total_mb=5000
+    shell:
+        '''
+        seq_cache_populate.pl -root {params.ref_dir} {input.ref}
+        export REF_PATH={params.ref_dir}/%2s/%2s/%s:http://www.ebi.ac.uk/ena/cram/md5/%s
+        export REF_CACHE={params.ref_dir}/%2s/%2s/%s
+        samtools view -b -T {input.ref} -o {output.bam} {input.reads}
+        samtools index -b {output.bam}
+        '''
+
+# run vamos on the vienna data cohort-wide
+rule vamos_vienna:
+    input:
+        alignment='results/temp/{sample}.t2t.bam',
+        alignment_index='results/temp/{sample}.t2t.bam.bai',
+        sites='resources/vamos.T2T.processed.tsv'
+    output:
+        vcf='results/vamos-t2t/{sample}.vcf'
+    log:
+        'results/vamos-t2t/{sample}.log'
+    threads: 8
+    conda:
+        '../envs/vamos.yml'
+    resources:
+        runtime_hrs=24,
+        runtime_min=20,
+        mem_total_mb=500*1024
+    shell:
+        'vamos --read -b {input.alignment} -r {input.sites} -s {wildcards.sample} -o {output} -t {threads} > {log}'

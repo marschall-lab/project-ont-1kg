@@ -1,21 +1,21 @@
 # making the vcf compatible for the comparison pipeline
 rule prepare_miller_vcf:
     input:
-        vcf='results/analysis/vamos-miller.sorted.vcf',
-        ref='results/reference-vntrs.bed'
+        vcf='results/miller-comparison/analysis/vamos-miller.sorted.vcf',
+        ref='results/miller-comparison/reference-vntrs.bed'
     output:
-        'results/callset-comparison/miller-vcfs/{sample}.vcf'
+        'results/miller-comparison/callset-comparison/miller-vcfs/{sample}.vcf'
     shell:
         'python scripts/subsample-vcf.py -vcf {input.vcf} -reference {input.ref} -sample {wildcards.sample} > {output}'
 
 # adding SVLEN and SVTYPE tags to the miller vcf
 rule add_tags_miller:
     input:
-        'results/callset-comparison/miller-vcfs/{sample}.vcf'
+        'results/miller-comparison/callset-comparison/miller-vcfs/{sample}.vcf'
     output:
-        'results/callset-comparison/miller-vcfs/{sample}.tagged.vcf'
+        'results/miller-comparison/callset-comparison/miller-vcfs/{sample}.tagged.vcf'
     log:
-        'results/callset-comparison/miller-vcfs/{sample}.tagged.log'
+        'results/miller-comparison/callset-comparison/miller-vcfs/{sample}.tagged.log'
     conda:
         "../envs/comparison.yml"
     shell:
@@ -28,19 +28,19 @@ rule prepare_svan_annot:
         deletions=config['path_to_svan_del'],
         gts=config['path_to_gts']
     output:
-        ins_zip=temp('results/callset-comparison/svan-vcfs/ins.vcf.gz'),
-        del_zip=temp('results/callset-comparison/svan-vcfs/del.vcf.gz'),
-        ins_zip_tbi=temp('results/callset-comparison/svan-vcfs/ins.vcf.gz.tbi'),
-        del_zip_tbi=temp('results/callset-comparison/svan-vcfs/del.vcf.gz.tbi'),
-        ins_gts=temp('results/callset-comparison/svan-vcfs/ins-gts.vcf.gz'),
-        del_gts=temp('results/callset-comparison/svan-vcfs/del-gts.vcf.gz'),
-        ins_gts_tbi=temp('results/callset-comparison/svan-vcfs/ins-gts.vcf.gz.tbi'),
-        del_gts_tbi=temp('results/callset-comparison/svan-vcfs/del-gts.vcf.gz.tbi'),
-        vntr_exp=temp('results/callset-comparison/svan-vcfs/vntrs-exp.vcf.gz'),
-        vntr_con=temp('results/callset-comparison/svan-vcfs/vntrs-con.vcf.gz'),
-        vntr_exp_tbi=temp('results/callset-comparison/svan-vcfs/vntrs-exp.vcf.gz.tbi'),
-        vntr_con_tbi=temp('results/callset-comparison/svan-vcfs/vntrs-con.vcf.gz.tbi'),
-        vntrs='results/callset-comparison/svan-vcfs/vntrs.vcf'
+        ins_zip=temp('results/miller-comparison/callset-comparison/svan-vcfs/ins.vcf.gz'),
+        del_zip=temp('results/miller-comparison/callset-comparison/svan-vcfs/del.vcf.gz'),
+        ins_zip_tbi=temp('results/miller-comparison/callset-comparison/svan-vcfs/ins.vcf.gz.tbi'),
+        del_zip_tbi=temp('results/miller-comparison/callset-comparison/svan-vcfs/del.vcf.gz.tbi'),
+        ins_gts=temp('results/miller-comparison/callset-comparison/svan-vcfs/ins-gts.vcf.gz'),
+        del_gts=temp('results/miller-comparison/callset-comparison/svan-vcfs/del-gts.vcf.gz'),
+        ins_gts_tbi=temp('results/miller-comparison/callset-comparison/svan-vcfs/ins-gts.vcf.gz.tbi'),
+        del_gts_tbi=temp('results/miller-comparison/callset-comparison/svan-vcfs/del-gts.vcf.gz.tbi'),
+        vntr_exp=temp('results/miller-comparison/callset-comparison/svan-vcfs/vntrs-exp.vcf.gz'),
+        vntr_con=temp('results/miller-comparison/callset-comparison/svan-vcfs/vntrs-con.vcf.gz'),
+        vntr_exp_tbi=temp('results/miller-comparison/callset-comparison/svan-vcfs/vntrs-exp.vcf.gz.tbi'),
+        vntr_con_tbi=temp('results/miller-comparison/callset-comparison/svan-vcfs/vntrs-con.vcf.gz.tbi'),
+        vntrs='results/miller-comparison/callset-comparison/svan-vcfs/vntrs.vcf'
     conda:
         '../envs/comparison.yml'
     shell:
@@ -66,9 +66,9 @@ rule prepare_svan_annot:
 # extract samples from the SVAN vntrs
 rule extract_subsample_svan:
     input:
-        'results/callset-comparison/svan-vcfs/vntrs.vcf'
+        'results/miller-comparison/callset-comparison/svan-vcfs/vntrs.vcf'
     output:
-        'results/callset-comparison/svan-vcfs/{sample}.vcf'
+        'results/miller-comparison/callset-comparison/svan-vcfs/{sample}.vcf'
     conda:
         '../envs/comparison.yml'
     shell:
@@ -77,11 +77,11 @@ rule extract_subsample_svan:
 # adding SVLEN and SVTYPE tags to the SVAN vcf
 rule add_tags_svan:
     input:
-        'results/callset-comparison/svan-vcfs/{sample}.vcf'
+        'results/miller-comparison/callset-comparison/svan-vcfs/{sample}.vcf'
     output:
-        'results/callset-comparison/svan-vcfs/{sample}.tagged.vcf'
+        'results/miller-comparison/callset-comparison/svan-vcfs/{sample}.tagged.vcf'
     log:
-        'results/callset-comparison/svan-vcfs/{sample}.tagged.log'
+        'results/miller-comparison/callset-comparison/svan-vcfs/{sample}.tagged.log'
     conda:
         '../envs/comparison.yml'
     shell:
@@ -91,18 +91,18 @@ rule add_tags_svan:
 # the order of the vcfs given to the intersection matters
 rule intersect_vcfs:
     input:
-        'results/callset-comparison/svan-vcfs/{sample}.tagged.vcf',
-        'results/callset-comparison/miller-vcfs/{sample}.tagged.vcf'
+        'results/miller-comparison/callset-comparison/svan-vcfs/{sample}.tagged.vcf',
+        'results/miller-comparison/callset-comparison/miller-vcfs/{sample}.tagged.vcf'
     output:
-        tsv="results/callset-comparison/intersection/{sample}.tsv",
-        vcf="results/callset-comparison/intersection/{sample}.vcf",
-        pdf="results/callset-comparison/intersection/{sample}.pdf",
-        plot="results/callset-comparison/intersection/upsetplot_{sample}.pdf"
+        tsv="results/miller-comparison/callset-comparison/intersection/{sample}.tsv",
+        vcf="results/miller-comparison/callset-comparison/intersection/{sample}.vcf",
+        pdf="results/miller-comparison/callset-comparison/intersection/{sample}.pdf",
+        plot="results/miller-comparison/callset-comparison/intersection/upsetplot_{sample}.pdf"
     conda:
         "../envs/comparison.yml"
     log:
-        intersect="results/callset-comparison/intersection/intersect-{sample}.log",
-        plot="results/callset-comparison/intersection/plot-{sample}.log"
+        intersect="results/miller-comparison/callset-comparison/intersection/intersect-{sample}.log",
+        plot="results/miller-comparison/callset-comparison/intersection/plot-{sample}.log"
     params:
         names = ['svan', 'miller'],
         columns = ['in_svan', 'in_miller']
