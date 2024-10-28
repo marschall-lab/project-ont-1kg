@@ -23,4 +23,4 @@ rule all:
         #expand('results/miller-comparison/plots/distance-histogram/HG03548_HG03499-{af}-full.png', af=afs)
         #expand('results/miller-comparison/callset-comparison/intersection/{sample}.tsv', sample=comaprison_samples),
         #expand('results/miller-comparison/callset-comparison/intersection/upsetplot_{sample}.pdf', sample=comaprison_samples),
-        expand('results/vamos-t2t/{sample}.vcf', sample=t2t_samples[0:10])
+        expand('results/vamos-t2t/{sample}.vcf', sample=t2t_samples[0:100])

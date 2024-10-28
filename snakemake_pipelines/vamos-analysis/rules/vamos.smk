@@ -97,7 +97,7 @@ rule process_t2t_sites_list:
     input:
         'resources/vamos.effMotifs-0.1.T2T-CHM13.tsv.gz'
     output:
-        temp('resources/vamos.T2T.processed.tsv')
+        'result/temp/vamos.T2T.processed.tsv'
     shell:
         'zcat {input} | grep VNTR | sort -k 1,1 -k2,2n > {output}'
 
@@ -131,7 +131,7 @@ rule vamos_t2t:
     input:
         alignment='results/temp/{sample}.t2t.bam',
         alignment_index='results/temp/{sample}.t2t.bam.bai',
-        sites='resources/vamos.T2T.processed.tsv'
+        sites='result/temp/vamos.T2T.processed.tsv'
     output:
         vcf='results/vamos-t2t/{sample}.vcf'
     log:
@@ -140,8 +140,8 @@ rule vamos_t2t:
     conda:
         '../envs/vamos.yml'
     resources:
-        runtime_hrs=24,
+        runtime_hrs=12,
         runtime_min=20,
-        mem_total_mb=500*1024
+        mem_total_mb=50*1024
     shell:
         'vamos --read -b {input.alignment} -r {input.sites} -s {wildcards.sample} -o {output} -t {threads} > {log}'
