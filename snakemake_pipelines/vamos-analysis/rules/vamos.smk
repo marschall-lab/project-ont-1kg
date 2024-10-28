@@ -127,7 +127,7 @@ rule cram_to_bam_t2t:
         '''
 
 # run vamos on the vienna data cohort-wide
-rule vamos_vienna:
+rule vamos_t2t:
     input:
         alignment='results/temp/{sample}.t2t.bam',
         alignment_index='results/temp/{sample}.t2t.bam.bai',
