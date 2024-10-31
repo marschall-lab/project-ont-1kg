@@ -167,5 +167,9 @@ rule vamos_t2t_summary:
         ','.join(list(expand('results/vamos-t2t/{sample}.stats', sample=t2t_samples)))
     conda:
         '../envs/comparison.yml'
+    resources:
+        runtime_hrs=2,
+        runtime_min=0,
+        mem_total_mb=10000
     shell:
         'python scripts/create-vntr-table.py -stats {params} -sites {input.sites} > {output}'
