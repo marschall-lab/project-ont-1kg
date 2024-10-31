@@ -168,8 +168,8 @@ rule vamos_t2t_summary:
     conda:
         '../envs/comparison.yml'
     resources:
-        runtime_hrs=2,
+        runtime_hrs=5,
         runtime_min=0,
-        mem_total_mb=50000
+        mem_total_mb=960000
     shell:
         'python scripts/create-vntr-table.py -stats {params} -sites {input.sites} > {output}'

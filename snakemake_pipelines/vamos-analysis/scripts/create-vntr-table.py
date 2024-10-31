@@ -1,6 +1,6 @@
 import argparse
 import sys
-import pandas
+import numpy as np
 
 def run(stats=None, sites=None):
     
@@ -9,7 +9,7 @@ def run(stats=None, sites=None):
         for line in sitesfile:
             line = line.rstrip().split('\t')
             # storing all the sites as keys for the RU count and bp stats
-            data[(line[0], line[1])] = [[], [], [], line[2]]
+            data[(line[0], line[1])] = [[], [], [], int(line[2])]
     
     # reading individual stat files
     count=0
@@ -34,15 +34,16 @@ def run(stats=None, sites=None):
     # writing summary stats
     print('#CHROM\tREF_START\tREF_END\tNUM_SAMPLES\tNUM_UNIQUE_VNTRS\tMAX_RUS\tMIN_RUS\tMEDIAN_RUS\t25%_RUS\t75%_RUS\tUNIQUE_NUM_RUS\tMAX_BPS\tMIN_BPS\tMEDIAN_BPS\t25%_BPS\t75%_BPS')
     for site, value in data.items():
+        #print(value, file=sys.stderr)
         n_samples = len(value[0])
         if n_samples == 0:
             print(f"{site[0]}\t{site[1]}\t{value[3]}\t{n_samples}\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN")    
             continue
-        rus = pandas.Series(value[0]).describe()
+        rus = np.array(sorted(value[0]))
         unique_rus_num = len(set(value[0]))
         unique_vntrs = len(set(value[2]))
-        bps = pandas.Series(value[1]).describe()
-        print(f"{site[0]}\t{site[1]}\t{value[3]}\t{n_samples}\t{unique_vntrs}\t{int(rus['max'])}\t{int(rus['min'])}\t{rus['50%']}\t{rus['25%']}\t{rus['75%']}\t{unique_rus_num}\t{int(bps['max'])}\t{int(bps['min'])}\t{bps['50%']}\t{bps['25%']}\t{bps['75%']}")
+        bps = np.array(sorted(value[1]))
+        print(f"{site[0]}\t{site[1]}\t{value[3]}\t{n_samples}\t{unique_vntrs}\t{int(rus.max())}\t{int(rus.min())}\t{np.median(rus)}\t{np.percentile(rus, 25)}\t{np.percentile(rus, 75)}\t{unique_rus_num}\t{int(bps.max())}\t{int(bps.min())}\t{np.median(bps)}\t{np.percentile(bps, 25)}\t{np.percentile(bps, 75)}")
 
 
 if __name__=='__main__':
