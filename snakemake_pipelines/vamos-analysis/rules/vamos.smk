@@ -159,12 +159,12 @@ rule vamos_t2t_stats:
 # create vntr summary table
 rule vamos_t2t_summary:
     input:
-        vcf=expand('results/vamos-t2t/{sample}.vcf', sample=t2t_samples),
+        vcf=expand('results/vamos-t2t/{sample}.stats', sample=t2t_samples),
         sites='result/temp/vamos.T2T.processed.tsv'
     output:
         'results/vamos-t2t-summary.bed'
     params:
-        ','.join(list(expand('results/vamos-t2t/{sample}.vcf', sample=t2t_samples)))
+        ','.join(list(expand('results/vamos-t2t/{sample}.stats', sample=t2t_samples)))
     conda:
         '../envs/comparison.yml'
     shell:
