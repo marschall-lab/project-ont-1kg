@@ -93,6 +93,7 @@ rule extract_reference_sequence:
 ## Running Vamos cohort-wide on T2T
 
 # processing T2T sites list
+# the VAMOS list was obtained from https://zenodo.org/records/13263615
 rule process_t2t_sites_list:
     input:
         'resources/vamos.effMotifs-0.1.T2T-CHM13.tsv.gz'
@@ -145,3 +146,26 @@ rule vamos_t2t:
         mem_total_mb=50*1024
     shell:
         'vamos --read -b {input.alignment} -r {input.sites} -s {wildcards.sample} -o {output} -t {threads} > {log}'
+
+# getting stats from the vntr vcf
+rule vamos_t2t_stats:
+    input:
+        'results/vamos-t2t/{sample}.vcf'
+    output:
+        'results/vamos-t2t/{sample}.stats'
+    shell:
+        'python scripts/get-vntr-stats.py -vcf {input} > {output}'
+
+# create vntr summary table
+rule vamos_t2t_summary:
+    input:
+        vcf=expand('results/vamos-t2t/{sample}.vcf', sample=t2t_samples),
+        sites='result/temp/vamos.T2T.processed.tsv'
+    output:
+        'results/vamos-t2t-summary.bed'
+    params:
+        ','.join(list(expand('results/vamos-t2t/{sample}.vcf', sample=t2t_samples)))
+    conda:
+        '../envs/comparison.yml'
+    shell:
+        'python scripts/create-vntr-table.py -stats {params} -sites {input.sites} > {output}'
