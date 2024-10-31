@@ -12,8 +12,11 @@ def run(stats=None, sites=None):
             data[(line[0], line[1])] = [[], [], [], line[2]]
     
     # reading individual stat files
+    count=0
     for stat_file in stats.split(','):
         with open(stat_file, 'r') as file:
+            count += 1
+            print(f'Reading File Number {count}', file=sys.stderr)
             for line in file:
                 if line.startswith('#'):
                     continue
