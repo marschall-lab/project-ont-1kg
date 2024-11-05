@@ -29,7 +29,7 @@ ls_out, ls_err = process.communicate()
 
 hgsvc_sample_list_all = []
 for s in ls_out.decode('utf-8').split('\n'):
-    if not s.endswith('*.vrk-ps-sseq.asm-hap1.t2tv2.sort.bam'):
+    if not s.endswith('.vrk-ps-sseq.asm-hap1.t2tv2.sort.bam'):
         continue
     hgsvc_sample_list_all.append(s.split('/')[-1][0:7])
 
