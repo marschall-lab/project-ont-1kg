@@ -17,4 +17,4 @@ rule hgsvc_vntr_call:
         runtime_min=20,
         mem_total_mb=50*1024
     shell:
-        'vamos --contig -b {input.bam} -r {input.tsv} -s {wildcards.sample} -o {output} -t {threads}'
+        'vamos --contig -b {input.bam} -r {input.sites} -s {wildcards.sample} -o {output} -t {threads}'
