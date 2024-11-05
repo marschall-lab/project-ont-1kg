@@ -25,3 +25,6 @@ path_to_gts: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/f
 # path to the SVAN insertion and deletion annotations
 path_to_svan_ins: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/18_10_2024_1KGP-ONT/1KGP_ONT.INS.SV_annot.vcf'
 path_to_svan_del: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/18_10_2024_1KGP-ONT/1KGP_ONT.DEL.SV_annot.vcf'
+
+# path to HGSVC3 assembly alignments
+path_to_hgsvc_alignments: '/gpfs/project/projects/medbioinf/projects/assemblies/hybrids/eval/wd/results/alignments/contig_to_ref/t2tv2/bam/'

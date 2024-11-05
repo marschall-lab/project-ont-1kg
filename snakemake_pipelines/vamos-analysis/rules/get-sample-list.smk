@@ -8,7 +8,6 @@ path=config['path_to_t2t_cram']
 ls_command = 'ls '+path
 process = subprocess.Popen(ls_command.split(), stdout=subprocess.PIPE)
 ls_out, ls_err = process.communicate()
-sample_re = re.compile('(?:NA|HG)\d{5}')
 
 cram_sample_list = []
 for s in ls_out.decode('utf-8').split('\n'):
@@ -21,3 +20,18 @@ df = pd.read_csv('resources/igsr_sample_data.tsv', sep="\t")
 nygc_sample_list = df["Sample name"].to_list()
 
 t2t_samples = sorted(list(set(cram_sample_list).intersection(nygc_sample_list)))
+
+# Finding the samples common to HGSVC
+path=config['path_to_hgsvc_alignments']
+ls_command = 'ls '+path
+process = subprocess.Popen(ls_command.split(), stdout=subprocess.PIPE)
+ls_out, ls_err = process.communicate()
+
+hgsvc_sample_list_all = []
+for s in ls_out.decode('utf-8').split('\n'):
+    if not s.endswith('*.vrk-ps-sseq.asm-hap1.t2tv2.sort.bam'):
+        continue
+    hgsvc_sample_list_all.append(s.split('/')[-1][0:7])
+
+hgsvc_samples = sorted(list(set(t2t_samples).intersection(hgsvc_sample_list_all)))
+hgsvc_samples.remove('HG00514')

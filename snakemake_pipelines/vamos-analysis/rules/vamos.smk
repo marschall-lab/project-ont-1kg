@@ -98,7 +98,7 @@ rule process_t2t_sites_list:
     input:
         'resources/vamos.effMotifs-0.1.T2T-CHM13.tsv.gz'
     output:
-        'result/temp/vamos.T2T.processed.tsv'
+        'results/temp/vamos.T2T.processed.tsv'
     shell:
         'zcat {input} | grep VNTR | sort -k 1,1 -k2,2n > {output}'
 
@@ -132,7 +132,7 @@ rule vamos_t2t:
     input:
         alignment='results/temp/{sample}.t2t.bam',
         alignment_index='results/temp/{sample}.t2t.bam.bai',
-        sites='result/temp/vamos.T2T.processed.tsv'
+        sites='results/temp/vamos.T2T.processed.tsv'
     output:
         vcf='results/vamos-t2t/{sample}.vcf'
     log:
@@ -160,7 +160,7 @@ rule vamos_t2t_stats:
 rule vamos_t2t_summary:
     input:
         vcf=expand('results/vamos-t2t/{sample}.stats', sample=t2t_samples),
-        sites='result/temp/vamos.T2T.processed.tsv'
+        sites='results/temp/vamos.T2T.processed.tsv'
     output:
         'results/vamos-t2t-summary.bed'
     params:
