@@ -170,6 +170,6 @@ rule vamos_t2t_summary:
     resources:
         runtime_hrs=5,
         runtime_min=0,
-        mem_total_mb=960000
+        mem_total_mb=96000
     shell:
         'python scripts/create-vntr-table.py -stats {params} -sites {input.sites} > {output}'
