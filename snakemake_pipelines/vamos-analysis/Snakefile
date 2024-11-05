@@ -1,6 +1,7 @@
 configfile: 'config.yaml'
 
 include: 'rules/get-sample-list.smk'
+include: 'rules/hgsvc-qc.smk'
 include: 'rules/compare-vcf.smk'
 include: 'rules/vamos.smk'
 include: 'rules/analysis.smk'
