@@ -46,7 +46,7 @@ rule hgsvc_comp_same:
     log:
         'results/hgsvc3-comparison/qc/same-sample/{sample}.log'
     params:
-        outprefix='resuls/hgsvc3-comparison/qc/same-sample/'
+        outprefix='results/hgsvc3-comparison/qc/same-sample/'
     conda:
         '../envs/vamos.yml'
     resources:
@@ -70,7 +70,7 @@ rule hgsvc_comp_diff:
     log:
         'results/hgsvc3-comparison/qc/diff-sample/{sample1}_{sample2}.log'
     params:
-        outprefix='resuls/hgsvc3-comparison/qc/diff-sample/'
+        outprefix='results/hgsvc3-comparison/qc/diff-sample/'
     conda:
         '../envs/vamos.yml'
     resources:
