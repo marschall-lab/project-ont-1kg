@@ -49,6 +49,10 @@ rule hgsvc_comp_same:
         outprefix='resuls/hgsvc3-comparison/qc/same-sample/'
     conda:
         '../envs/vamos.yml'
+    resources:
+        runtime_hrs=1,
+        runtime_min=20,
+        mem_total_mb=2*1024
     shell:
         'python scripts/plot-hgsvc-qc.py -hgsvc {input.hgsvc1},{input.hgsvc2} -ont {input.ont} -sample {wildcards.sample} -output {params.outprefix} 2> {log}'
 
@@ -69,6 +73,10 @@ rule hgsvc_comp_diff:
         outprefix='resuls/hgsvc3-comparison/qc/diff-sample/'
     conda:
         '../envs/vamos.yml'
+    resources:
+        runtime_hrs=1,
+        runtime_min=20,
+        mem_total_mb=2*1024
     shell:
         'python scripts/plot-hgsvc-qc.py -hgsvc {input.hgsvc1},{input.hgsvc2} -ont {input.ont} -sample {wildcards.sample1}_{wildcards.sample2} -output {params.outprefix} 2> {log}'
 
@@ -84,5 +92,9 @@ rule hgsvc_ru_pcc_boxplot:
         diff_sample=','.join(list(expand('results/hgsvc3-comparison/qc/diff-sample/{diff_sample}.stats', diff_sample=mismatched_hgsvc_sample)))
     conda:
         '../envs/vamos.yml'
+    resources:
+        runtime_hrs=1,
+        runtime_min=20,
+        mem_total_mb=2*1024
     shell:
         'python scripts/plot-ru-pcc-boxplot.py -same-sample {params.same_sample} -diff-sample {params.diff_sample} -output {output}'
