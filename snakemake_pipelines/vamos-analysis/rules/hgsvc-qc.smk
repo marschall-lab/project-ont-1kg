@@ -31,7 +31,7 @@ for i in hgsvc_samples:
             continue
         mismatched_hgsvc_sample_set1.append(i)
         mismatched_hgsvc_sample_set2.append(j)
-        mismatched_hgsvc_sample.append(f'{i}_{j}')
+        mismatched_hgsvc_sample.append(i+'_'+j)
 
 # running VNTR comparison between HGSVC assemblies and ONT reads on the same sample
 rule hgsvc_comp_same:
