@@ -17,7 +17,7 @@ def run(tsvs=None, output=None, title=None):
     ranges = [i.split('/')[-1].split('.')[0] for i in tsvs]
     ranges.sort(key = lambda range: int(range.split('-')[0]))
     #categories = ['callset', 'sniffles', 'delly', 'svarp', 'single_sample_delly']
-    categories = ['single_sample_delly', 'delly', 'callset']
+    categories = ['single_sample_delly', 'delly', 'sniffles', 'callset']
     # create legend
     handles = []
     labels = []
@@ -56,7 +56,7 @@ def run(tsvs=None, output=None, title=None):
             continue
         plt.axvline(x = index*(len(categories)+1), color = 'black', linewidth = 1, linestyle='--')
     
-    plt.title(f'SV Count for Discovery vs Final Genotypes - {title}', fontsize=25)
+    plt.title(f'SV Count for Discovery vs Final Genotypes - {title}', fontsize=20)
     plt.xticks(tick_pos, ranges, fontsize=15)
     xmin, xmax, _, _ = plt.axis()
     plt.xlim([xmin-1, xmax+1])
