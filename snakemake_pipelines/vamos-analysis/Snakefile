@@ -28,4 +28,5 @@ rule all:
         #expand('results/miller-comparison/callset-comparison/intersection/upsetplot_{sample}.pdf', sample=comaprison_samples),
         #expand('results/vamos-t2t/{sample}.vcf', sample=t2t_samples),
         #'results/vamos-t2t-summary.bed',
-        expand('results/hgsvc3-comparison/vntr-calls/{sample}-{haplotype}.vcf', sample=hgsvc_samples, haplotype=haplotypes)
+        expand('results/hgsvc3-comparison/vntr-calls/{sample}-{haplotype}.vcf', sample=hgsvc_samples, haplotype=haplotypes),
+        'results/hgsvc3-comparison/qc/ru-boxplot-pcc.svg'
