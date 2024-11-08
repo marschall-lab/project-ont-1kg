@@ -22,8 +22,9 @@ def run(same_sample, diff_sample, output):
     
     labels = ['Same-sample comparison', 'Diff-sample comparison']
     data = [same_sample_pccs, diff_sample_pccs]
-    plt.boxplot(data, positions=[2, 4], labels=labels, widths=1)
-    plt.xlim(0, 6)
+    plt.boxplot(data, positions=[1, 3], labels=labels, widths=1)
+    plt.ylabel('PCC')
+    plt.xlim(0, 4)
     plt.ylim(0, 1)
     plt.savefig(output)
 
