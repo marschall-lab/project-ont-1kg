@@ -1,6 +1,16 @@
 import argparse
 from operator import add
 
+def map_sample_to_pop(file):
+    sample_to_pop = {}
+    with open(file, 'r') as reader:
+        for line in reader:
+            if line[0] == 's':
+                continue
+            line = line.rstrip().split('\t')
+            sample_to_pop[line[0]] = line[3]
+    return sample_to_pop
+
 def read_gts(line):
     fields = line.split('\t')[8]
     assert 'GT' in fields
@@ -27,10 +37,11 @@ def read_gts(line):
     
     return counter
 
-def run(sample_list=None, path=None):
-       
+def run(sample_data=None, sample_list=None, path=None):
+    
+    sample_to_pop_map = map_sample_to_pop(sample_data)
     with open(sample_list, 'r') as sample_list_reader:
-        sv_counter_list = []
+        sv_counter_list = {'AFR': [], 'non-AFR': []}
         for sample in sample_list_reader:
             sv_counter = None
             try:
@@ -49,15 +60,20 @@ def run(sample_list=None, path=None):
                 gts = read_gts(line)
                 assert len(gts) == n_samples
                 sv_counter = list(map(add, sv_counter, gts))
-            sv_counter_list.append(str(sv_counter[0]))
+            if sample_to_pop_map[sample] == 'AFR':
+                sv_counter_list['AFR'].append(str(sv_counter[0]))
+            else:
+                sv_counter_list['non-AFR'].append(str(sv_counter[0]))
             reader.close()
-        print(','.join(sv_counter_list))
+        print('single_sample_delly_AFR\t'+','.join(sv_counter_list['AFR']))
+        print('single_sample_delly_non_AFR\t'+','.join(sv_counter_list['non-AFR']))
 
 
 if __name__=='__main__':
     
     parser = argparse.ArgumentParser(prog='count-svs-single-sample-delly.py', description="count svs from single sample delly bcfs")
-    parser.add_argument("-sample-list", required=True, help="List of single sample delly variants")
+    parser.add_argument("-sample-data", required=True, help="Sample ancestry data")
+    parser.add_argument("-sample-list", required=True, help="List of single sample delly variants from a range")
     parser.add_argument("-path", required=True, help="Path to the VCF files")
     
     options = parser.parse_args()

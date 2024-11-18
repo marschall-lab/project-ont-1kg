@@ -1,6 +1,4 @@
 import argparse
-import sys
-import pandas as pd
 
 def run(tsv = None, delly = None):
     
@@ -14,8 +12,8 @@ def run(tsv = None, delly = None):
     delly_reader = open(delly, 'r')
     for line in delly_reader:
         line = line.strip().split('\t')
-        assert len(line) == 1
-        lines.append(['single_sample_delly', line[0]])
+        assert len(line) == 2
+        lines.append(line)
     delly_reader.close()
 
     for line in lines:

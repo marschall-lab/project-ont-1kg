@@ -17,7 +17,7 @@ def run(tsvs=None, output=None, title=None):
     ranges = [i.split('/')[-1].split('.')[0] for i in tsvs]
     ranges.sort(key = lambda range: int(range.split('-')[0]))
     #categories = ['callset', 'sniffles', 'delly', 'svarp', 'single_sample_delly']
-    categories = ['single_sample_delly', 'delly', 'sniffles', 'callset']
+    categories = ['single_sample_delly_AFR', 'delly_AFR', 'callset_AFR', 'single_sample_delly_non_AFR', 'delly_non_AFR', 'callset_non_AFR']
     # create legend
     handles = []
     labels = []
@@ -39,7 +39,7 @@ def run(tsvs=None, output=None, title=None):
     tick_pos = [(i*(len(categories)+1))+(len(categories)+1)/2 for i in range(len(ranges))]
     for index, cat in enumerate(categories):
         d = [data[i][cat] for i in ranges]
-        bp[cat] = plt.boxplot(d, positions=[(index+1)+(i*(len(categories)+1)) for i in range(len(ranges))], patch_artist=True, notch=False, widths=0.9)
+        bp[cat] = plt.boxplot(d, positions=[(index+1)+(i*(len(categories)+1)) for i in range(len(ranges))], patch_artist=True, notch=False, widths=0.4)
         # styling the boxes
         for patch in bp[cat]['boxes']:
             patch.set_facecolor(colors[index])
