@@ -1,4 +1,5 @@
 import argparse
+import sys
 from operator import add
 
 def map_sample_to_pop(file):
@@ -60,11 +61,16 @@ def run(sample_data=None, sample_list=None, path=None):
                 gts = read_gts(line)
                 assert len(gts) == n_samples
                 sv_counter = list(map(add, sv_counter, gts))
-            if sample_to_pop_map[sample.strip()] == 'AFR':
-                sv_counter_list['AFR'].append(str(sv_counter[0]))
-            else:
-                sv_counter_list['non-AFR'].append(str(sv_counter[0]))
+            try:
+                if sample_to_pop_map[sample.strip()] == 'AFR':
+                    sv_counter_list['AFR'].append(str(sv_counter[0]))
+                else:
+                    sv_counter_list['non-AFR'].append(str(sv_counter[0]))
+            except KeyError:
+                continue
             reader.close()
+        print(f'Number of AFR in single sample Delly = {len(sv_counter_list['AFR'])}', file=sys.stderr)
+        print(f'Number of non AFR in single sample Delly = {len(sv_counter_list['non-AFR'])}', file=sys.stderr)
         print('single_sample_delly_AFR\t'+','.join(sv_counter_list['AFR']))
         print('single_sample_delly_non_AFR\t'+','.join(sv_counter_list['non-AFR']))
 
