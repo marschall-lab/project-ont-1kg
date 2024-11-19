@@ -1,4 +1,5 @@
 import argparse
+import sys
 from operator import add
 
 def map_sample_to_pop(file):
@@ -64,10 +65,13 @@ def run(sample_data=None, callset=None, sniffles=None, delly=None, svarp=None):
             assert len(gts) == n_samples
             sv_counter[vcf_type] = list(map(add, sv_counter[vcf_type], gts))
         reader.close()
-        print(f'{vcf_type}_AFR\t{",".join([str(i) for n, i in enumerate(sv_counter[vcf_type]) if sample_to_pop_map[sample_list[n]] == 'AFR'])}')
-        print(f'{vcf_type}_non_AFR\t{",".join([str(i) for n, i in enumerate(sv_counter[vcf_type]) if sample_to_pop_map[sample_list[n]] != 'AFR'])}')
-        #print(f'{vcf_type}_non_AFR\t{",".join([str(i) for i in sv_counter[vcf_type] if sample_to_pop_map[sample_list[i]] != 'AFR'])}')
-
+        afr_data = [str(i) for n, i in enumerate(sv_counter[vcf_type]) if sample_to_pop_map[sample_list[n]] == 'AFR']
+        non_afr_data = [str(i) for n, i in enumerate(sv_counter[vcf_type]) if sample_to_pop_map[sample_list[n]] != 'AFR']
+        print(f'Total samples = {len(sv_counter[vcf_type])}', file=sys.stderr)
+        print(f'AFR samples = {len(afr_data)}', file=sys.stderr)
+        print(f'Non AFR samples = {len(non_afr_data)}', file=sys.stderr)
+        print(f'{vcf_type}_AFR\t{",".join(afr_data)}')
+        print(f'{vcf_type}_non_AFR\t{",".join(non_afr_data)}')
 
     
 if __name__=='__main__':
