@@ -135,6 +135,7 @@ rule sv_number_per_sample_n50:
         delly='results/n50-experiments/subsampled-vcf/{n50_range}-delly.vcf',
         svarp='results/n50-experiments/subsampled-vcf/{n50_range}-svarp.vcf',
         sample_list='results/n50-experiments/sample-by-n50_{n50_range}.tsv',
+        sample_data='resources/sample_sheet.tsv',
         convert_check='results/single_sample_delly_vcfs/done.chk'
     output:
         tmp='results/n50-experiments/sv_count_per_sample/{n50_range}-tmp.tsv',
@@ -150,8 +151,8 @@ rule sv_number_per_sample_n50:
         mem_total_mb=5*1024
     shell:
         '''
-        python scripts/count-svs-per-sample.py -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} > {output.tmp}
-        python scripts/count-svs-single-sample-delly.py -sample-list {input.sample_list} -path {params.single_sample_delly_dir} > {output.single_sample_delly}
+        python scripts/count-svs-per-sample.py -sample-data {input.sample_data} -callset {input.callset} -sniffles {input.sniffles} -delly {input.delly} -svarp {input.svarp} > {output.tmp}
+        python scripts/count-svs-single-sample-delly.py -sample-data {input.sample_data} -sample-list {input.sample_list} -path {params.single_sample_delly_dir} > {output.single_sample_delly}
         python scripts/add-single-sample-delly-counts.py -tsv {output.tmp} -delly {output.single_sample_delly} > {output.final}
         '''
 
