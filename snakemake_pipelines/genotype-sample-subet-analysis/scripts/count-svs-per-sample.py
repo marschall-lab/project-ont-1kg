@@ -64,8 +64,9 @@ def run(sample_data=None, callset=None, sniffles=None, delly=None, svarp=None):
             assert len(gts) == n_samples
             sv_counter[vcf_type] = list(map(add, sv_counter[vcf_type], gts))
         reader.close()
-        print(f'{vcf_type}_AFR\t{",".join([str(i) for i in sv_counter[vcf_type] if sample_to_pop_map[sample_list[i]] == 'AFR'])}')
-        print(f'{vcf_type}_non_AFR\t{",".join([str(i) for i in sv_counter[vcf_type] if sample_to_pop_map[sample_list[i]] != 'AFR'])}')
+        print(f'{vcf_type}_AFR\t{",".join([str(i) for n, i in enumerate(sv_counter[vcf_type]) if sample_to_pop_map[sample_list[n]] == 'AFR'])}')
+        print(f'{vcf_type}_non_AFR\t{",".join([str(i) for n, i in enumerate(sv_counter[vcf_type]) if sample_to_pop_map[sample_list[n]] != 'AFR'])}')
+        #print(f'{vcf_type}_non_AFR\t{",".join([str(i) for i in sv_counter[vcf_type] if sample_to_pop_map[sample_list[i]] != 'AFR'])}')
 
 
     
