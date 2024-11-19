@@ -60,7 +60,7 @@ def run(sample_data=None, sample_list=None, path=None):
                 gts = read_gts(line)
                 assert len(gts) == n_samples
                 sv_counter = list(map(add, sv_counter, gts))
-            if sample_to_pop_map[sample] == 'AFR':
+            if sample_to_pop_map[sample.strip()] == 'AFR':
                 sv_counter_list['AFR'].append(str(sv_counter[0]))
             else:
                 sv_counter_list['non-AFR'].append(str(sv_counter[0]))
