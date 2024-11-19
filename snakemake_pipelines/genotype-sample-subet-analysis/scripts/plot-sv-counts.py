@@ -60,7 +60,7 @@ def run(tsvs=None, output=None, title=None):
     plt.xticks(tick_pos, ranges, fontsize=15)
     xmin, xmax, _, _ = plt.axis()
     plt.xlim([xmin-1, xmax+1])
-    plt.xlabel(f'{title} Ranges', fontsize=20)
+    plt.xlabel(f'{title}', fontsize=20)
     plt.ylabel('Number of SVs', fontsize=20)
     plt.yticks(fontsize=15)
     plt.tight_layout()
