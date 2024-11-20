@@ -171,4 +171,4 @@ rule plot_sv_counts_n50:
     conda:
         '../envs/analysis.yml'
     shell:
-        'python scripts/plot-sv-counts.py -tsvs {params} -output {output} -title "N50 Ranges (in Mbp)"'
+        'python scripts/plot-sv-counts.py -tsvs {params} -output {output} -title "N50 Ranges (in Kbp)"'
