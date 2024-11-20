@@ -11,7 +11,7 @@ afs = ['0.1', '0.5', '1']
 haplotypes = ['hap1', 'hap2']
 
 wildcard_constraints:
-    sample='|'.join(t2t_samples),
+    sample='|'.join(t2t_samples+hgsvc_sample_list_all),
     af='|'.join(afs),
     haplotype='|'.join(haplotypes)
 
