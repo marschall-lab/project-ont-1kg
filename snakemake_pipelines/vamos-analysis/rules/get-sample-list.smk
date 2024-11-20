@@ -33,5 +33,8 @@ for s in ls_out.decode('utf-8').split('\n'):
         continue
     hgsvc_sample_list_all.append(s.split('/')[-1][0:7])
 
+# set of samples intersecting with our callset
 hgsvc_samples = sorted(list(set(t2t_samples).intersection(hgsvc_sample_list_all)))
-#hgsvc_samples.remove('HG00514')
+
+# all hgsvc3 assembly samples except HG00514 (asked to be removed by P. Ebert)
+hgsvc_sample_list_all.remove('HG00514')

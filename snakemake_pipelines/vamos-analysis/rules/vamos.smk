@@ -154,7 +154,7 @@ rule vamos_t2t_stats:
     output:
         'results/vamos-t2t/{sample}.stats'
     shell:
-        'python scripts/get-vntr-stats.py -vcf {input} > {output}'
+        'python scripts/get-vntr-stats-ont.py -vcf {input} > {output}'
 
 # create vntr summary table
 rule vamos_t2t_summary:

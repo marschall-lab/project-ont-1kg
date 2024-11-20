@@ -98,3 +98,31 @@ rule hgsvc_ru_pcc_boxplot:
         mem_total_mb=2*1024
     shell:
         'python scripts/plot-ru-pcc-boxplot.py -same-sample {params.same_sample} -diff-sample {params.diff_sample} -output {output}'
+
+# running stats for vntr-summary table on all the HGSVC assemblies (except HG00514. Warned not to use it by P. Ebert)
+rule hgsvc_get_vntr_stats:
+    input:
+        hap1='results/hgsvc3-comparison/vntr-calls/{sample}-hap1.vcf',
+        hap2='results/hgsvc3-comparison/vntr-calls/{sample}-hap2.vcf'
+    output:
+        'results/hgsvc3-comparison/vntr-calls/{sample}.stats'
+    shell:
+        'python scripts/get-vntr-stats-assemblies.py -hap1 {input.hap1} -hap2 {input.hap2} > {output}'
+
+# create the vntr summary table
+rule hgsvc_vntr_summary_table:
+    input:
+        vcf=expand('results/hgsvc3-comparison/vntr-calls/{sample}.stats', sample=hgsvc_sample_list_all),
+        sites='results/temp/vamos.T2T.processed.tsv'
+    output:
+        'results/hgsvc3-comparison/hgsvc-vntr-summary.bed'
+    params:
+        ','.join(list(expand('results/hgsvc3-comparison/vntr-calls/{sample}.stats', sample=hgsvc_sample_list_all)))
+    conda:
+        '../envs/comparison.yml'
+    resources:
+        runtime_hrs=5,
+        runtime_min=0,
+        mem_total_mb=96000
+    shell:
+        'python scripts/create-vntr-table.py -stats {params} -sites {input.sites} > {output}'

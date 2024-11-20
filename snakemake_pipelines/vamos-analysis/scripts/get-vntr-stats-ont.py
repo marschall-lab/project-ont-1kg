@@ -39,7 +39,7 @@ def run(vcf = None):
 
 if __name__=='__main__':
     
-    parser = argparse.ArgumentParser(prog='get-vntr-stats.py', description="Gets the VNTR stats for making the table")
+    parser = argparse.ArgumentParser(prog='get-vntr-stats-ont.py', description="Gets the VNTR stats from ONT vcf for making the table")
     parser.add_argument("-vcf", required=True, help="Vamos VCF file")
     
     options = parser.parse_args()

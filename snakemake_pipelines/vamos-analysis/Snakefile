@@ -30,4 +30,5 @@ rule all:
         #'results/vamos-t2t-summary.bed',
         expand('results/hgsvc3-comparison/vntr-calls/{sample}-{haplotype}.vcf', sample=hgsvc_samples, haplotype=haplotypes),
         'results/hgsvc3-comparison/qc/ru-boxplot-pcc.svg',
-        'results/vamos-multisample.vcf'
+        'results/vamos-multisample.vcf',
+        'results/hgsvc3-comparison/hgsvc-vntr-summary.bed'
