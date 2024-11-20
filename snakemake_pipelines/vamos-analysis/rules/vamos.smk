@@ -186,6 +186,6 @@ rule vamos_t2t_vcf_combine:
     resources:
         runtime_hrs=5,
         runtime_min=0,
-        mem_total_mb=20*1024
+        mem_total_mb=50*1024
     shell:
         'python scripts/combine-vamos-vcf.py -sites {input.sites} -vcfs {params} > {output}'
