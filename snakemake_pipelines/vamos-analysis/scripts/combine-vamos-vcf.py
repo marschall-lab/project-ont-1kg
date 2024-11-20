@@ -1,6 +1,5 @@
 import argparse
 import sys
-import numpy as np
 
 def parse_info(line):
     info_fields={}
@@ -35,9 +34,12 @@ def run(sites=None, vcfs=None):
             gt_info[key] = ['./.' for _ in sample_list]
     
     is_header_written = None
+    count = 0
     # reading individual vcf files
     for vcf_file in vcfs.split(','):
         sample_name = vcf_file.strip().split('/')[-1][0:7]
+        count += 1
+        print(f'Reading file {count}', file=sys.stderr)
         with open(vcf_file, 'r') as file:
             for line in file:
                 if line.startswith('##'):
