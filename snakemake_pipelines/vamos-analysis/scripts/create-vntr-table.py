@@ -22,9 +22,9 @@ def run(stats=None, sites=None):
                 if line.startswith('#'):
                     continue
                 line = line.rstrip().split('\t')
-                num_rus = [int(i) for i in line[2].split(',')]
-                bps = [int(i) for i in line[3].split(',')]
-                vntrs = line[4].split(',')
+                num_rus = [int(i) for i in line[2].split(',') if i != '.']
+                bps = [int(i) for i in line[3].split(',') if i != '.']
+                vntrs = [i for i in line[4].split(',') if i != '.']
                 try:
                     data[(line[0], line[1])][0].extend(num_rus)
                     data[(line[0], line[1])][1].extend(bps)

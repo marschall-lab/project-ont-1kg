@@ -48,11 +48,11 @@ def run(hap1 = None, hap2 = None):
         for i in [0,1]:
             if num_rus[i] == None:
                 #print(num_rus, bps, alt_out, file=sys.stderr)
-                num_rus[i] = ''
+                num_rus[i] = '.'
             if bps[i] == None:
-                bps[i] = ''
+                bps[i] = '.'
             if alt_out[i] == None:
-                alt_out[i] = ''
+                alt_out[i] = '.'
                 #print(num_rus, bps, alt_out, file=sys.stderr)
         
         print(f'{chrom}\t{pos}\t{",".join(num_rus)}\t{",".join(bps)}\t{",".join(alt_out)}')
