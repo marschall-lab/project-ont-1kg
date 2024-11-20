@@ -19,7 +19,7 @@ def read_summary_file(file, c1, c2):
     
     return data
 
-def run(hgsvc, ont, range, output):
+def run(hgsvc, ont, spread, output):
     
     title_map = {
         'max': 'Min - Max',
@@ -33,10 +33,10 @@ def run(hgsvc, ont, range, output):
         '75': ['25%_RUS', '75%_RUS']
     }
 
-    title = title_map[range]
+    title = title_map[spread]
 
-    col1 = column_map[range][0]
-    col2 = column_map[range][1]
+    col1 = column_map[spread][0]
+    col2 = column_map[spread][1]
 
     hgsvc_data = None
     ont_data = None
@@ -96,7 +96,7 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(prog='plot-hgsvc-qc.py', description="Creates plots for HGSVC-based QC")
     parser.add_argument("-hgsvc", required=True, help="Summary statistics of HGSVC VNTRs")
     parser.add_argument("-ont", required=True, help="Summary statistics of ONT VNTRs")
-    parser.add_argument("-range", required=True, help="Determines the range of values to use (max | 95 | 75)")
+    parser.add_argument("-spread", required=True, help="Determines the range of values to use (max | 95 | 75)")
     parser.add_argument("-output", required=True, help="Output prefix")
 
     options = parser.parse_args()
