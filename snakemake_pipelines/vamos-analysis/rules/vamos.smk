@@ -173,3 +173,14 @@ rule vamos_t2t_summary:
         mem_total_mb=96000
     shell:
         'python scripts/create-vntr-table.py -stats {params} -sites {input.sites} > {output}'
+
+# combine sample vcfs into one multisample vcf
+rule vamos_t2t_vcf_combine:
+    input:
+        vcf=expand('results/vamos-t2t/{sample}.vcf', sample=t2t_samples)
+    output:
+        'results/vamos-multisample.vcf'
+    params:
+        ','.join(list(expand('results/vamos-t2t/{sample}.vcf', sample=t2t_samples)))
+    shell:
+        'python scripts/combine-vamos-vcf.py -vcfs {params} > {output}'
