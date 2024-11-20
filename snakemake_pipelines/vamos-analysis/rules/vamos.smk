@@ -183,5 +183,9 @@ rule vamos_t2t_vcf_combine:
         'results/vamos-multisample.vcf'
     params:
         ','.join(list(expand('results/vamos-t2t/{sample}.vcf', sample=t2t_samples)))
+    resources:
+        runtime_hrs=5,
+        runtime_min=0,
+        mem_total_mb=20*1024
     shell:
         'python scripts/combine-vamos-vcf.py -sites {input.sites} -vcfs {params} > {output}'
