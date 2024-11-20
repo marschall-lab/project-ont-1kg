@@ -126,3 +126,28 @@ rule hgsvc_vntr_summary_table:
         mem_total_mb=96000
     shell:
         'python scripts/create-vntr-table.py -stats {params} -sites {input.sites} > {output}'
+
+# plotting the vntr spread between hgsvc vntr calls (all assemblies) and ont vntr calls
+rule plot_vntr_spread:
+    input:
+        hgsvc='results/hgsvc3-comparison/hgsvc-vntr-summary.bed',
+        ont='results/vamos-t2t-summary.bed'
+    output:
+        'results/hgsvc3-comparison/vntr-spread/max-full.svg',
+        'results/hgsvc3-comparison/vntr-spread/95-full.svg',
+        'results/hgsvc3-comparison/vntr-spread/75-full.svg',
+        'results/hgsvc3-comparison/vntr-spread/max-subset100.svg',
+        'results/hgsvc3-comparison/vntr-spread/95-subset100.svg',
+        'results/hgsvc3-comparison/vntr-spread/75-subset100.svg'
+    params:
+        par1='results/hgsvc3-comparison/vntr-spread/max',
+        par2='results/hgsvc3-comparison/vntr-spread/95',
+        par3='results/hgsvc3-comparison/vntr-spread/75'
+    conda:
+        '../envs/vamos.yml'
+    shell:
+        '''
+        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -range max -output {params.par1}
+        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -range 95 -output {params.par2}
+        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -range 75 -output {params.par3}
+        '''
