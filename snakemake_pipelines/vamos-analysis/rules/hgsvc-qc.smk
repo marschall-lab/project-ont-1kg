@@ -147,7 +147,7 @@ rule plot_vntr_spread:
         '../envs/vamos.yml'
     shell:
         '''
-        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -range max -output {params.par1}
-        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -range 95 -output {params.par2}
-        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -range 75 -output {params.par3}
+        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -spread max -output {params.par1}
+        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -spread 95 -output {params.par2}
+        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -spread 75 -output {params.par3}
         '''
