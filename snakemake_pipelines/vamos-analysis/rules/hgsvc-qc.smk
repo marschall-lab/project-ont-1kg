@@ -107,7 +107,7 @@ rule hgsvc_get_vntr_stats:
     output:
         'results/hgsvc3-comparison/vntr-calls/{sample}.stats'
     shell:
-        'python scripts/get-vntr-stats-assemblies.py -hap1 {input.hap1} -hap2 {input.hap2} > {output}'
+        'python scripts/get-vntr-stats-assemblies.py -hap1 {input.hap1} -hap2 {input.hap2} | awk \'$1 ~ /^#/ {{print $0;next}} {{print $0 | "sort -k1,1 -k2,2n "}}\' > {output}'
 
 # create the vntr summary table
 rule hgsvc_vntr_summary_table:
