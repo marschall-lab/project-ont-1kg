@@ -134,9 +134,11 @@ rule plot_vntr_spread:
         ont='results/vamos-t2t-summary.bed'
     output:
         'results/hgsvc3-comparison/vntr-spread/max-full.svg',
+        'results/hgsvc3-comparison/vntr-spread/99-full.svg',
         'results/hgsvc3-comparison/vntr-spread/95-full.svg',
         'results/hgsvc3-comparison/vntr-spread/75-full.svg',
         'results/hgsvc3-comparison/vntr-spread/max-subset100.svg',
+        'results/hgsvc3-comparison/vntr-spread/99-subset100.svg',
         'results/hgsvc3-comparison/vntr-spread/95-subset100.svg',
         'results/hgsvc3-comparison/vntr-spread/75-subset100.svg'
     params:
@@ -148,6 +150,7 @@ rule plot_vntr_spread:
     shell:
         '''
         python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -spread max -output {params.par1}
+        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -spread 99 -output {params.par2}
         python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -spread 95 -output {params.par2}
         python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -spread 75 -output {params.par3}
         '''

@@ -2,6 +2,7 @@ import argparse
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 import seaborn
+import numpy
 
 def read_summary_file(file, c1, c2):
     data = {}
@@ -15,20 +16,23 @@ def read_summary_file(file, c1, c2):
         chrom = line[0]
         pos = line[1]
         key = chrom+'_'+pos
+        if numpy.isnan(float(line[i2])-float(line[i1])):
+            continue
         data[key] = float(line[i2])-float(line[i1])
-    
     return data
 
 def run(hgsvc, ont, spread, output):
     
     title_map = {
         'max': 'Min - Max',
+        '99': '1 Percentile - 99 Percentile',
         '95': '5 Percentile - 95 Percentile',
         '75': '25 Percentile - 75 Percentile'
     }
 
     column_map = {
         'max': ['MIN_RUS', 'MAX_RUS'],
+        '99': ['1%_RUS', '99%_RUS'],
         '95': ['5%_RUS', '95%_RUS'],
         '75': ['25%_RUS', '75%_RUS']
     }
@@ -73,6 +77,7 @@ def run(hgsvc, ont, spread, output):
     g = seaborn.JointGrid(x=hgsvc_values, y=ont_values, height=10, ratio=5)
     g.plot_marginals(seaborn.histplot, bins=100)
     g.plot_joint(plt.hexbin, bins='log', gridsize=50, cmap='Blues')
+    plt.axline((0,0), (100,100), linewidth=1, color='black')
     g.set_axis_labels("Range Difference in HGSVC", "Range Difference in ONT", fontsize=20)
     g.fig.suptitle(f'{title} - Full\nPCC: {pearsonr(hgsvc_values, ont_values)[0]}', fontsize=20)
     cbar_ax = g.fig.add_axes([.95, .2, .02, .6])  # x, y, width, height
@@ -80,10 +85,11 @@ def run(hgsvc, ont, spread, output):
     g.savefig(f'{output}-full.svg')
     
     print(f'Number of positions plotted in subset100 plot: {len(hgsvc_values_subset100)}')
-    f = seaborn.JointGrid(x=hgsvc_values_subset100, y=ont_values_subset100, height=10, ratio=5, ylim=(-100, 100), xlim=(-100,100))
+    f = seaborn.JointGrid(x=hgsvc_values_subset100, y=ont_values_subset100, height=10, ratio=5, ylim=(0, 100), xlim=(0,100))
     #g = seaborn.JointGrid(x=hgsvc_counts, y=ont_counts, height=10, ratio=5)
     f.plot_marginals(seaborn.histplot, bins=range(0, 100))
     f.plot_joint(plt.hexbin, bins='log', gridsize=50, cmap='Blues')
+    plt.axline((0,0), (100,100), linewidth=1, color='black')
     f.set_axis_labels("Range Difference in HGSVC", "Range Difference in ONT", fontsize=20)
     f.fig.suptitle(f'{title} - Subset100\nPCC: {pearsonr(hgsvc_values_subset100, ont_values_subset100)[0]}', fontsize=20)
     cbar_ax = f.fig.add_axes([.95, .2, .02, .6])  # x, y, width, height

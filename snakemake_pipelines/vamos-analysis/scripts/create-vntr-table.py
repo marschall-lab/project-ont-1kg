@@ -33,19 +33,19 @@ def run(stats=None, sites=None):
                     print(f'Did not find CHROM: {line[0]}, POS: {line[1]}', file=sys.stderr)
     
     # writing summary stats
-    print('#CHROM\tREF_START\tREF_END\tNUM_HAPS\tRU_LEN_AVG\tRU_LEN_STD\tNUM_UNIQUE_VNTRS\tMAX_RUS\tMIN_RUS\tMEDIAN_RUS\t5%_RUS\t25%_RUS\t75%_RUS\t95%_RUS\tUNIQUE_NUM_RUS\tMAX_BPS\tMIN_BPS\tMEDIAN_BPS\t25%_BPS\t75%_BPS')
+    print('#CHROM\tREF_START\tREF_END\tNUM_HAPS\tRU_LEN_AVG\tRU_LEN_STD\tNUM_UNIQUE_VNTRS\tMAX_RUS\tMIN_RUS\tMEDIAN_RUS\t1%_RUS\t5%_RUS\t25%_RUS\t75%_RUS\t95%_RUS\t95%_RUS\tUNIQUE_NUM_RUS\tMAX_BPS\tMIN_BPS\tMEDIAN_BPS\t25%_BPS\t75%_BPS')
     for site, value in data.items():
         #print(value, file=sys.stderr)
         n_samples = len(value[0])
         if n_samples == 0:
-            print(f"{site[0]}\t{site[1]}\t{value[3]}\t{n_samples}\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN")    
+            print(f"{site[0]}\t{site[1]}\t{value[3]}\t{n_samples}\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN\tNaN")    
             continue
         ru_len = np.array(value[4])
         rus = np.array(sorted(value[0]))
         unique_rus_num = len(set(value[0]))
         unique_vntrs = len(set(value[2]))
         bps = np.array(sorted(value[1]))
-        print(f"{site[0]}\t{site[1]}\t{value[3]}\t{n_samples}\t{np.mean(ru_len)}\t{np.std(ru_len)}\t{unique_vntrs}\t{int(rus.max())}\t{int(rus.min())}\t{np.median(rus)}\t{np.percentile(rus, 5)}\t{np.percentile(rus, 25)}\t{np.percentile(rus, 75)}\t{np.percentile(rus, 95)}\t{unique_rus_num}\t{int(bps.max())}\t{int(bps.min())}\t{np.median(bps)}\t{np.percentile(bps, 25)}\t{np.percentile(bps, 75)}")
+        print(f"{site[0]}\t{site[1]}\t{value[3]}\t{n_samples}\t{np.mean(ru_len)}\t{np.std(ru_len)}\t{unique_vntrs}\t{int(rus.max())}\t{int(rus.min())}\t{np.median(rus)}\t{np.percentile(rus, 1)}\t{np.percentile(rus, 5)}\t{np.percentile(rus, 25)}\t{np.percentile(rus, 75)}\t{np.percentile(rus, 95)}\t{np.percentile(rus, 99)}\t{unique_rus_num}\t{int(bps.max())}\t{int(bps.min())}\t{np.median(bps)}\t{np.percentile(bps, 25)}\t{np.percentile(bps, 75)}")
 
 
 if __name__=='__main__':
