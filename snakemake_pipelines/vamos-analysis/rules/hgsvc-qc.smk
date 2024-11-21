@@ -143,14 +143,15 @@ rule plot_vntr_spread:
         'results/hgsvc3-comparison/vntr-spread/75-subset100.svg'
     params:
         par1='results/hgsvc3-comparison/vntr-spread/max',
-        par2='results/hgsvc3-comparison/vntr-spread/95',
-        par3='results/hgsvc3-comparison/vntr-spread/75'
+        par2='results/hgsvc3-comparison/vntr-spread/99',
+        par3='results/hgsvc3-comparison/vntr-spread/95',
+        par4='results/hgsvc3-comparison/vntr-spread/75'
     conda:
         '../envs/vamos.yml'
     shell:
         '''
         python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -spread max -output {params.par1}
         python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -spread 99 -output {params.par2}
-        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -spread 95 -output {params.par2}
-        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -spread 75 -output {params.par3}
+        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -spread 95 -output {params.par3}
+        python scripts/plot-vntr-spread.py -hgsvc {input.hgsvc} -ont {input.ont} -spread 75 -output {params.par4}
         '''
