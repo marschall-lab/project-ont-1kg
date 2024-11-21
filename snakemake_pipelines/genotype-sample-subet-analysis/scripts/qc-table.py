@@ -210,7 +210,7 @@ panel_samples = list(panel_reader.samples)
 callset_reader = VCF(args.bi_callset)
 callset_samples = list(callset_reader.samples)
 
-if len(callset_samples) < 10:
+if len(callset_samples) < 30:
     with open(args.output+'.chk', 'w') as chkfile:
         print('VCF has less than 10 samples. Skipping.', file=chkfile)
     exit()
