@@ -33,7 +33,7 @@ def run(stats=None, sites=None):
                     print(f'Did not find CHROM: {line[0]}, POS: {line[1]}', file=sys.stderr)
     
     # writing summary stats
-    print('#CHROM\tREF_START\tREF_END\tNUM_HAPS\tRU_LEN_AVG\tRU_LEN_STD\tNUM_UNIQUE_VNTRS\tMAX_RUS\tMIN_RUS\tMEDIAN_RUS\t1%_RUS\t5%_RUS\t25%_RUS\t75%_RUS\t95%_RUS\t95%_RUS\tUNIQUE_NUM_RUS\tMAX_BPS\tMIN_BPS\tMEDIAN_BPS\t25%_BPS\t75%_BPS')
+    print('#CHROM\tREF_START\tREF_END\tNUM_HAPS\tRU_LEN_AVG\tRU_LEN_STD\tNUM_UNIQUE_VNTRS\tMAX_RUS\tMIN_RUS\tMEDIAN_RUS\t1%_RUS\t5%_RUS\t25%_RUS\t75%_RUS\t95%_RUS\t99%_RUS\tUNIQUE_NUM_RUS\tMAX_BPS\tMIN_BPS\tMEDIAN_BPS\t25%_BPS\t75%_BPS')
     for site, value in data.items():
         #print(value, file=sys.stderr)
         n_samples = len(value[0])
