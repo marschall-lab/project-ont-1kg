@@ -1,7 +1,6 @@
 import argparse
 import matplotlib.pyplot as plt
-import matplotlib
-import seaborn
+import numpy
 
 def run(same_sample, diff_sample, output):
     
@@ -26,12 +25,13 @@ def run(same_sample, diff_sample, output):
     plt.ylabel('PCC')
     plt.xlim(0, 4)
     plt.ylim(0, 1)
+    print(f'Same-sample-median: {numpy.median(same_sample_pccs)}\nDiff-sample-median: {numpy.median(diff_sample_pccs)}')
     plt.savefig(output)
 
     
 if __name__=='__main__':
     
-    parser = argparse.ArgumentParser(prog='plot-hgsvc-qc.py', description="Creates plots for HGSVC-based QC")
+    parser = argparse.ArgumentParser(prog='plot-ru-pcc-boxplot.py', description="Creates boxplots of PCC for same-sample vs diff-sample comparison")
     parser.add_argument("-same-sample", required=True, help="Comma-separated list of same-sample comparison stat files")
     parser.add_argument("-diff-sample", required=True, help="Comma-separated list of diff-sample comparison stat files")
     parser.add_argument("-output", required=True, help="Output boxplot")

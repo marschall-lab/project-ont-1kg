@@ -1,5 +1,3 @@
-# Judge me not based on this script. I am overcaffeinated and sleepless now.
-
 import argparse
 
 def convert_to_seq(anno, rus):

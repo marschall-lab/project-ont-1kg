@@ -54,7 +54,7 @@ rule hgsvc_comp_same:
         runtime_min=20,
         mem_total_mb=2*1024
     shell:
-        'python scripts/plot-hgsvc-qc.py -hgsvc {input.hgsvc1},{input.hgsvc2} -ont {input.ont} -sample {wildcards.sample} -output {params.outprefix} 2> {log}'
+        'python scripts/plot-qc.py -assembly {input.hgsvc1},{input.hgsvc2} -ont {input.ont} -sample {wildcards.sample} -output {params.outprefix} 2> {log}'
 
 
 # running VNTR comparison between HGSVC assemblies and ONT reads on the different sample
@@ -78,7 +78,7 @@ rule hgsvc_comp_diff:
         runtime_min=20,
         mem_total_mb=2*1024
     shell:
-        'python scripts/plot-hgsvc-qc.py -hgsvc {input.hgsvc1},{input.hgsvc2} -ont {input.ont} -sample {wildcards.sample1}_{wildcards.sample2} -output {params.outprefix} 2> {log}'
+        'python scripts/plot-qc.py -assembly {input.hgsvc1},{input.hgsvc2} -ont {input.ont} -sample {wildcards.sample1}_{wildcards.sample2} -output {params.outprefix} 2> {log}'
 
 # creating the boxplot of PCCs
 rule hgsvc_ru_pcc_boxplot:
