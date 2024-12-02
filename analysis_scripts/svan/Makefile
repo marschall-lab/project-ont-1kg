@@ -34,53 +34,53 @@ all: directory-tree gts extract-categories rausch-one qc
 
 # removes all the files and folders made during the execution of the script
 remove:
-    rm -r $(PROJECT_DIR)
-    
+	rm -r $(PROJECT_DIR)
+	
 # creates the inital directory structure where the output files can be stored
 directory-tree:
-    mkdir $(PROJECT_DIR)
-    mkdir $(PROJECT_DIR)/vcfs
-    mkdir $(PROJECT_DIR)/tables
-    
+	mkdir $(PROJECT_DIR)
+	mkdir $(PROJECT_DIR)/vcfs
+	mkdir $(PROJECT_DIR)/tables
+	
 gts:
-    bcftools annotate -c INFO -a $(SVAN_INS) $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/INS.tmp.vcf
-    bcftools annotate -c INFO -a $(SVAN_DEL) $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/DEL.tmp.vcf
-    bcftools annotate -c INFO -a $(SVAN_COMPLEX_INS) $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf
-    bcftools annotate -c INFO -a $(SVAN_COMPLEX_DEL) $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf
-    bcftools concat $(PROJECT_DIR)/vcfs/INS.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf > $(PROJECT_DIR)/vcfs/INS.vcf
-    bcftools concat $(PROJECT_DIR)/vcfs/DEL.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf > $(PROJECT_DIR)/vcfs/DEL.vcf
+	bcftools annotate -c INFO -a $(SVAN_INS) $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/INS.tmp.vcf
+	bcftools annotate -c INFO -a $(SVAN_DEL) $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/DEL.tmp.vcf
+	bcftools annotate -c INFO -a $(SVAN_COMPLEX_INS) $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf
+	bcftools annotate -c INFO -a $(SVAN_COMPLEX_DEL) $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf
+	bcftools concat $(PROJECT_DIR)/vcfs/INS.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf > $(PROJECT_DIR)/vcfs/INS.vcf
+	bcftools concat $(PROJECT_DIR)/vcfs/DEL.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf > $(PROJECT_DIR)/vcfs/DEL.vcf
 
 extract-categories:
-    bcftools view -i "ITYPE_N='VNTR'" $(PROJECT_DIR)/vcfs/INS.vcf > $(PROJECT_DIR)/vcfs/VNTR.expansion.gts.vcf
-    bcftools view -i "DTYPE_N='VNTR'" $(PROJECT_DIR)/vcfs/DEL.vcf > $(PROJECT_DIR)/vcfs/VNTR.contraction.gts.vcf
-    bcftools view -i "ITYPE_N='COMPLEX_DUP' | ITYPE_N='DUP' | ITYPE_N='INV_DUP' | ITYPE_N='DUP_INTERSPERSED'" $(PROJECT_DIR)/vcfs/INS.vcf > $(PROJECT_DIR)/vcfs/DUP.gts.vcf
-    bcftools view -i "ITYPE_N='PSD'" $(PROJECT_DIR)/vcfs/INS.vcf > $(PROJECT_DIR)/vcfs/PSD.gts.vcf
-    bcftools view -i "ITYPE_N='NUMT'" $(PROJECT_DIR)/vcfs/INS.vcf > $(PROJECT_DIR)/vcfs/NUMT.gts.vcf
-    bcftools view -i "ITYPE_N='solo' | ITYPE_N='partnered' | ITYPE_N='orphan'" $(PROJECT_DIR)/vcfs/INS.vcf > $(PROJECT_DIR)/vcfs/MEI.non-ref.gts.vcf
-    bcftools view -i "DTYPE_N='solo' | DTYPE_N='partnered' | DTYPE_N='orphan'" $(PROJECT_DIR)/vcfs/DEL.vcf > $(PROJECT_DIR)/vcfs/MEI.ref.gts.vcf
+	bcftools view -i "ITYPE_N='VNTR'" $(PROJECT_DIR)/vcfs/INS.vcf > $(PROJECT_DIR)/vcfs/VNTR.expansion.gts.vcf
+	bcftools view -i "DTYPE_N='VNTR'" $(PROJECT_DIR)/vcfs/DEL.vcf > $(PROJECT_DIR)/vcfs/VNTR.contraction.gts.vcf
+	bcftools view -i "ITYPE_N='COMPLEX_DUP' | ITYPE_N='DUP' | ITYPE_N='INV_DUP' | ITYPE_N='DUP_INTERSPERSED'" $(PROJECT_DIR)/vcfs/INS.vcf > $(PROJECT_DIR)/vcfs/DUP.gts.vcf
+	bcftools view -i "ITYPE_N='PSD'" $(PROJECT_DIR)/vcfs/INS.vcf > $(PROJECT_DIR)/vcfs/PSD.gts.vcf
+	bcftools view -i "ITYPE_N='NUMT'" $(PROJECT_DIR)/vcfs/INS.vcf > $(PROJECT_DIR)/vcfs/NUMT.gts.vcf
+	bcftools view -i "ITYPE_N='solo' | ITYPE_N='partnered' | ITYPE_N='orphan'" $(PROJECT_DIR)/vcfs/INS.vcf > $(PROJECT_DIR)/vcfs/MEI.non-ref.gts.vcf
+	bcftools view -i "DTYPE_N='solo' | DTYPE_N='partnered' | DTYPE_N='orphan'" $(PROJECT_DIR)/vcfs/DEL.vcf > $(PROJECT_DIR)/vcfs/MEI.ref.gts.vcf
 
 rausch-separate:
-    for path in $(PROJECT_DIR)/vcfs/*.gts.vcf; do\
-        name=$$(echo $$path | cut -d'/' -f 2);\
-        echo $${name};\
-        python scripts/rausch-curves.py -vcfs $$path -names $$name -sample-sheet sample_sheet.tsv -output $(PROJECT_DIR)/$$name;\
-    done
-    
+	for path in $(PROJECT_DIR)/vcfs/*.gts.vcf; do\
+		name=$$(echo $$path | cut -d'/' -f 2);\
+		echo $${name};\
+		python scripts/rausch-curves.py -vcfs $$path -names $$name -sample-sheet sample_sheet.tsv -output $(PROJECT_DIR)/$$name;\
+	done
+	
 rausch-one:
-    delim="";\
-    paths="";\
-    names="";\
-    for path in vcfs/*.gts.vcf; do\
-        name=$$(echo $$path | cut -d'/' -f 2);\
-        paths="$$paths$$delim$$path";\
-        names="$$names$$delim$$name";\
-        delim=",";\
-    done;\
-    python scripts/rausch-curves.py -vcfs $$paths -names $$names -sample-sheet sample_sheet.tsv -output $(PROJECT_DIR)/all;\
-    
+	delim="";\
+	paths="";\
+	names="";\
+	for path in vcfs/*.gts.vcf; do\
+		name=$$(echo $$path | cut -d'/' -f 2);\
+		paths="$$paths$$delim$$path";\
+		names="$$names$$delim$$name";\
+		delim=",";\
+	done;\
+	python scripts/rausch-curves.py -vcfs $$paths -names $$names -sample-sheet sample_sheet.tsv -output $(PROJECT_DIR)/all;\
+	
 qc:
-    for path in vcfs/*.gts.vcf; do\
-        name=$$(echo $$path | cut -d'/' -f 2);\
-        echo $${name};\
-        python scripts/qc-table-creation.py -sample-sheet sample_sheet.tsv -bi-panel ${BI_PANEL} -multi-panel ${MULTI_PANEL} -bi-callset $$path > $(PROJECT_DIR)/tables/$$name.tsv;\
-    done
+	for path in vcfs/*.gts.vcf; do\
+		name=$$(echo $$path | cut -d'/' -f 2);\
+		echo $${name};\
+		python scripts/qc-table-creation.py -sample-sheet sample_sheet.tsv -bi-panel ${BI_PANEL} -multi-panel ${MULTI_PANEL} -bi-callset $$path > $(PROJECT_DIR)/tables/$$name.tsv;\
+	done
