@@ -41,12 +41,23 @@ directory-tree:
 	mkdir -p $(PROJECT_DIR)
 	mkdir -p $(PROJECT_DIR)/vcfs
 	mkdir -p $(PROJECT_DIR)/tables
-	
+
 gts:
-	bcftools annotate -c INFO -a $(SVAN_INS) $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/INS.tmp.vcf
-	bcftools annotate -c INFO -a $(SVAN_DEL) $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/DEL.tmp.vcf
-	bcftools annotate -c INFO -a $(SVAN_COMPLEX_INS) $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf
-	bcftools annotate -c INFO -a $(SVAN_COMPLEX_DEL) $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf
+	bcftools sort $(SVAN_INS) | bgzip -c > $(PROJECT_DIR)/vcfs/svan-ins-sorted.vcf.gz
+	bcftools sort $(SVAN_DEL) | bgzip -c > $(PROJECT_DIR)/vcfs/svan-del-sorted.vcf.gz
+	bcftools sort $(SVAN_COMPLEX_INS) | bgzip -c > $(PROJECT_DIR)/vcfs/svan-complex-ins-sorted.vcf.gz
+	bcftools sort $(SVAN_COMPLEX_DEL) | bgzip -c > $(PROJECT_DIR)/vcfs/svan-complex-del-sorted.vcf.gz
+
+	tabix -p vcf $(PROJECT_DIR)/vcfs/svan-ins-sorted.vcf.gz
+	tabix -p vcf $(PROJECT_DIR)/vcfs/svan-del-sorted.vcf.gz
+	tabix -p vcf $(PROJECT_DIR)/vcfs/svan-complex-ins-sorted.vcf.gz
+	tabix -p vcf $(PROJECT_DIR)/vcfs/svan-complex-del-sorted.vcf.gz
+
+	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-ins-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/INS.tmp.vcf
+	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-del-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/DEL.tmp.vcf
+	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-complex-ins-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf
+	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-complex-del-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf
+	
 	bcftools concat $(PROJECT_DIR)/vcfs/INS.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf > $(PROJECT_DIR)/vcfs/INS.vcf
 	bcftools concat $(PROJECT_DIR)/vcfs/DEL.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf > $(PROJECT_DIR)/vcfs/DEL.vcf
 
