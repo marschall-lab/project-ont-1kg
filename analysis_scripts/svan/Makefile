@@ -58,8 +58,8 @@ gts:
 	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-complex-ins-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf
 	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-complex-del-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf
 	
-	bcftools concat $(PROJECT_DIR)/vcfs/INS.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf > $(PROJECT_DIR)/vcfs/INS.vcf
-	bcftools concat $(PROJECT_DIR)/vcfs/DEL.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf > $(PROJECT_DIR)/vcfs/DEL.vcf
+	bcftools concat -a $(PROJECT_DIR)/vcfs/INS.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf > $(PROJECT_DIR)/vcfs/INS.vcf
+	bcftools concat -a $(PROJECT_DIR)/vcfs/DEL.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf > $(PROJECT_DIR)/vcfs/DEL.vcf
 
 	rm $(PROJECT_DIR)/vcfs/INS.tmp.vcf $(PROJECT_DIR)/vcfs/DEL.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf
 
