@@ -19,16 +19,16 @@ MULTI_PANEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/gi
 AUGMENTED_GIGGLES_GTS_FILTERED="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz"
 
 # path to the SVAN insertion annotations provided by Berni
-SVAN_INS="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.INS.SVAN_1.3.vcf"
+SVAN_INS="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.INS.SVAN_1.3.fixed.vcf"
 
 # path to the SVAN deletion annotations provided by Berni
-SVAN_DEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.DEL.SVAN_1.3.vcf"
+SVAN_DEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.DEL.SVAN_1.3.fixed.vcf"
 
 # path to the SVAN complex insertion annotations provided by Berni
-SVAN_COMPLEX_INS="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.COMPLEX-INS.SVAN_1.3.vcf"
+SVAN_COMPLEX_INS="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.COMPLEX-INS.SVAN_1.3.fixed.vcf"
 
 # path to the SVAN complex deletion annotations provided by Berni
-SVAN_COMPLEX_DEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.COMPLEX-DEL.SVAN_1.3.vcf"
+SVAN_COMPLEX_DEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.COMPLEX-DEL.SVAN_1.3.fixed.vcf"
 
 all: directory-tree gts extract-categories rausch-one qc
 
@@ -60,6 +60,8 @@ gts:
 	
 	bcftools concat $(PROJECT_DIR)/vcfs/INS.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf > $(PROJECT_DIR)/vcfs/INS.vcf
 	bcftools concat $(PROJECT_DIR)/vcfs/DEL.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf > $(PROJECT_DIR)/vcfs/DEL.vcf
+
+	rm $(PROJECT_DIR)/vcfs/INS.tmp.vcf $(PROJECT_DIR)/vcfs/DEL.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf
 
 extract-categories:
 	bcftools view -i "ITYPE_N='VNTR'" $(PROJECT_DIR)/vcfs/INS.vcf > $(PROJECT_DIR)/vcfs/VNTR.expansion.gts.vcf
