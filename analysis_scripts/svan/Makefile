@@ -53,15 +53,20 @@ gts:
 	tabix -p vcf $(PROJECT_DIR)/vcfs/svan-complex-ins-sorted.vcf.gz
 	tabix -p vcf $(PROJECT_DIR)/vcfs/svan-complex-del-sorted.vcf.gz
 
-	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-ins-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/INS.tmp.vcf
-	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-del-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/DEL.tmp.vcf
-	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-complex-ins-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf
-	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-complex-del-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf
+	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-ins-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort | bgzip -c > $(PROJECT_DIR)/vcfs/INS.tmp.vcf.gz
+	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-del-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort | bgzip -c > $(PROJECT_DIR)/vcfs/DEL.tmp.vcf.gz
+	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-complex-ins-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort | bgzip -c > $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf.gz
+	bcftools annotate -c INFO -a $(PROJECT_DIR)/vcfs/svan-complex-del-sorted.vcf.gz $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort | bgzip -c > $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf.gz
 	
-	bcftools concat -a $(PROJECT_DIR)/vcfs/INS.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf > $(PROJECT_DIR)/vcfs/INS.vcf
-	bcftools concat -a $(PROJECT_DIR)/vcfs/DEL.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf > $(PROJECT_DIR)/vcfs/DEL.vcf
+	tabix -p vcf $(PROJECT_DIR)/vcfs/INS.tmp.vcf.gz
+	tabix -p vcf $(PROJECT_DIR)/vcfs/DEL.tmp.vcf.gz
+	tabix -p vcf $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf.gz
+	tabix -p vcf $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf.gz
 
-	rm $(PROJECT_DIR)/vcfs/INS.tmp.vcf $(PROJECT_DIR)/vcfs/DEL.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf
+	bcftools concat -a $(PROJECT_DIR)/vcfs/INS.tmp.vcf.gz $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf.gz > $(PROJECT_DIR)/vcfs/INS.vcf
+	bcftools concat -a $(PROJECT_DIR)/vcfs/DEL.tmp.vcf.gz $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf.gz > $(PROJECT_DIR)/vcfs/DEL.vcf
+
+	rm $(PROJECT_DIR)/vcfs/INS.tmp.vcf.gz $(PROJECT_DIR)/vcfs/DEL.tmp.vcf.gz $(PROJECT_DIR)/vcfs/COMPLEX-INS.tmp.vcf.gz $(PROJECT_DIR)/vcfs/COMPLEX-DEL.tmp.vcf.gz
 
 extract-categories:
 	bcftools view -i "ITYPE_N='VNTR'" $(PROJECT_DIR)/vcfs/INS.vcf > $(PROJECT_DIR)/vcfs/VNTR.expansion.gts.vcf
