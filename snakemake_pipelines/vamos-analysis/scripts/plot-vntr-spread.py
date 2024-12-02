@@ -110,6 +110,7 @@ def run(hgsvc, ont, spread, output):
     #g = seaborn.JointGrid(x=hgsvc_counts, y=ont_counts, height=10, ratio=5)
     f.plot_marginals(seaborn.histplot, bins=range(0, 100))
     f.plot_joint(plt.hexbin, bins='log', gridsize=50, cmap='Blues')
+    f.ax_joint.tick_params(axis='both', labelsize=20)
     plt.axline((0,0), (100,100), linestyle='--', linewidth=2, color='black')
     for c, color in zip([5, 20, 50], ['red', 'orange', 'purple']):
         plt.axline((0,c), (100,100+c), linestyle='--', linewidth=2, color=color, alpha=0.5)
@@ -118,6 +119,7 @@ def run(hgsvc, ont, spread, output):
     f.fig.suptitle(f'PCC: {pearsonr(hgsvc_values_subset100, ont_values_subset100)[0]}', fontsize=30)
     cbar_ax = f.fig.add_axes([.95, .2, .02, .6])  # x, y, width, height
     plt.colorbar(cax=cbar_ax)
+    cbar_ax.tick_params(labelsize=20)
     f.savefig(f'{output}-subset100.svg')
     
     print()
