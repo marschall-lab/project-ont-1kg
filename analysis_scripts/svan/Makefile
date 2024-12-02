@@ -88,7 +88,7 @@ rausch-one:
 	delim="";\
 	paths="";\
 	names="";\
-	for path in vcfs/*.gts.vcf; do\
+	for path in $(PROJECT_DIR)/vcfs/*.gts.vcf; do\
 		name=$$(echo $$path | cut -d'/' -f 2);\
 		paths="$$paths$$delim$$path";\
 		names="$$names$$delim$$name";\
@@ -97,7 +97,7 @@ rausch-one:
 	python scripts/rausch-curves.py -vcfs $$paths -names $$names -sample-sheet sample_sheet.tsv -output $(PROJECT_DIR)/all;\
 	
 qc:
-	for path in vcfs/*.gts.vcf; do\
+	for path in $(PROJECT_DIR)/vcfs/*.gts.vcf; do\
 		name=$$(echo $$path | cut -d'/' -f 2);\
 		echo $${name};\
 		python scripts/qc-table-creation.py -sample-sheet sample_sheet.tsv -bi-panel ${BI_PANEL} -multi-panel ${MULTI_PANEL} -bi-callset $$path > $(PROJECT_DIR)/tables/$$name.tsv;\
