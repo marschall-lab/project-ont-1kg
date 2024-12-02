@@ -16,7 +16,7 @@ MULTI_PANEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/gi
 
 # Multiallelic genotypes produced by Giggles on the HPRC_mg_44+966 in the rule "merge_vcf_to_multisample" of "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/genotyping.smk" file
 # The above pipeline produced file has been processed using the analysis_scripts/genotyping Makefile
-AUGMENTED_GIGGLES_GTS_FILTERED="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/multisample-genotypes/biallelic.filtered.all-samples.vcf.gz"
+AUGMENTED_GIGGLES_GTS_FILTERED="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz"
 
 # path to the SVAN insertion annotations provided by Berni
 SVAN_INS="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.INS.SVAN_1.3.vcf"
@@ -38,9 +38,9 @@ remove:
 	
 # creates the inital directory structure where the output files can be stored
 directory-tree:
-	mkdir $(PROJECT_DIR)
-	mkdir $(PROJECT_DIR)/vcfs
-	mkdir $(PROJECT_DIR)/tables
+	mkdir -p $(PROJECT_DIR)
+	mkdir -p $(PROJECT_DIR)/vcfs
+	mkdir -p $(PROJECT_DIR)/tables
 	
 gts:
 	bcftools annotate -c INFO -a $(SVAN_INS) $(AUGMENTED_GIGGLES_GTS_FILTERED) | bcftools sort > $(PROJECT_DIR)/vcfs/INS.tmp.vcf
