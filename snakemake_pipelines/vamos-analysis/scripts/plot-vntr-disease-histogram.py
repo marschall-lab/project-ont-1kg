@@ -26,12 +26,13 @@ def get_statistics(stats):
                 if line.startswith('#'):
                     continue
                 line = line.rstrip().split('\t')
-                if check_vntr(disease_sites, line) == None:
+                name=check_vntr(disease_sites, line)
+                if name == None:
                     continue
                 num_ru = [int(i) for i in line[2].split(',') if i != '.']
                 bp = [int(i) for i in line[3].split(',') if i != '.']
-                num_rus[check_vntr].extend(num_ru)
-                bps[check_vntr].extend(bp)
+                num_rus[name].extend(num_ru)
+                bps[name].extend(bp)
                 break
     return num_rus, bps
 
