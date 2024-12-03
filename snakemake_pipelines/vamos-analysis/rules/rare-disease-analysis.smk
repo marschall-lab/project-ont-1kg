@@ -8,7 +8,7 @@ rule disease_vntr_histogram:
         'results/rare-disease-vntr-analysis/abca7-histogram.svg',
         'results/rare-disease-vntr-analysis/plin4-histogram.svg'
     params:
-        outdir='results/rare-disease-vntr-analysis/'
+        outdir='results/rare-disease-vntr-analysis/',
         hgsvc=','.join(list(expand('results/hgsvc3-comparison/vntr-calls/{sample}.stats', sample=hgsvc_sample_list_all))),
         ont=','.join(list(expand('results/vamos-t2t/{sample}.vcf', sample=cram_sample_list)))
     conda:

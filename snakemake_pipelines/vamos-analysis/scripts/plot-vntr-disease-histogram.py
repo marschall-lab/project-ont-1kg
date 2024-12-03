@@ -22,7 +22,6 @@ def get_statistics(stats):
     bps = {x: [] for x in disease_sites.keys()}
     for stat_file in stats.split(','):
         with open(stat_file, 'r') as file:
-            count += 1
             for line in file:
                 if line.startswith('#'):
                     continue
