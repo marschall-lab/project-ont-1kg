@@ -5,6 +5,7 @@ include: 'rules/hgsvc-qc.smk'
 include: 'rules/compare-vcf.smk'
 include: 'rules/vamos.smk'
 include: 'rules/analysis.smk'
+include: 'rules/rare-disease-analysis.smk'
 
 comaprison_samples = ['HG03499','HG03548']
 afs = ['0.1', '0.5', '1']
@@ -32,4 +33,6 @@ rule all:
         'results/hgsvc3-comparison/qc/ru-boxplot-pcc.svg',
         'results/vamos-multisample.vcf',
         'results/hgsvc3-comparison/hgsvc-vntr-summary.bed',
-        'results/hgsvc3-comparison/vntr-spread/max-full.svg'
+        'results/hgsvc3-comparison/vntr-spread/max-full.svg',
+        'results/rare-disease-vntr-analysis/abca7-histogram.svg',
+        'results/rare-disease-vntr-analysis/plin4-histogram.svg'
