@@ -2,7 +2,7 @@ import argparse
 import matplotlib.pyplot as plt
 
 def plot_histogram(h, o, output, title, bins):
-    fig, ax = plt.subplots(nrows=1, ncols=2)
+    fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(15, 15))
     # Plotting the RUs
     ax[0].hist(o[0], bins[0], density=True, facecolor='blue', alpha=0.5, label='ONT')
     ax[0].hist(h[0], bins[0], density=True, facecolor='green', alpha=0.5, label='HGSVC')
@@ -15,6 +15,7 @@ def plot_histogram(h, o, output, title, bins):
     ax[1].legend()
     ax[1].set_title(title+' (in base pairs)')
 
+    fig.tight_layout()
     plt.savefig(output)
     pass
 
