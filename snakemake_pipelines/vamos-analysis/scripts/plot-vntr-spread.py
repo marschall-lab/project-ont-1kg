@@ -64,10 +64,10 @@ def run(hgsvc, ont, spread, output):
 
     # Calculating the count of data for data lying either over y = x + c or under y = x - c
     # y = ONT, x = HGSVC
-    stats_full_ont = {5: 0, 10: 0, 20: 0, 50: 0}
-    stats_subset_ont = {5: 0, 10: 0, 20: 0, 50: 0}
-    stats_full_hgsvc = {5: 0, 10: 0, 20: 0, 50: 0}
-    stats_subset_hgsvc = {5: 0, 10: 0, 20: 0, 50: 0}
+    stats_full_ont = {5: 0, 20: 0, 50: 0}
+    stats_subset_ont = {5: 0, 20: 0, 50: 0}
+    stats_full_hgsvc = {5: 0, 20: 0, 50: 0}
+    stats_subset_hgsvc = {5: 0, 20: 0, 50: 0}
 
     hgsvc_values = []
     ont_values = []
