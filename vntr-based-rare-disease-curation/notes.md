@@ -9,12 +9,9 @@
 
 - For individuals with two alleles within the normal range (< 5720 bp, “wild-type”), distribution was similar between patients and controls (Fig. 2b). However, individuals carrying an allele > 5720 bp (“expanded”), were mostly patients [OR 4.5 (95% CI 1.3–24.2), p = 0.008, Fig. 2b]. Twenty patients (7.3%) carried an expanded VNTR allele in contrast to three controls (1.7%) (Table S2).
 
-## Notes about this study
-
-- 95% RU x Avg RU len gives around 5122bp which is <5720bp (considered as wildtype)
-
 Candidate VNTR from our sites list: chr19	1012105	1014401
 
+Conclusion: We have good information regarding the locus and the ONT data shows a greater spread than the HGSVC3 assemblies. Based on the high polymorphism we see in this site, this is a good example where the higher sample size of this study can be beneficial.
 
 # PLIN4 (https://doi.org/10.1007/s00401-020-02164-4)
 
@@ -23,9 +20,9 @@ Candidate VNTR from our sites list: chr19	1012105	1014401
 - PCR amplification of this exon in patient genomic DNA and muscle RNA revealed the wild-type band, and a second ~ 1000 bp higher band (Fig. 2a) not present in unaffected relatives or in 60 ethnic controls. The 31 × 33-aa amphipathic domain of perilipin-4 is encoded by 31 × 99 repetitive sequences in exon 3 [4]
 - We amplified cDNA from patient muscle RNA and obtained Oxford Nanopore long-read sequencing, which confirmed that the higher band is an expansion of the normal 31 × 99-nucleotide sequence to 40 × 99 bases, resulting in 297 (9 × 33) extra amino acids (Supplementary Fig. 5).
 
-
 Candidate VNTR from our sites list: chr19	4494323	4497243
 
+Conclusion: The study provides good information regarding disease-associated VNTR and the statistics obtained from the ONT data and the HGSVC3 assemblies show concordance. This is an interesting case where both datasets agree very well.
 
 # CACNA1C (https://doi.org/10.1016/j.ajhg.2018.07.011)
 
@@ -38,6 +35,7 @@ Candidate VNTR from our sites list: chr19	4494323	4497243
 
 Candidate VNTR from our sites list: chr12	2251595	2257324
 
+Conclusions: This is a very complex site and does not have straightforward association with the disease. In out analysis, we also do not consider all the motifs of this sites since their occurence is very low.
 
 # WDR7 (https://doi.org/10.1016/j.ajhg.2020.07.004)
 
@@ -52,3 +50,5 @@ Candidate VNTR from our sites list: chr12	2251595	2257324
 - WDR7 VNTR copy number distribution in the longest amplified alleles from individuals with sALS and sPD and control subjects obtained from the Coriell Institute. Repeat copy number is significantly higher in cases of ALS (median [IQR] = 17.5 [9–24], mean ± SD = 17.7 ± 10.4) versus control subjects (median [IQR] = 15 [8–21], mean ± SD = 15.2 ± 9.66; p = 0.0003; Mann-Whitney test).
 
 Candidate VNTR from our sites list: chr18	57226379	57227527
+
+Conclusion: The study does not provide robust statistics for disease-associated VNTR and hence we are not considering this for now. But it will be interesting to investigate this site later.
