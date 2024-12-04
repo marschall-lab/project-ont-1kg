@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 def plot_histogram(h, o, output, title):
     fig, ax = plt.subplots(nrows=1, ncols=1)
     plt.hist(o, 20, density=True, facecolor='blue', alpha=0.5, label='ONT')
-    plt.hist(h, 20, density=True, facecolor='gree', alpha=0.5, label='HGSVC')
+    plt.hist(h, 20, density=True, facecolor='green', alpha=0.5, label='HGSVC')
     plt.legend()
     plt.title(title)
     plt.savefig(output)
@@ -33,7 +33,6 @@ def get_statistics(stats):
                 bp = [int(i) for i in line[3].split(',') if i != '.']
                 num_rus[name].extend(num_ru)
                 bps[name].extend(bp)
-                break
     return num_rus, bps
 
 def run(hgsvc, ont, output):
