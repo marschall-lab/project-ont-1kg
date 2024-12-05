@@ -30,9 +30,6 @@ SVAN_COMPLEX_INS="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-o
 # path to the SVAN complex deletion annotations provided by Berni
 SVAN_COMPLEX_DEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.COMPLEX-DEL.SVAN_1.3.fixed.vcf"
 
-# making the map IDs between the augmented graph bubbles and decomposed SVs
-AUGMENTED_MAP_ID="$
-
 
 all: directory-tree gts extract-categories rausch-one qc
 

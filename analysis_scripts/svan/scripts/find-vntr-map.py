@@ -19,10 +19,10 @@ def read_map(map):
         bub_id_to_allele_id_map[bub_id] = allele_ids
         for a in allele_ids:
             allele_id_to_bub_id_map[a] = bub_id
-        if len(allele_ids) == 2:
+        if len(allele_ids) == 1:
             is_bub_biallelic[bub_id] = True
         else:
-            assert len(allele_ids) > 2
+            assert len(allele_ids) > 1
             is_bub_biallelic[bub_id] = False
     map_reader.close()
 
