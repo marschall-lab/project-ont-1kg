@@ -1,17 +1,21 @@
 import argparse
 import matplotlib.pyplot as plt
 
-def plot_histogram(h, o, output, title, bins):
+def plot_histogram(h, o, output, title, bins, y_line):
     fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(7, 7))
     # Plotting the RUs
-    ax[0].hist(o[0], bins[0], density=True, facecolor='blue', alpha=0.5, label='ONT')
-    ax[0].hist(h[0], bins[0], density=True, facecolor='green', alpha=0.5, label='HGSVC')
+    ax[0].hist(o[0], bins[0], density=True, facecolor='#377eb8', alpha=0.5, label='ONT')
+    ax[0].hist(h[0], bins[0], density=True, facecolor='#ff7f00', alpha=0.5, label='HGSVC')
+    if y_line[0] != None:
+        ax[0].axvline(x=y_line[0], linestyle='--', linewidth=0.5)
     ax[0].legend()
     ax[0].set_title(title+' (in RUs)')
     
     # Plotting the base pairs
-    ax[1].hist(o[1], bins[1], density=True, facecolor='blue', alpha=0.5, label='ONT')
-    ax[1].hist(h[1], bins[1], density=True, facecolor='green', alpha=0.5, label='HGSVC')
+    ax[1].hist(o[1], bins[1], density=True, facecolor='#377eb8', alpha=0.5, label='ONT')
+    ax[1].hist(h[1], bins[1], density=True, facecolor='#ff7f00', alpha=0.5, label='HGSVC')
+    if y_line[1] != None:
+        ax[1].axvline(x=y_line[1], linestyle='--', linewidth=0.5)
     ax[1].legend()
     ax[1].set_title(title+' (in base pairs)')
 
@@ -51,12 +55,12 @@ def run(hgsvc, ont, output):
     # plotting the ABCA7 basepairs
     bins_bps = [500*i for i in range(21)]
     bins_num_rus = [i for i in range(0, 401, 20)]
-    plot_histogram(h=(hgsvc_num_rus['ABCA7'], hgsvc_bps['ABCA7']), o=(ont_num_rus['ABCA7'], ont_bps['ABCA7']), output=output+'abca7-histogram.svg', title='ABCA7', bins=(bins_num_rus, bins_bps))
+    plot_histogram(h=(hgsvc_num_rus['ABCA7'], hgsvc_bps['ABCA7']), o=(ont_num_rus['ABCA7'], ont_bps['ABCA7']), output=output+'abca7-histogram.svg', title='ABCA7', bins=(bins_num_rus, bins_bps), y_line=(None, 5720))
 
     # plotting the PLIN4 RUs
     bins_num_rus = [i for i in range(10, 45, 2)]
     bins_bps = [i for i in range(1000, 4401, 200)]
-    plot_histogram(h=(hgsvc_num_rus['PLIN4'], hgsvc_bps['PLIN4']), o=(ont_num_rus['PLIN4'], ont_bps['PLIN4']), output=output+'plin4-histogram.svg', title='PLIN4', bins=(bins_num_rus, bins_bps))
+    plot_histogram(h=(hgsvc_num_rus['PLIN4'], hgsvc_bps['PLIN4']), o=(ont_num_rus['PLIN4'], ont_bps['PLIN4']), output=output+'plin4-histogram.svg', title='PLIN4', bins=(bins_num_rus, bins_bps), y_line=(40, None))
 
 
 if __name__=='__main__':
