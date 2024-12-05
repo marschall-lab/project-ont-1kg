@@ -6,7 +6,7 @@ def plot_histogram(h, o, output, title, bins, y_line):
     # Plotting the RUs
     ax[0].hist(o[0], bins[0], density=True, facecolor='#377eb8', alpha=0.5, label='ONT')
     ax[0].hist(h[0], bins[0], density=True, facecolor='#ff7f00', alpha=0.5, label='HGSVC')
-    ax[0].hist([0], bins[0], density=True, facecolor='#9B7F5C', alpha=0.5, label='Both')
+    ax[0].hist([20000], bins[0], density=True, facecolor='#cc9d6d', alpha=1, label='Both')
     if y_line[0] != None:
         ax[0].axvline(x=y_line[0], color='black', linestyle='--', linewidth=1)
     ax[0].legend()
@@ -15,7 +15,7 @@ def plot_histogram(h, o, output, title, bins, y_line):
     # Plotting the base pairs
     ax[1].hist(o[1], bins[1], density=True, facecolor='#377eb8', alpha=0.5, label='ONT')
     ax[1].hist(h[1], bins[1], density=True, facecolor='#ff7f00', alpha=0.5, label='HGSVC')
-    ax[1].hist([0], bins[1], density=True, facecolor='#9B7F5C', alpha=0.5, label='Both')
+    ax[1].hist([20000], bins[1], density=True, facecolor='#cc9d6d', alpha=1, label='Both')
     if y_line[1] != None:
         ax[1].axvline(x=y_line[1], color='black', linestyle='--', linewidth=1)
     ax[1].legend()
