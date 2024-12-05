@@ -30,6 +30,10 @@ SVAN_COMPLEX_INS="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-o
 # path to the SVAN complex deletion annotations provided by Berni
 SVAN_COMPLEX_DEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.COMPLEX-DEL.SVAN_1.3.fixed.vcf"
 
+# making the map IDs between the augmented graph bubbles and decomposed SVs
+AUGMENTED_MAP_ID="$
+
+
 all: directory-tree gts extract-categories rausch-one qc
 
 # removes all the files and folders made during the execution of the script
@@ -41,6 +45,7 @@ directory-tree:
 	mkdir -p $(PROJECT_DIR)
 	mkdir -p $(PROJECT_DIR)/vcfs
 	mkdir -p $(PROJECT_DIR)/tables
+	mkdir -p $(PROJECT_DIR)/statistics
 
 gts:
 	bcftools sort $(SVAN_INS) | bgzip -c > $(PROJECT_DIR)/vcfs/svan-ins-sorted.vcf.gz
@@ -102,3 +107,8 @@ qc:
 		echo $${name};\
 		python scripts/qc-table-creation.py -sample-sheet sample_sheet.tsv -bi-panel ${BI_PANEL} -multi-panel ${MULTI_PANEL} -bi-callset $$path > $(PROJECT_DIR)/tables/$$name.tsv;\
 	done
+
+# breaking down VNTRs from SVAN as multiallelic or biallelic
+vntr-stratification:
+	python scripts/map-bub-ids-to-allele-ids.py -vcf $(MULTI_PANEL) > $(PROJECT_DIR)/map-bub_ids-to-allele_ids.tsv
+	python scripts/find-vntr-map.py -con $(PROJECT_DIR)/vcfs/VNTR.contraction.gts.vcf -exp $(PROJECT_DIR)/vcfs/VNTR.expansion.gts.vcf -map $(PROJECT_DIR)/map-bub_ids-to-allele_ids.tsv > $(PROJECT_DIR)/statistics/vntr-map.stats
