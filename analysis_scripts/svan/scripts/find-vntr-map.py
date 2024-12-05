@@ -50,11 +50,23 @@ all_sv_ids = deletion_sv_ids+insertion_sv_ids
 biallelic_vntr_count=0
 multiallelic_vntr_count=0
 
-for sv in all_sv_ids:
+for sv in deletion_sv_ids:
     if is_bub_biallelic[allele_id_to_bub_id_map[sv]]:
         biallelic_vntr_count+=1
     else:
         multiallelic_vntr_count+=1
 
-print(f'Biallelic VNTRS: {biallelic_vntr_count}')
-print(f'Multiallelic VNTRS: {multiallelic_vntr_count}')
+print(f'Biallelic VNTR Contractions: {biallelic_vntr_count}')
+print(f'Multiallelic VNTR Contractions: {multiallelic_vntr_count}')
+
+biallelic_vntr_count=0
+multiallelic_vntr_count=0
+
+for sv in insertion_sv_ids:
+    if is_bub_biallelic[allele_id_to_bub_id_map[sv]]:
+        biallelic_vntr_count+=1
+    else:
+        multiallelic_vntr_count+=1
+
+print(f'Biallelic VNTR Expansions: {biallelic_vntr_count}')
+print(f'Multiallelic VNTR Expansions: {multiallelic_vntr_count}')
