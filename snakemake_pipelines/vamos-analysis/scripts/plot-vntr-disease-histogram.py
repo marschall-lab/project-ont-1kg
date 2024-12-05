@@ -7,7 +7,7 @@ def plot_histogram(h, o, output, title, bins, y_line):
     ax[0].hist(o[0], bins[0], density=True, facecolor='#377eb8', alpha=0.5, label='ONT')
     ax[0].hist(h[0], bins[0], density=True, facecolor='#ff7f00', alpha=0.5, label='HGSVC')
     if y_line[0] != None:
-        ax[0].axvline(x=y_line[0], linestyle='--', linewidth=0.5)
+        ax[0].axvline(x=y_line[0], color='black', linestyle='--', linewidth=1)
     ax[0].legend()
     ax[0].set_title(title+' (in RUs)')
     
@@ -15,7 +15,7 @@ def plot_histogram(h, o, output, title, bins, y_line):
     ax[1].hist(o[1], bins[1], density=True, facecolor='#377eb8', alpha=0.5, label='ONT')
     ax[1].hist(h[1], bins[1], density=True, facecolor='#ff7f00', alpha=0.5, label='HGSVC')
     if y_line[1] != None:
-        ax[1].axvline(x=y_line[1], linestyle='--', linewidth=0.5)
+        ax[1].axvline(x=y_line[1], color='black', linestyle='--', linewidth=1)
     ax[1].legend()
     ax[1].set_title(title+' (in base pairs)')
 
