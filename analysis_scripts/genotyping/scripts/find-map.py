@@ -31,7 +31,7 @@ def read_map(map):
 
 def get_sv_ids(vcf):
     sv_ids = []
-    vcf_reader = gzip.open(vcf, 'rb')
+    vcf_reader = gzip.open(vcf, 'rt')
     for line in vcf_reader:
         if line[0] == '#':
             continue
@@ -63,8 +63,8 @@ for sv in sv_ids:
         multiallelic_sv_count+=1
         print(sv, file=multi_writer)
 
-print(f'Biallelic VNTR Contractions: {biallelic_sv_count}', file=stat_writer)
-print(f'Multiallelic VNTR Contractions: {multiallelic_sv_count}', file=stat_writer)
+print(f'Biallelic SVs: {biallelic_sv_count}', file=stat_writer)
+print(f'Multiallelic SVs: {multiallelic_sv_count}', file=stat_writer)
 
 stat_writer.close()
 bi_writer.close()
