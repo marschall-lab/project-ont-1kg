@@ -90,7 +90,7 @@ def run(bed=None, panel=None, callset=None, outdir=None):
     width = 0.4
     multiplier = 0
 
-    fig, ax = plt.subplots(layout='constrained', figsize=(10,10))
+    fig, ax = plt.subplots(layout='constrained', figsize=(7,7))
 
     for x, y in sv_numbers.items():
         offset = width*multiplier
@@ -106,7 +106,7 @@ def run(bed=None, panel=None, callset=None, outdir=None):
     plt.savefig(outdir+'counts.svg')
     
     # Plotting length histograms
-    fig, ax = plt.subplots(1, 3, figsize=(30,10), tight_layout=True, sharey=True)
+    fig, ax = plt.subplots(1, 3, figsize=(15,5), tight_layout=True, sharey=True)
     
     for index, type in enumerate(['INS', 'DEL', 'COMPLEX']):
         ax[index].hist(sv_in_panel[type], bins=range(0, max(sv_in_panel[type])+1000, 1000), color='blue')
