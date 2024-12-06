@@ -45,17 +45,17 @@ PHASED_GTS_DIR="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont
 
 ### Derived variables. These are files that will be produced as a result.
 
-ORIGINAL_GIGGLES_GTS_FILTERED="$$(ORIGINAL_GIGGLES_GTS_DIR)/biallelic.filtered.all-samples.vcf.gz"
-AUGMENTED_GIGGLES_GTS_FILTERED="$$(AUGMENTED_GIGGLES_GTS_DIR)/biallelic.filtered.all-samples.vcf.gz"
+ORIGINAL_GIGGLES_GTS_FILTERED=$(ORIGINAL_GIGGLES_GTS_DIR)/biallelic.filtered.all-samples.vcf.gz
+AUGMENTED_GIGGLES_GTS_FILTERED=$(AUGMENTED_GIGGLES_GTS_DIR)/biallelic.filtered.all-samples.vcf.gz
 
-ORIGINAL_MAP_ID="$$(ORIGINAL_GIGGLES_GTS_DIR)/map-bub_ids-to-allele_ids.tsv"
-AUGMENTED_MAP_ID="$$(AUGMENTED_GIGGLES_GTS_DIR)/map-bub_ids-to-allele_ids.tsv"
+ORIGINAL_MAP_ID=$(ORIGINAL_GIGGLES_GTS_DIR)/map-bub_ids-to-allele_ids.tsv
+AUGMENTED_MAP_ID=$(AUGMENTED_GIGGLES_GTS_DIR)/map-bub_ids-to-allele_ids.tsv
 
-PHASED_GTS_TAGGED="$$(PHASED_GTS_DIR)/phased.gts.tagged.vcf.gz"
+PHASED_GTS_TAGGED=$(PHASED_GTS_DIR)/phased.gts.tagged.vcf.gz
 
 # QC Tables
-PHASED_GTS_QC_TABLE="$$(PHASED_GTS_DIR)/phased.qc.tsv"
-AUGMENTED_GIGGLES_GTS_FILTERED_QC_TABLE="$$(AUGMENTED_GIGGLES_GTS_DIR)/filtered.qc.tsv"
+PHASED_GTS_QC_TABLE=$(PHASED_GTS_DIR)/phased.qc.tsv
+AUGMENTED_GIGGLES_GTS_FILTERED_QC_TABLE="$$(AUGMENTED_GIGGLES_GTS_DIR)/filtered.qc.tsv
 
 # removes all the files and folders made during the execution of the script
 remove:

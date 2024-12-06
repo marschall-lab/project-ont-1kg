@@ -1,4 +1,5 @@
 import argparse
+import gzip
 
 parser = argparse.ArgumentParser(prog='find-map.py', description="Find maps from biallelic and multiallelic bubbles")
 parser.add_argument('-vcf', metavar='vcf', help='Biallelic VCF')
@@ -30,7 +31,7 @@ def read_map(map):
 
 def get_sv_ids(vcf):
     sv_ids = []
-    vcf_reader = open(vcf, 'r')
+    vcf_reader = gzip.open(vcf, 'rb')
     for line in vcf_reader:
         if line[0] == '#':
             continue
