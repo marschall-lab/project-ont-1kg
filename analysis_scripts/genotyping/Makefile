@@ -128,4 +128,5 @@ mendelian-consistency:
 
 # some statistics for the paper
 get-statistics:
-	python scripts/find-map.py -map $(AUGMENTED_MAP_ID) -vcf $(PHASED_GTS) -outdir $(PROJECT_DIR)/statistics/
+	python scripts/find-map.py -map $(AUGMENTED_MAP_ID) -vcf $(PHASED_GTS) -outdir $(PROJECT_DIR)/statistics/phased
+	python scripts/find-map.py -map $(AUGMENTED_MAP_ID) -vcf $(AUGMENTED_GIGGLES_GTS_FILTERED) -outdir $(PROJECT_DIR)/statistics/unphased
