@@ -56,6 +56,8 @@ bi_writer = open(args.outdir+'biallelic-sv-ids.txt', 'w')
 multi_writer = open(args.outdir+'multiallelic-sv-ids.txt', 'w')
 
 for sv in sv_ids:
+    if 'SNV' in sv:
+        continue
     if is_bub_biallelic[allele_id_to_bub_id_map[sv]]:
         biallelic_sv_count+=1
         print(sv, file=bi_writer)
