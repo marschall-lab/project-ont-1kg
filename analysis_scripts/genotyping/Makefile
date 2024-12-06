@@ -59,7 +59,7 @@ AUGMENTED_GIGGLES_GTS_FILTERED_QC_TABLE="$$(AUGMENTED_GIGGLES_GTS_DIR)/filtered.
 
 # removes all the files and folders made during the execution of the script
 remove:
-	rm -r $(PROJECT_DIR)/plots $(PHASED_GTS_DIR)/plots $(AUGMENTED_GIGGLES_GTS_DIR)/plots $(ORIGINAL_GIGGLES_GTS_DIR)/plots $(AUGMENTED_GIGGLES_GTS_DIR)/mendelian-consistency
+	rm -r $(PROJECT_DIR)/statistics $(PROJECT_DIR)/plots $(PHASED_GTS_DIR)/plots $(AUGMENTED_GIGGLES_GTS_DIR)/plots $(ORIGINAL_GIGGLES_GTS_DIR)/plots $(AUGMENTED_GIGGLES_GTS_DIR)/mendelian-consistency
 	rm sample-lists/*.svg
 	rm $(ORIGINAL_GIGGLES_GTS_FILTERED)
 	rm $(AUGMENTED_GIGGLES_GTS_FILTERED)
@@ -71,12 +71,13 @@ remove:
 
 # creates the inital directory structure where the output files can be stored
 directory-tree:
-	mkdir $(PROJECT_DIR)
-	mkdir $(PROJECT_DIR)/plots
-	mkdir $(PHASED_GTS_DIR)/plots
-	mkdir $(AUGMENTED_GIGGLES_GTS_DIR)/plots
-	mkdir $(ORIGINAL_GIGGLES_GTS_DIR)/plots
-	mkdir $(AUGMENTED_GIGGLES_GTS_DIR)/mendelian-consistency
+	mkdir -p $(PROJECT_DIR)
+	mkdir -p $(PROJECT_DIR)/statistics
+	mkdir -p $(PROJECT_DIR)/plots
+	mkdir -p $(PHASED_GTS_DIR)/plots
+	mkdir -p $(AUGMENTED_GIGGLES_GTS_DIR)/plots
+	mkdir -p $(ORIGINAL_GIGGLES_GTS_DIR)/plots
+	mkdir -p $(AUGMENTED_GIGGLES_GTS_DIR)/mendelian-consistency
 
 # creating a map between the bubble ids and allele ids
 map-ids:
@@ -124,3 +125,7 @@ venn-diagram:
 mendelian-consistency:
 	bash scripts/mendelian-check.sh $(AUGMENTED_MAP_ID) $(AUGMENTED_GIGGLES_GTS_FILTERED) $(AUGMENTED_GIGGLES_GTS_DIR)/mendelian-consistency
 	python scripts/mendelian-consistency-upsetplot.py -children NA19828,HG01258,HG00420,NA19129,NA12877,NA12878 -out $(AUGMENTED_GIGGLES_GTS_DIR)/mendelian-consistency
+
+# some statistics for the paper
+get-statistics:
+	python scripts/find-map.py -map $(AUGMENTED_MAP_ID) -vcf $(PHASED_GTS) -outdir $(PROJECT_DIR)/statistics/
