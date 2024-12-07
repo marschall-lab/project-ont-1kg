@@ -30,6 +30,9 @@ SVAN_COMPLEX_INS="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-o
 # path to the SVAN complex deletion annotations provided by Berni
 SVAN_COMPLEX_DEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.COMPLEX-DEL.SVAN_1.3.fixed.vcf"
 
+# path to the list of VNTR sites given to vamos for the pipeline in snakemake_pipelines/vamos-analysis.
+# the output of the rule process_t2t_sites_list in rules/vamos.smk
+VAMOS_SITES="/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/vamos-analysis/results/temp/vamos.T2T.processed.tsv"
 
 all: directory-tree gts extract-categories rausch-one qc
 
@@ -109,3 +112,9 @@ qc:
 vntr-stratification:
 	python scripts/map-bub-ids-to-allele-ids.py -vcf $(MULTI_PANEL) > $(PROJECT_DIR)/map-bub_ids-to-allele_ids.tsv
 	python scripts/find-vntr-map.py -con $(PROJECT_DIR)/vcfs/VNTR.contraction.gts.vcf -exp $(PROJECT_DIR)/vcfs/VNTR.expansion.gts.vcf -map $(PROJECT_DIR)/map-bub_ids-to-allele_ids.tsv > $(PROJECT_DIR)/statistics/vntr-map.stats
+
+intersect-with-vamos:
+	bcftools view -i "ITYPE_N='DUP'" $(PROJECT_DIR)/vcfs/INS.vcf > $(PROJECT_DIR)/statistics/DUP.gts.vcf
+	bedtools intersect -a $(VAMOS_SITES) -b $(PROJECT_DIR)/statistics/DUP.gts.vcf > $(PROJECT_DIR)/statistics/dup-instersection.bed
+	bedtools intersect -a $(VAMOS_SITES) -b $(PROJECT_DIR)/vcfs/VNTR.expansion.gts.vcf > $(PROJECT_DIR)/statistics/vntr-exp-instersection.bed
+	bedtools intersect -a $(VAMOS_SITES) -b $(PROJECT_DIR)/vcfs/VNTR.contraction.gts.vcf > $(PROJECT_DIR)/statistics/vntr-con-instersection.bed
