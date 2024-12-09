@@ -8,5 +8,5 @@ out=$3
 
 # on the filtered genotypes
 for i in 0 1 2 3 4 5; do
-    python scripts/check-mendelian-consistency.py -map $(map) -vcf $(vcf) -child ${trioChild[$i]} -father ${trioPaternal[$i]} -mother ${trioMaternal[$i]} -out $(out) > $(out)/${trioChild[$i]}.log;
+    python scripts/check-mendelian-consistency.py -map $map -vcf $vcf -child ${trioChild[$i]} -father ${trioPaternal[$i]} -mother ${trioMaternal[$i]} -out $out > $out/{$trioChild[$i]}.log;
 done;
