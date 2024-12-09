@@ -8,8 +8,8 @@ Please refer to the `Makefile` for details on each section and the analysis done
 
 - python=3.9.18
 - bcftools=1.19
-- tabix=
-- bedtools=
+- tabix=1.20
+- bedtools=2.31.1
 - cyvcf2=0.30.22
 - numpy=1.24.4
 - scipy=1.8.1
