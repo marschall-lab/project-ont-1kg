@@ -20,10 +20,10 @@ reference_directory: "/gpfs/project/projects/medbioinf/users/spani/files/ref/"
 
 # path to the haplotags. The haplotags should be present in the following format: <path to haplotags>/<sample name>/<sample name>.tsv
 # these files are produced by the haplotagging pipeline
-path_to_haplotags: ''
+path_to_haplotags: '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/'
 
 # path to the directory containing HPRC Year 1 assemblies.
-# they can be downloaded from
+# refer to https://github.com/human-pangenomics/HPP_Year1_Assemblies on how to download them and prepare them
 # the files inside the folder have to be of the format <sample name>.<haplotype number>.fa where haplotype number is 1 or 2.
 path_to_hprc_assemblies: '/gpfs/project/projects/medbioinf/users/spani/files/fasta/HPRC/Assemblies_Yr1/'
 

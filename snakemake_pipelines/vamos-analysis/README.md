@@ -1,5 +1,11 @@
 # Description of the Pipeline
 
+- We run vamos on the entire cohort of 1019 samples and produce VNTR genotypes.
+- We run vamos on the HGSVC3 assemblies for 64 samples and produce VNTR genotypes.
+- We run quality checks using the 16 overlapping samples.
+- We investigate the diversity of VNTRs in the two datasets.
+
+Currently not used for the studies due to better alternative methods.
 - Doing the Vamos Analysis for VNTRs using our aligned BAMs with the sites list from Gustafson, Gibson, Damaraju et al, 2024.
 - Generated Vamos results for the ONT data and compared the two VCFs with the overlapping samples (HG03499, HG03548).
 

@@ -10,7 +10,7 @@ reference_directory: "/gpfs/project/projects/medbioinf/users/spani/files/ref/"
 
 # path to the haplotags. The haplotags should be present in the following format: <path to haplotags>/<sample name>/<sample name>.tsv
 # these files are produced by the haplotagging pipeline
-path_to_haplotags: ''
+path_to_haplotags: '/gpfs/project/projects/medbioinf/users/spani/results/1000GP/haplotagging-results/GRCh38/'
 
 # path to the directory containing HPRC Year 1 assemblies.
 # they can be downloaded from

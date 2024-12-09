@@ -34,7 +34,7 @@ SVAN_COMPLEX_DEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-o
 # the output of the rule process_t2t_sites_list in rules/vamos.smk
 VAMOS_SITES="/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/vamos-analysis/results/temp/vamos.T2T.processed.tsv"
 
-all: directory-tree gts extract-categories rausch-one qc
+all: directory-tree gts extract-categories rausch-one qc vntr-stratification intersect-with-vamos
 
 # removes all the files and folders made during the execution of the script
 remove:

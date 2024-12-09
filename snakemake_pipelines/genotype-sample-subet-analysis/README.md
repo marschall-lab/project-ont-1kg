@@ -4,7 +4,6 @@
 - The pipeline looks at the following
     - The quality of the genotypes (before the population phasing step by ShapeIt5)
     - Difference in SVs discovered vs genotyped
-    - [TODO] Downsampling and genotyping of high coverage samples to show effects of downsampling.
 
 ## System Requirements
 

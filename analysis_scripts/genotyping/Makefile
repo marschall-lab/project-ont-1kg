@@ -57,6 +57,8 @@ PHASED_GTS_TAGGED=$(PHASED_GTS_DIR)/phased.gts.tagged.vcf.gz
 PHASED_GTS_QC_TABLE=$(PHASED_GTS_DIR)/phased.qc.tsv
 AUGMENTED_GIGGLES_GTS_FILTERED_QC_TABLE="$$(AUGMENTED_GIGGLES_GTS_DIR)/filtered.qc.tsv
 
+all: directory-tree map-ids filtering tag-phased-vcf qc-table boxplot rausch-curves hwe-af growth-curves venn-diagram mendelian-consistency get-statistics
+
 # removes all the files and folders made during the execution of the script
 remove:
 	rm -r $(PROJECT_DIR)/statistics $(PROJECT_DIR)/plots $(PHASED_GTS_DIR)/plots $(AUGMENTED_GIGGLES_GTS_DIR)/plots $(ORIGINAL_GIGGLES_GTS_DIR)/plots $(AUGMENTED_GIGGLES_GTS_DIR)/mendelian-consistency

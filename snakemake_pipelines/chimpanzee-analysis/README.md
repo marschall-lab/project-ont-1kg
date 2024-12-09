@@ -1,6 +1,6 @@
 # Description of the Pipeline
 
-- Using minigraph/graphaligner, the chimp reference is aligned to the rGFA created in the graph augmentation part of the SAGA pipeline described.
+- Using minigraph, the chimp reference is aligned to the rGFA created in the graph augmentation part of the SAGA pipeline described.
 - From the alignment, the alleles traversing the bubbles are extracted and then converted into a haploid VCF.
 - The VCF is then processed into a BED file containing the information about the ancestral allele found in the chimp for each bubble.
 
@@ -9,7 +9,7 @@
 - python=3.12.2
 - snakemake=7.32.4
 - conda=24.7.1
-- giggles=1.1
+- giggles (commit ID: [fd13a89682dbb3ebaabfa9eb68e6d3dc63638af4](https://github.com/samarendra-pani/giggles/tree/fd13a89682dbb3ebaabfa9eb68e6d3dc63638af4))
 - gaftools (commit ID: [feaf7f45456fe49285fbfbd8e7cf1d2256dde65e](https://github.com/marschall-lab/gaftools/tree/feaf7f45456fe49285fbfbd8e7cf1d2256dde65e))
 
 ## Installation Guide
@@ -27,6 +27,7 @@ The following packages need installation:
 - giggles
     - link to github: https://github.com/samarendra-pani/giggles
     - for this pipeline, giggles needs to be installed in a conda environment called `giggles-env`. Instructions on conda installation is provided in the github wiki.
+    - NOTE: This pipeline uses a later developmental commit of giggles which has the added subcommand of preparing phased panels. Users can download this development version and use it for the genotyping as well since this commit makes no changes to the genotyping algorithm.
 
 ## Instructions for use
 
