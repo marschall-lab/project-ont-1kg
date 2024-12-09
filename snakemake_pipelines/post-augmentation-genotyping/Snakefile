@@ -20,10 +20,4 @@ rule all:
                     callset = [c for c in config['callsets'].keys()], 
                     representation=['biallelic', 'multiallelic'], 
                     min_af=['0', '0.05', '0.1', '0.2'], 
-                    max_af=['1']),
-        #expand('results/{callset}/callset-comparison/out-graph/{sample}-{min_af}-{max_af}/intersection-upsetplot.pdf', callset = [c for c in config['callsets'].keys()], sample = config['hgsvc_samples'], min_af=['0'], max_af=['1']),
-        #expand('results/{callset}/callset-comparison/in-graph/HG01258-{min_af}-{max_af}/intersection-upsetplot.pdf', callset = [c for c in config['callsets'].keys()], min_af=['0'], max_af=['1']),
-        #expand('results/{callset}/truvari-comparison/out-graph/{sample}-{source}-{min_af}-{max_af}/summary.json', callset = [c for c in config['callsets'].keys()], sample = config['hgsvc_samples'], source = ['pangenie'], min_af=['0'], max_af=['1']),
-        #expand('results/{callset}/truvari-comparison-lenient/out-graph/{sample}-{source}-{min_af}-{max_af}/summary.json', callset = [c for c in config['callsets'].keys()], sample = config['hgsvc_samples'], source = ['pangenie'], min_af=['0'], max_af=['1']),
-        #expand('results/{callset}/truvari-comparison/in-graph/HG01258-{source}-{min_af}-{max_af}/summary.json', callset = [c for c in config['callsets'].keys()], source = ['pangenie', 'pangenie_panel', 'giggles_panel'], min_af=['0'], max_af=['1']),
-        
+                    max_af=['1'])

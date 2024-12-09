@@ -63,10 +63,7 @@ rule all:
     input:
         expand('results/GRCh38/{sample}/{sample}.tsv', sample=female_samples),
         expand('results/GRCh38/{sample}/{sample}.tsv', sample=male_samples),
-        'results/GRCh38/sample_sex.tsv',
-        #'results/GRCh38/qc/summary.tsv',
-        #expand('results/GRCh38/qc/{sample}_absent-read-stats.tsv', sample=all_samples)
-        
+        'results/GRCh38/sample_sex.tsv'
 
 ############################
 ##### Merge NYGC VCFs ######
