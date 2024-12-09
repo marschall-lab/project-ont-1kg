@@ -1,0 +1,1 @@
+This directory hosts the old code that has been repackaged as other snakemake pipelines or deprecated.
