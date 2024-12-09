@@ -104,8 +104,8 @@ rausch-one:
 qc:
 	for path in $(PROJECT_DIR)/vcfs/*.gts.vcf; do\
 		name=$$(echo $$path | cut -d'/' -f 3);\
-		echo ${name};\
-		python scripts/qc-table-creation.py -sample-sheet sample_sheet.tsv -bi-panel ${BI_PANEL} -multi-panel ${MULTI_PANEL} -bi-callset $(path) > $(PROJECT_DIR)/tables/$$name.tsv;\
+		echo $${name};\
+		python scripts/qc-table-creation.py -sample-sheet sample_sheet.tsv -bi-panel ${BI_PANEL} -multi-panel ${MULTI_PANEL} -bi-callset $$path > $(PROJECT_DIR)/tables/$$name.tsv;\
 	done
 
 # breaking down VNTRs from SVAN as multiallelic or biallelic
