@@ -1,6 +1,6 @@
 # 1000 Genomes ONT Sequencing
 ## Project overview
-![overview_figure](https://github.com/marschall-lab/project-ont-1kg/blob/main/figures/ont-1kg-overview.png)
+![overview_figure](https://github.com/marschall-lab/project-ont-1kg/blob/main/figures/SAGA-framework.png)
 
 ## Source of graph
 ```
