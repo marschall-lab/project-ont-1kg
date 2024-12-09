@@ -84,9 +84,9 @@ extract-categories:
 
 rausch-separate:
 	for path in $(PROJECT_DIR)/vcfs/*.gts.vcf; do\
-		name=$$(echo $$(path) | cut -d'/' -f 2);\
+		name=$$(echo $$path | cut -d'/' -f 3);\
 		echo $${name};\
-		python scripts/rausch-curves.py -vcfs $$(path) -names $$(name) -sample-sheet sample_sheet.tsv -output $(PROJECT_DIR)/$$(name);\
+		python scripts/rausch-curves.py -vcfs $$path -names $$name -sample-sheet sample_sheet.tsv -output $(PROJECT_DIR)/$$name;\
 	done
 	
 rausch-one:
@@ -94,16 +94,16 @@ rausch-one:
 	paths="";\
 	names="";\
 	for path in $(PROJECT_DIR)/vcfs/*.gts.vcf; do\
-		name=$(echo $$path | cut -d'/' -f 2);\
-		paths="$(paths)$(delim)$(path)";\
-		names="$(names)$(delim)$(name)";\
+		name=$$(echo $$path | cut -d'/' -f 3);\
+		paths="$$paths$$delim$$path";\
+		names="$$names$$delim$$name";\
 		delim=",";\
 	done;\
-	python scripts/rausch-curves.py -vcfs $(paths) -names $(names) -sample-sheet sample_sheet.tsv -output $(PROJECT_DIR)/all;\
+	python scripts/rausch-curves.py -vcfs $$paths -names $$names -sample-sheet sample_sheet.tsv -output $(PROJECT_DIR)/all;\
 	
 qc:
 	for path in $(PROJECT_DIR)/vcfs/*.gts.vcf; do\
-		name=$(echo $$path | cut -d'/' -f 2);\
+		name=$$(echo $$path | cut -d'/' -f 3);\
 		echo ${name};\
 		python scripts/qc-table-creation.py -sample-sheet sample_sheet.tsv -bi-panel ${BI_PANEL} -multi-panel ${MULTI_PANEL} -bi-callset $(path) > $(PROJECT_DIR)/tables/$$name.tsv;\
 	done
