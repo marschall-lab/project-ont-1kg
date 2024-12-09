@@ -6,33 +6,33 @@ SHELL=/bin/bash
 CONDA_ACTIVATE=source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ; conda activate
 
 # Main project directory where all the files are present and where to put the results plots
-PROJECT_DIR="results/"
+PROJECT_DIR=results
 
 # These are the genotypes from the genotyping pipeline
 # Biallelic panel made in the rule annotate_panel_giggles_ready of the "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/prepare-vcf.smk" file
-BI_PANEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/prepared-panel/giggles-ready_biallelic.vcf.gz"
+BI_PANEL=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/prepared-panel/giggles-ready_biallelic.vcf.gz
 # Multiallelic panel made in the rule annotate_panel_giggles_ready of the "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/prepare-vcf.smk" file
-MULTI_PANEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/prepared-panel/giggles-ready_multiallelic.vcf.gz"
+MULTI_PANEL=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/prepared-panel/giggles-ready_multiallelic.vcf.gz
 
 # Multiallelic genotypes produced by Giggles on the HPRC_mg_44+966 in the rule "merge_vcf_to_multisample" of "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/genotyping.smk" file
 # The above pipeline produced file has been processed using the analysis_scripts/genotyping Makefile
-AUGMENTED_GIGGLES_GTS_FILTERED="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz"
+AUGMENTED_GIGGLES_GTS_FILTERED=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/multisample-genotypes/biallelic.ac0-filtered.vcf.gz
 
 # path to the SVAN insertion annotations provided by Berni
-SVAN_INS="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.INS.SVAN_1.3.fixed.vcf"
+SVAN_INS=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.INS.SVAN_1.3.fixed.vcf
 
 # path to the SVAN deletion annotations provided by Berni
-SVAN_DEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.DEL.SVAN_1.3.fixed.vcf"
+SVAN_DEL=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.DEL.SVAN_1.3.fixed.vcf
 
 # path to the SVAN complex insertion annotations provided by Berni
-SVAN_COMPLEX_INS="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.COMPLEX-INS.SVAN_1.3.fixed.vcf"
+SVAN_COMPLEX_INS=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.COMPLEX-INS.SVAN_1.3.fixed.vcf
 
 # path to the SVAN complex deletion annotations provided by Berni
-SVAN_COMPLEX_DEL="/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.COMPLEX-DEL.SVAN_1.3.fixed.vcf"
+SVAN_COMPLEX_DEL=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.COMPLEX-DEL.SVAN_1.3.fixed.vcf
 
 # path to the list of VNTR sites given to vamos for the pipeline in snakemake_pipelines/vamos-analysis.
 # the output of the rule process_t2t_sites_list in rules/vamos.smk
-VAMOS_SITES="/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/vamos-analysis/results/temp/vamos.T2T.processed.tsv"
+VAMOS_SITES=/gpfs/project/projects/medbioinf/users/spani/scripts/1000g-ont/ont-1kg/snakemake_pipelines/vamos-analysis/results/temp/vamos.T2T.processed.tsv
 
 all: directory-tree gts extract-categories rausch-one qc vntr-stratification intersect-with-vamos
 
