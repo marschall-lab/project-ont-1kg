@@ -2,7 +2,7 @@ from matplotlib_venn import venn3, venn3_unweighted, venn3_circles
 import matplotlib.pyplot as plt
 
 nygc = 'sample-lists/3202-nygc-sample-list.tsv'
-nygc_unrelated = 'sample-lists/2504_unrelated-sample-list.tsv'
+nygc_unrelated = 'sample-lists/2504-unrelated-sample-list.tsv'
 vienna_ont = 'sample-lists/1kg-vienna-sample-list.tsv'
 hprc = 'sample-lists/47-hprc-sample-list.txt'
 hgsvc = 'sample-lists/44-hgsvc-phase2-sample-list.tsv'
