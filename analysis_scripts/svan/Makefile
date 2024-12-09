@@ -84,9 +84,9 @@ extract-categories:
 
 rausch-separate:
 	for path in $(PROJECT_DIR)/vcfs/*.gts.vcf; do\
-		name=$$(echo $(path) | cut -d'/' -f 2);\
-		echo $(name);\
-		python scripts/rausch-curves.py -vcfs $(path) -names $(name) -sample-sheet sample_sheet.tsv -output $(PROJECT_DIR)/$$name;\
+		name=$$(echo $$(path) | cut -d'/' -f 2);\
+		echo $$(name);\
+		python scripts/rausch-curves.py -vcfs $$(path) -names $$(name) -sample-sheet sample_sheet.tsv -output $(PROJECT_DIR)/$$(name);\
 	done
 	
 rausch-one:
