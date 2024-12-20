@@ -31,7 +31,7 @@ def run(vcf=None, outdir=None):
     bin_centers = 0.5*(x[1:]+x[:-1])
     plt.plot(bin_centers, n, color='black', label='SVs with known Ancestral All') ## using bin_centers rather than edges
     ax.set_title('Lengths of SVs annotated with an Ancestral Allele', fontsize=16)
-    plt.xlabel('Lengths', fontsize=18)
+    plt.xlabel('Lengths (in bp)', fontsize=18)
     plt.ylabel('Counts', fontsize=18)
     plt.xticks(fontsize=14)
     plt.yticks(fontsize=14)
