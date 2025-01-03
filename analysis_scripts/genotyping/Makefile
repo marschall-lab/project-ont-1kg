@@ -18,26 +18,33 @@ PROJECT_DIR=results/
 
 # These are the genotypes from the genotyping pipeline
 # Biallelic panel made in the rule annotate_panel_giggles_ready of the "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/prepare-vcf.smk" file
+# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/giggles-genotyping/giggles-panel-biallelic.vcf.gz
 BI_PANEL=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/prepared-panel/giggles-ready_biallelic.vcf.gz
 # Multiallelic panel made in the rule annotate_panel_giggles_ready of the "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/prepare-vcf.smk" file
+# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/giggles-genotyping/giggles-panel-multiallelic.vcf.gz
 MULTI_PANEL=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/prepared-panel/giggles-ready_multiallelic.vcf.gz
 
 # Biallelic genotypes produced by Giggles on the HPRC_mg in the rule "convert_multisample_vcf_biallelic" of "hhu-snakemake-pipelines/pre-augmentation-giggles-svarp/rules/genotyping.smk" file
+# File not part of release. Contact authors for access.
 ORIGINAL_GIGGLES_GTS_BA=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/original-graph/multisample-genotypes/multisample-biallelic.vcf.gz
 # Multiallelic genotypes produced by Giggles on the HPRC_mg in the rule "merge_vcf_to_multisample" of "hhu-snakemake-pipelines/pre-augmentation-giggles-svarp/rules/genotyping.smk" file
+# File not part of release. Contact authors for access.
 ORIGINAL_GIGGLES_GTS_MA=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/original-graph/multisample-genotypes/multisample-multiallelic.vcf.gz
 # The directory where the above two files are present
 ORIGINAL_GIGGLES_GTS_DIR=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/original-graph/multisample-genotypes/
 
 # Biallelic genotypes produced by Giggles on the HPRC_mg_44+966 in the rule "convert_multisample_vcf_biallelic" of "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/genotyping.smk" file
+# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/giggles-genotyping/giggles-genotypes-biallelic.vcf.gz
 AUGMENTED_GIGGLES_GTS_BA=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/multisample-genotypes/multisample-biallelic.vcf.gz
 # Multiallelic genotypes produced by Giggles on the HPRC_mg_44+966 in the rule "merge_vcf_to_multisample" of "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/genotyping.smk" file
+# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/giggles-genotyping/giggles-genotypes-multiallelic.vcf.gz
 AUGMENTED_GIGGLES_GTS_MA=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/multisample-genotypes/multisample-multiallelic.vcf.gz
 #The directory where the above two files are present
 AUGMENTED_GIGGLES_GTS_DIR=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/multisample-genotypes/
 
 # These are the biallelic genotypes from the post-phasing of the genotypes using ShapeIt5
 # These files were produced by Dr Tobias Rausch of EMBL and are not part of the pipeline. Please refer to the Methods section on how to generate them.
+# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/shapeit5-phased-callset/shapeit5-phased-callset_final-vcf.phased.vcf.gz
 PHASED_GTS=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/final-vcf.phased.vcf.gz
 # The directory of the phased genotypes
 PHASED_GTS_DIR=/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/

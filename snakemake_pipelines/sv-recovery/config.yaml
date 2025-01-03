@@ -1,13 +1,13 @@
 # path to the rGFA
 # this the rGFA produced using the graph augmentation pipeline
-# TODO: add path to this file in the release once the latest release is available
+# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.0/augmented_graph/minigraph-extended_all.gfa.gz
 path_to_rgfa: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/rgfa-augmented-graph/minigraph-extended_all.gfa'
 
 # path to the final callset of the paper whose genotypes needs to be analysed
-# TODO: add path to this file in the release once the latest release is available
+# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/shapeit5-phased-callset/shapeit5-phased-callset_final-vcf.phased.vcf.gz
 path_to_callset_vcf: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/final-vcf.phased.vcf.gz'
 
 # path to the multiallelic panel VCF
 # Biallelic panel made in the rule annotate_panel_giggles_ready of the "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/prepare-vcf.smk" file
-# TODO: add path to this file in the release once the latest release is available
+# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/giggles-genotyping/giggles-panel-biallelic.vcf.gz
 path_to_panel_vcf: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/prepared-panel/giggles-ready_biallelic.vcf.gz'

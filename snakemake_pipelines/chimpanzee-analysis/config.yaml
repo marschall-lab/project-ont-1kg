@@ -4,17 +4,17 @@ path_to_assembly: '/gpfs/project/projects/medbioinf/users/spani/files/ref/GCF_02
 
 # path to the rGFA
 # this the rGFA produced using the graph augmentation pipeline
-# TODO: add path to this file in the release once the latest release is available
+# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.0/augmented_graph/minigraph-extended_all.gfa.gz
 path_to_rgfa: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/rgfa-augmented-graph/minigraph-extended_all.gfa'
 
 # path to the multiallelic callset vcf produced by giggles in the rule "merge_vcf_to_multisample" of "hhu-snakemake-pipelines/post-augmentation-genotyping/rules/genotyping.smk" file
-# TODO: add path to this file in the release once the latest release is available
+# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/giggles-genotyping/giggles-genotypes-multiallelic.vcf.gz
 path_to_multiallelic_callset: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/giggles-genotyping/augmented-graph/multisample-genotypes/multisample-multiallelic.vcf.gz'
 
 # path to the final phased callset
-# TODO: add path to this file in the release once the latest release is available
+# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/shapeit5-phased-callset/shapeit5-phased-callset_final-vcf.phased.vcf.gz
 path_to_phased_callset_vcf: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/final-vcf.phased.vcf.gz'
 
 # path to the final phased callset
-# TODO: add path to this file in the release once the latest release is available
+# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/giggles-genotyping/giggles-genotyping_final-vcf.unphased.vcf.gz
 path_to_unphased_callset_vcf: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/final-vcf.unphased.vcf.gz'
