@@ -23,9 +23,9 @@ def run(ref = None, sample = None):
                 if field.startswith('END'):
                     end = int(field.split('=')[1])
                 if field.startswith('RU'):
-                    rus = field.split('=')[1].split(',')
+                    rus = tuple(field.split('=')[1].split(','))
                 if field.startswith('ALTANNO_H1'):
-                    altanno = tuple(field.split('=').split(','))
+                    altanno = tuple(field.split('=')[1].split(','))
             altanno_len = 0
             for allele in altanno:
                 altanno_len += len(rus[allele])
@@ -56,11 +56,11 @@ def run(ref = None, sample = None):
             info = line[7]
             for field in info.split(';'):
                 if field.startswith('RU'):
-                    rus = field.split('=')[1].split(',')
+                    rus = tuple(field.split('=')[1].split(','))
                 if field.startswith('ALTANNO_H1'):
-                    altanno_h1 = tuple(field.split('=').split(','))
+                    altanno_h1 = tuple(field.split('=')[1].split(','))
                 if field.startswith('ALTANNO_H2'):
-                    altanno_h2 = tuple(field.split('=').split(','))
+                    altanno_h2 = tuple(field.split('=')[1].split(','))
             assert rus == ref_rus
             # checking if only reference vntr is present
             if altanno_h1 == ref_altanno:

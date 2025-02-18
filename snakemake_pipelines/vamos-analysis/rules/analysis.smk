@@ -148,7 +148,7 @@ rule call_chm13_vntr:
 # creating BED file for sample with its non-reference records.
 rule create_samplewise_vntr_bed:
     input:
-        sample_vntr='results/vamos-t2t/{sample}.vcf'
+        sample_vntr='results/vamos-t2t/{sample}.vcf',
         ref_vntr='results/per-sample-bed/chm13-prep/chm13-vntr.vcf'
     output:
         'results/per-sample-bed/bed/{sample}.bed'
