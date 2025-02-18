@@ -28,7 +28,7 @@ def run(ref = None, sample = None):
                     altanno = tuple(field.split('=')[1].split(','))
             altanno_len = 0
             for allele in altanno:
-                altanno_len += len(rus[allele])
+                altanno_len += len(rus[int(allele)])
             if altanno_len == (end-start):
                 len_match = True
             else:
