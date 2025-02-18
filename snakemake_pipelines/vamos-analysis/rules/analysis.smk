@@ -119,7 +119,7 @@ rule align_chm13_to_itself:
     resources:
         runtime_hrs=12,
         runtime_min=20,
-        mem_total_mb=5*1024
+        mem_total_mb=50*1024
     shell:
         '''
         minimap2 -ax asm5 {input.assembly} {input.assembly} > {output.tmp_sam}
@@ -130,7 +130,7 @@ rule align_chm13_to_itself:
 rule call_chm13_vntr:
     input:
         alignment='results/per-sample-bed/chm13-prep/chm13_mapped-to-chm13.bam',
-        vntr_sites='resources/vamos-sites-list.sorted.bed'
+        vntr_sites='results/temp/vamos.T2T.processed.tsv'
     output:
         'results/per-sample-bed/chm13-prep/chm13-vntr.vcf'
     log:
@@ -146,3 +146,15 @@ rule call_chm13_vntr:
         'vamos --contig -b {input.alignment} -r {input.vntr_sites} -s chm13 -o {output} -t {threads} > {log}'
 
 # creating BED file for sample with its non-reference records.
+rule create_samplewise_vntr_bed:
+    input:
+        sample_vntr='results/vamos-t2t/{sample}.vcf'
+        ref_vntr='results/per-sample-bed/chm13-prep/chm13-vntr.vcf'
+    output:
+        'results/per-sample-bed/bed/{sample}.bed'
+    resources:
+        runtime_hrs=1,
+        runtime_min=0,
+        mem_total_mb=2*1024
+    shell:
+        'python scripts/prepare-bed.py -sample {input.sample_vntr} -ref {input.ref_vntr} > {output}'
