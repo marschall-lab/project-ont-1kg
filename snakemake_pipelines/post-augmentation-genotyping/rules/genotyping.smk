@@ -16,7 +16,7 @@ rule giggles:
         gzi='results/data/fasta/{sample}.fasta.gz.gzi',
         haplotag=config['path_to_haplotags']+'/{sample}/{sample}.tsv',
         alignment='results/{callset}/ont-alignments/{sample}.sorted.gaf.gz',
-        alignment_index='results/{callset}/ont-alignments/{sample}.sorted.gaf.gz.gai',
+        alignment_index='results/{callset}/ont-alignments/{sample}.sorted.gaf.gz.gsi',
         gfa='results/{callset}/bubble_calling_and_tagging/{callset}.tagged.gfa',
         vcf='results/{callset}/panel/giggles-ready_multiallelic.vcf.gz'
     output:

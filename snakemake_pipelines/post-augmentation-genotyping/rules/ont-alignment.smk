@@ -52,7 +52,7 @@ rule gaftools_sort:
         gfa='results/{callset}/bubble_calling_and_tagging/{callset}.tagged.gfa'
     output:
         sorted_gaf='results/{callset}/ont-alignments/{sample}.sorted.gaf.gz',
-        index='results/{callset}/ont-alignments/{sample}.sorted.gaf.gz.gai'
+        index='results/{callset}/ont-alignments/{sample}.sorted.gaf.gz.gsi'
     log:
         'results/{callset}/ont-alignments/{sample}.sorting.log'
     resources:
