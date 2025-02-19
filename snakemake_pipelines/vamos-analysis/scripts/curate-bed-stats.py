@@ -17,11 +17,11 @@ def run(stats = None):
         count_nref_sites.append(count_stats['#3']/(count_stats['#2']+count_stats['#3']))
     
     print('Skipped Sites Statistics:')
-    print(pd.array(skipped_sites).describe())
+    print(pd.DataFrame(skipped_sites).describe())
     print('\nReference Sites Statistics:')
-    print(pd.array(count_ref_sites).describe())
+    print(pd.DataFrame(count_ref_sites).describe())
     print('\nNon-reference Sites Statistics:')
-    print(pd.array(count_nref_sites).describe())
+    print(pd.DataFrame(count_nref_sites).describe())
             
 if __name__=='__main__':
     
