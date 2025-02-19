@@ -145,16 +145,41 @@ rule call_chm13_vntr:
     shell:
         'vamos --contig -b {input.alignment} -r {input.vntr_sites} -s chm13 -o {output} -t {threads} > {log}'
 
+# get stats from the ref vntrs from vamos
+rule chm13_vntr_stats:
+    input:
+        vcf='results/per-sample-bed/chm13-prep/chm13-vntr.vcf'
+    output:
+        stats='results/per-sample-bed/chm13-prep/chm13-vntr.stats',
+        plot='results/per-sample-bed/chm13-prep/chm13-vntr-length-diff.png'
+    conda:
+        '../envs/vamos.yml'
+    shell:
+        'python scripts/get-ref-vntr-stats.py -vcf {input.vcf} -plot {output.plot} > {output.stats}'    
+
+
 # creating BED file for sample with its non-reference records.
 rule create_samplewise_vntr_bed:
     input:
         sample_vntr='results/vamos-t2t/{sample}.vcf',
         ref_vntr='results/per-sample-bed/chm13-prep/chm13-vntr.vcf'
     output:
-        'results/per-sample-bed/bed/{sample}.bed'
+        bed='results/per-sample-bed/bed/{sample}.bed',
+        stats='results/per-sample-bed/bed/{sample}.stats'
     resources:
         runtime_hrs=1,
         runtime_min=0,
         mem_total_mb=2*1024
     shell:
-        'python scripts/prepare-bed.py -sample {input.sample_vntr} -ref {input.ref_vntr} > {output}'
+        'python scripts/prepare-bed.py -sample {input.sample_vntr} -ref {input.ref_vntr} 1> {output.bed} 2> {output.stats}'
+
+# curating the stats
+#rule curate_samplewise_vntr_stats:
+#    input:
+#        stats=expand('results/per-sample-bed/bed/{sample}.stats', sample=cram_sample_list)
+#    output:
+#        'results/per-sample-bed/bed-stats.tsv'
+#    params:
+#        ','.join(list(expand('results/per-sample-bed/bed/{sample}.stats', sample=cram_sample_list)))
+#    shell:
+#        'python scripts/curate-bed-stats.py -stats {params} > {output}'

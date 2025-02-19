@@ -26,5 +26,6 @@ rule all:
         'results/rare-disease-vntr-analysis/abca7-histogram.svg',
         'results/rare-disease-vntr-analysis/plin4-histogram.svg',
         'results/per-sample-bed/chm13-prep/chm13-vntr.vcf',
+        'results/per-sample-bed/chm13-prep/chm13-vntr.stats',
         expand('results/per-sample-bed/bed/{sample}.bed', sample=cram_sample_list)
         
