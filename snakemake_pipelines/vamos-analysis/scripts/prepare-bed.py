@@ -38,6 +38,7 @@ def run(ref = None, sample = None):
     # parse sample VNTRs
     num_sample_skipped = 0
     count_ref = 0
+    total= 0
     with open(sample, 'r') as vcffile:
         for line in vcffile:
             if line.startswith('#'):
@@ -68,10 +69,12 @@ def run(ref = None, sample = None):
                 if (altanno_h2 is None) or ((altanno_h2 is not None) and (altanno_h2 == ref_altanno)):
                     count_ref += 1
                     only_ref = True
+            total += 1
             print(f'{chr}\t{start}\t{ref_end}\t{0 if only_ref else 1}')
 
-    print(f'#1\tNumber of VNTRs where reference length and vamos allele length does not match:\t{num_ref_len_mismatch}', file=sys.stderr)
-    print(f'#2\tNumber of sample VNTRs not found in reference:\t{num_sample_skipped}', file=sys.stderr)
+    print(f'#1\tNumber of sample VNTRs not found in reference:\t{num_sample_skipped}', file=sys.stderr)
+    print(f'#2\tNumber of reference sites (based on ALTANNO):\t{count_ref}', file=sys.stderr)
+    print(f'#3\tNumber of non-reference sites (based on ALTANNO):\t{total-count_ref}', file=sys.stderr)
 
 if __name__=='__main__':
     

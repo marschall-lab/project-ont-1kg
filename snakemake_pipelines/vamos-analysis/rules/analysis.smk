@@ -174,12 +174,12 @@ rule create_samplewise_vntr_bed:
         'python scripts/prepare-bed.py -sample {input.sample_vntr} -ref {input.ref_vntr} 1> {output.bed} 2> {output.stats}'
 
 # curating the stats
-#rule curate_samplewise_vntr_stats:
-#    input:
-#        stats=expand('results/per-sample-bed/bed/{sample}.stats', sample=cram_sample_list)
-#    output:
-#        'results/per-sample-bed/bed-stats.tsv'
-#    params:
-#        ','.join(list(expand('results/per-sample-bed/bed/{sample}.stats', sample=cram_sample_list)))
-#    shell:
-#        'python scripts/curate-bed-stats.py -stats {params} > {output}'
+rule curate_samplewise_vntr_stats:
+    input:
+        stats=expand('results/per-sample-bed/bed/{sample}.stats', sample=cram_sample_list)
+    output:
+        'results/per-sample-bed/bed-stats.tsv'
+    params:
+        ','.join(list(expand('results/per-sample-bed/bed/{sample}.stats', sample=cram_sample_list)))
+    shell:
+        'python scripts/curate-bed-stats.py -stats {params} > {output}'

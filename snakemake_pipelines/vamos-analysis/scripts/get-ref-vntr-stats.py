@@ -41,7 +41,7 @@ def run(vcf = None, plot = None):
     plt.hist(len_diff, bins=range(0, 100, 1))
     plt.xlabel('Length difference')
     plt.ylabel('Number of VNTRs')
-    plt.title('Length difference between reference VNTR (defined in TSV) and vamos VNTR (defined in VCF)')
+    plt.title('Length difference between reference VNTR (defined in TSV) and \nvamos VNTR (defined in VCF)')
     plt.savefig(plot)
 
 
