@@ -66,9 +66,7 @@ def run(ref = None, sample = None):
             if altanno_h1 == ref_altanno:
                 if (altanno_h2 is None) or ((altanno_h2 is not None) and (altanno_h2 == ref_altanno)):
                     only_ref = True
-            if only_ref:
-                continue
-            print(f'{chr}\t{start}\t{ref_end}\t{0 if ref_len_match else 1}\t{ref_altanno_len}')
+            print(f'{chr}\t{start}\t{ref_end}\t{0 if only_ref else 1}\t{ref_altanno_len-(ref_end-start)}')
 
     print(f'Number of VNTRs where reference length and vamos allele length does not match: {num_ref_len_mismatch}', file=sys.stderr)
     print(f'Number of sample VNTRs not found in reference: {num_sample_skipped}', file=sys.stderr)
