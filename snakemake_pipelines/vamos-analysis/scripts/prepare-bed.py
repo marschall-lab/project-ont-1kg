@@ -5,7 +5,6 @@ def run(ref = None, sample = None):
     
     # parse reference VNTRs
     ref_dict = {}
-    num_ref_len_mismatch = 0
     with open(ref, 'r') as vcffile:
         for line in vcffile:
             if line.startswith('#'):
@@ -15,7 +14,6 @@ def run(ref = None, sample = None):
             start = int(line[1])
             end = None
             rus = None
-            len_match = False
             altanno = None
             info = line[7]
             assert line[9] == '1/1'
@@ -26,18 +24,12 @@ def run(ref = None, sample = None):
                     rus = tuple(field.split('=')[1].split(','))
                 if field.startswith('ALTANNO_H1'):
                     altanno = tuple(field.split('=')[1].split(','))
-            altanno_len = 0
-            for allele in altanno:
-                altanno_len += len(rus[int(allele)])
-            if altanno_len == (end-start):
-                len_match = True
-            else:
-                num_ref_len_mismatch += 1
-            ref_dict[(chr, start)] = [altanno, altanno_len, end, len_match, rus]
+            ref_dict[(chr, start)] = [altanno, end, rus]
     
     # parse sample VNTRs
     num_sample_skipped = 0
-    count_ref = 0
+    altanno_count_ref = 0
+    ru_count_ref = 0
     total= 0
     with open(sample, 'r') as vcffile:
         for line in vcffile:
@@ -47,11 +39,12 @@ def run(ref = None, sample = None):
             chr = line[0]
             start = int(line[1])
             rus = None
-            only_ref = False
+            altanno_only_ref = False
+            ru_count_only_ref = False
             altanno_h1 = None
             altanno_h2 = None
             try:
-                ref_altanno, ref_altanno_len, ref_end, ref_len_match, ref_rus = ref_dict[(chr, start)]
+                ref_altanno, ref_end, ref_rus = ref_dict[(chr, start)]
             except KeyError:
                 num_sample_skipped += 1
                 continue
@@ -64,17 +57,24 @@ def run(ref = None, sample = None):
                 if field.startswith('ALTANNO_H2'):
                     altanno_h2 = tuple(field.split('=')[1].split(','))
             assert rus == ref_rus
-            # checking if only reference vntr is present
+            # checking if only reference vntr is present, based on the altanno sequence
             if altanno_h1 == ref_altanno:
                 if (altanno_h2 is None) or ((altanno_h2 is not None) and (altanno_h2 == ref_altanno)):
-                    count_ref += 1
-                    only_ref = True
+                    altanno_count_ref += 1
+                    altanno_only_ref = True
+            # checking if only reference vntr is present, based on the ru count in the altanno
+            if len(altanno_h1) == len(ref_altanno):
+                if (altanno_h2 is None) or ((altanno_h2 is not None) and (len(altanno_h2) == len(ref_altanno))):
+                    ru_count_ref += 1
+                    ru_count_only_ref = True
             total += 1
-            print(f'{chr}\t{start}\t{ref_end}\t{0 if only_ref else 1}')
+            print(f'{chr}\t{start}\t{ref_end}\t{0 if altanno_only_ref else 1}\t{0 if ru_count_only_ref else 1}')
 
     print(f'#1\tNumber of sample VNTRs not found in reference:\t{num_sample_skipped}', file=sys.stderr)
-    print(f'#2\tNumber of reference sites (based on ALTANNO):\t{count_ref}', file=sys.stderr)
-    print(f'#3\tNumber of non-reference sites (based on ALTANNO):\t{total-count_ref}', file=sys.stderr)
+    print(f'#2\tNumber of reference sites (based on ALTANNO sequence):\t{altanno_count_ref}', file=sys.stderr)
+    print(f'#3\tNumber of non-reference sites (based on ALTANNO sequence):\t{total-altanno_count_ref}', file=sys.stderr)
+    print(f'#4\tNumber of reference sites (based on RU Count in ALTANNO):\t{ru_count_ref}', file=sys.stderr)
+    print(f'#5\tNumber of non-reference sites (based on RU Count in ALTANNO):\t{total-ru_count_ref}', file=sys.stderr)
 
 if __name__=='__main__':
     
