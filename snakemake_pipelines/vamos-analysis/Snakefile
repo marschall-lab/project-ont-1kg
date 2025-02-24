@@ -28,6 +28,6 @@ rule all:
         'results/per-sample-bed/chm13-prep/chm13-vntr.vcf',
         'results/per-sample-bed/chm13-prep/chm13-vntr.stats',
         expand('results/per-sample-bed/bed/{sample}.bed', sample=cram_sample_list),
-        expand('results/per-sample-bed/vcf/{sample}.vcf', sample=cram_sample_list),
+        expand('results/per-sample-bed/vcf/{sample}.vcf.gz', sample=cram_sample_list),
         'results/per-sample-bed/bed-stats.tsv'
         
