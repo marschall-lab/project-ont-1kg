@@ -109,35 +109,48 @@ def run(ref = None, sample = None):
                         h1_seq += rus[int(alt)]
                     for alt in altanno_h2:
                         h2_seq += rus[int(alt)]
-                    assert outline[3] != h1_seq, f'ALT:{altanno_h1} {h1_seq} REF:{ref_altanno} {outline[3]}'
-                    assert outline[3] != h2_seq, f'ALT:{altanno_h2} {h2_seq} REF:{ref_altanno} {outline[3]}'
-                    outline[4] = ','.join([h1_seq, h2_seq])
-                    outline[9] = '1/2'
+                    if outline[3] != h1_seq and outline[3] != h2_seq:
+                        outline[4] = ','.join([h1_seq, h2_seq])
+                        outline[9] = '1/2'
+                    elif outline[3] == h1_seq and outline[3] == h2_seq:
+                        continue
+                    elif outline[3] == h1_seq:
+                        outline[4] = h2_seq
+                        outline[9] = '1/0'
+                    elif outline[3] == h2_seq:
+                        outline[4] = h1_seq
+                        outline[9] = '1/0'
                 elif altanno_h1 != ref_altanno:
                     info_field['ALTANNO_H1'] = ','.join(altanno_h1)
                     h1_seq = ''
                     for alt in altanno_h1:
                         h1_seq += rus[int(alt)]
-                    assert outline[3] != h1_seq, f'ALT:{altanno_h1} {h1_seq} REF:{ref_altanno} {outline[3]}'
-                    outline[4] = h1_seq
-                    outline[9] = '1/0'
+                    if outline[3] != h1_seq:
+                        outline[4] = h1_seq
+                        outline[9] = '1/0'
+                    else:
+                        continue
                 elif altanno_h2 != ref_altanno:
                     info_field['ALTANNO_H1'] = ','.join(altanno_h2)
                     h1_seq = ''
                     for alt in altanno_h2:
                         h1_seq += rus[int(alt)]
-                    assert outline[3] != h1_seq, f'ALT:{altanno_h2} {h1_seq} REF:{ref_altanno} {outline[3]}'
-                    outline[4] = h1_seq
-                    outline[9] = '1/0'
+                    if outline[3] != h1_seq:
+                        outline[4] = h1_seq
+                        outline[9] = '1/0'
+                    else:
+                        continue
             else:
                 assert altanno_h1 != ref_altanno
                 info_field['ALTANNO_H1'] = ','.join(altanno_h1)
                 h1_seq = ''
                 for alt in altanno_h1:
                     h1_seq += rus[int(alt)]
-                assert outline[3] != h1_seq, f'ALT:{altanno_h1} {h1_seq} REF:{ref_altanno} {outline[3]}'
-                outline[4] = h1_seq
-                outline[9] = '1/1'
+                if outline[3] != h1_seq:
+                    outline[4] = h1_seq
+                    outline[9] = '1/1'
+                else:
+                    continue
             outline[7] = info_field_to_string(info_field)
             print('\t'.join(outline))
 
