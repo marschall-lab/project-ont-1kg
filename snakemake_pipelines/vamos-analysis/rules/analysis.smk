@@ -169,9 +169,23 @@ rule create_samplewise_vntr_bed:
     resources:
         runtime_hrs=1,
         runtime_min=0,
-        mem_total_mb=2*1024
+        mem_total_mb=1024
     shell:
         'python scripts/prepare-bed.py -sample {input.sample_vntr} -ref {input.ref_vntr} 1> {output.bed} 2> {output.stats}'
+
+# creating VCF file for sample.
+rule create_samplewise_vntr_vcf:
+    input:
+        sample_vntr='results/vamos-t2t/{sample}.vcf',
+        ref_vntr='results/per-sample-bed/chm13-prep/chm13-vntr.vcf'
+    output:
+        'results/per-sample-bed/vcf/{sample}.vcf'
+    resources:
+        runtime_hrs=1,
+        runtime_min=0,
+        mem_total_mb=1024
+    shell:
+        'python scripts/prepare-vntr-vcf.py -sample {input.sample_vntr} -ref {input.ref_vntr} > {output}'
 
 # curating the stats
 rule curate_samplewise_vntr_stats:
