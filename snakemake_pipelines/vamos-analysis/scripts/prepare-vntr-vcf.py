@@ -109,8 +109,8 @@ def run(ref = None, sample = None):
                         h1_seq += rus[int(alt)]
                     for alt in altanno_h2:
                         h2_seq += rus[int(alt)]
-                    assert outline[3] != h1_seq
-                    assert outline[3] != h2_seq
+                    assert outline[3] != h1_seq, f'ALT:{altanno_h1} {h1_seq} REF:{ref_altanno} {outline[3]}'
+                    assert outline[3] != h2_seq, f'ALT:{altanno_h2} {h2_seq} REF:{ref_altanno} {outline[3]}'
                     outline[4] = ','.join([h1_seq, h2_seq])
                     outline[9] = '1/2'
                 elif altanno_h1 != ref_altanno:
@@ -118,7 +118,7 @@ def run(ref = None, sample = None):
                     h1_seq = ''
                     for alt in altanno_h1:
                         h1_seq += rus[int(alt)]
-                    assert outline[3] != h1_seq
+                    assert outline[3] != h1_seq, f'ALT:{altanno_h1} {h1_seq} REF:{ref_altanno} {outline[3]}'
                     outline[4] = h1_seq
                     outline[9] = '1/0'
                 elif altanno_h2 != ref_altanno:
@@ -126,7 +126,7 @@ def run(ref = None, sample = None):
                     h1_seq = ''
                     for alt in altanno_h2:
                         h1_seq += rus[int(alt)]
-                    assert outline[3] != h1_seq
+                    assert outline[3] != h1_seq, f'ALT:{altanno_h2} {h1_seq} REF:{ref_altanno} {outline[3]}'
                     outline[4] = h1_seq
                     outline[9] = '1/0'
             else:
@@ -135,7 +135,7 @@ def run(ref = None, sample = None):
                 h1_seq = ''
                 for alt in altanno_h1:
                     h1_seq += rus[int(alt)]
-                assert outline[3] != h1_seq
+                assert outline[3] != h1_seq, f'ALT:{altanno_h1} {h1_seq} REF:{ref_altanno} {outline[3]}'
                 outline[4] = h1_seq
                 outline[9] = '1/1'
             outline[7] = info_field_to_string(info_field)
