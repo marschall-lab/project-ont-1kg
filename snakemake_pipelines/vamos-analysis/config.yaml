@@ -2,12 +2,8 @@
 # HG03499
 # HG03548
 
-# path of the GRCh38 CRAMs
-# Files are available here https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/hg38/
-path_to_hg38_cram: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/hg38/'
-
-# path of the GRCh38 CRAMs
-# Files are available here https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/hg38/
+# path of the CHM13-T2T CRAMs
+# Files are available here https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/t2t/
 path_to_t2t_cram: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/t2t/'
 
 # path to the reference fasta used to create the CRAMS
@@ -16,19 +12,11 @@ path_to_t2t_cram: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-
 # the directory of the reference
 reference_directory: "/gpfs/project/projects/medbioinf/users/spani/files/ref/"
 
-# The VAMOS vcf made from the NAPU assemblies of Gustafson et al can be downloaded at https://drive.google.com/file/d/1nykyQtunVptujJc_lkEUZUYZczASL0mb/view?usp=drive_link
-path_to_miller_vcf: '/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/MillerLab-Vamos/S3_1kgp_updated_combined.vcf.gz'
-
 # path to HGSVC3 assembly alignments
 path_to_hgsvc_alignments: '/gpfs/project/projects/medbioinf/projects/assemblies/hybrids/eval/wd/results/alignments/contig_to_ref/t2tv2/bam/'
 
-### These files are not currently used for any results in this pipeline ##
+# Not used by the pipeline currently
 
-# path to the filtered unphased genotypes which SVAN is based on
-# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/giggles-genotyping/giggles-genotyping_final-vcf.unphased.vcf.gz
-path_to_gts: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/final-vcf.unphased.vcf.gz'
+# The VAMOS vcf made from the NAPU assemblies of Gustafson et al can be downloaded at https://drive.google.com/file/d/1nykyQtunVptujJc_lkEUZUYZczASL0mb/view?usp=drive_link
+path_to_miller_vcf: '/gpfs/project/projects/medbioinf/users/spani/files/vcf/1000GP/MillerLab-Vamos/S3_1kgp_updated_combined.vcf.gz'
 
-# path to the SVAN insertion and deletion annotations
-# TODO: add path to this file in the release once the latest release is available
-path_to_svan_ins: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/18_10_2024_1KGP-ONT/1KGP_ONT.INS.SV_annot.vcf'
-path_to_svan_del: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/18_10_2024_1KGP-ONT/1KGP_ONT.DEL.SV_annot.vcf'

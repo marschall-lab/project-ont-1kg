@@ -2,7 +2,6 @@ configfile: 'config.yaml'
 
 include: 'rules/get-sample-list.smk'
 include: 'rules/hgsvc-qc.smk'
-include: 'rules/compare-vcf.smk'
 include: 'rules/vamos.smk'
 include: 'rules/analysis.smk'
 include: 'rules/rare-disease-analysis.smk'
@@ -25,9 +24,10 @@ rule all:
         'results/hgsvc3-comparison/vntr-spread/max-full.svg',
         'results/rare-disease-vntr-analysis/abca7-histogram.svg',
         'results/rare-disease-vntr-analysis/plin4-histogram.svg',
-        'results/per-sample-bed/chm13-prep/chm13-vntr.vcf',
-        'results/per-sample-bed/chm13-prep/chm13-vntr.stats',
-        expand('results/per-sample-bed/bed/{sample}.bed', sample=cram_sample_list),
-        expand('results/per-sample-bed/vcf/{sample}.vcf.gz', sample=cram_sample_list),
-        'results/per-sample-bed/bed-stats.tsv'
+        'results/per-sample-bed/reference-vntrs-t2t-seq.bed',
+        #'results/per-sample-bed/chm13-prep/chm13-vntr.vcf',
+        #'results/per-sample-bed/chm13-prep/chm13-vntr.stats',
+        #expand('results/per-sample-bed/bed/{sample}.bed', sample=cram_sample_list),
+        #expand('results/per-sample-bed/vcf/{sample}.vcf.gz', sample=cram_sample_list),
+        #'results/per-sample-bed/bed-stats.tsv'
         

@@ -15,11 +15,21 @@ def write_header(sample):
 def info_field_to_string(info_field):
     return ';'.join([f'{key}={value}' for key, value in info_field.items()])
 
-def run(ref = None, sample = None):
+def run(ref = None, sample = None, refseq = None):
     
     sample_name=sample.split('/')[-1].split('.')[0]
     write_header(sample_name)
     
+    # parse reference sequence
+    refseq_dict = {}
+    with open(refseq, 'r') as bedfile:
+        for line in bedfile:
+            line = line.strip().split('\t')
+            chr = line[0]
+            start = int(line[1])
+            end = int(line[2])
+            refseq_dict[(chr, start)] = line[3]
+
     # parse reference VNTRs
     ref_dict = {}
     with open(ref, 'r') as vcffile:
@@ -159,6 +169,7 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(prog='prepare-vntr-vcf.py', description="Processes reference VNTRs and sample VNTRs and output site a VCF with non-reference records.")
     parser.add_argument("-ref", required=True, help="Reference VNTRs (made from contigs)")
     parser.add_argument("-sample", required=True, help="Sample VNTRs (made from reads)")
+    parser.add_argument("-refseq", required=True, help="BED file with the reference sequence of VNTRs")
 
     options = parser.parse_args()
 
