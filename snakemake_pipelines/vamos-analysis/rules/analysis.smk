@@ -84,7 +84,7 @@ rule extract_reference_sequence:
     shell:
         '''
         cat {input.sites} | cut -f 1-3 > {output.sites}
-        bedtools getfasta -bedOut -fi {input.ref} -bed {input.sites} > {output.bed}
+        bedtools getfasta -bedOut -fi {input.ref} -bed {output.sites} > {output.bed}
         '''
 
 # creating VCF file for sample.
