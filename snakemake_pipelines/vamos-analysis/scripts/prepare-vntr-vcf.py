@@ -27,7 +27,6 @@ def run(ref = None, sample = None, refseq = None):
             line = line.strip().split('\t')
             chr = line[0]
             start = int(line[1])
-            end = int(line[2])
             refseq_dict[(chr, start)] = line[3]
 
     # parse reference VNTRs
@@ -56,8 +55,6 @@ def run(ref = None, sample = None, refseq = None):
     # parse sample VNTRs
     num_sample_skipped = 0
     altanno_count_ref = 0
-    ru_count_ref = 0
-    total= 0
     with open(sample, 'r') as vcffile:
         for line in vcffile:
             if line.startswith('#'):
@@ -161,6 +158,7 @@ def run(ref = None, sample = None, refseq = None):
                     outline[9] = '1/1'
                 else:
                     continue
+            outline[3] = refseq_dict[(chr, start)]
             outline[7] = info_field_to_string(info_field)
             print('\t'.join(outline))
 
