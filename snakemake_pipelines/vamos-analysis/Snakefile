@@ -7,12 +7,10 @@ include: 'rules/analysis.smk'
 include: 'rules/rare-disease-analysis.smk'
 
 comaprison_samples = ['HG03499','HG03548']
-afs = ['0.1', '0.5', '1']
 haplotypes = ['hap1', 'hap2']
 
 wildcard_constraints:
     sample='|'.join(cram_sample_list+hgsvc_sample_list_all),
-    af='|'.join(afs),
     haplotype='|'.join(haplotypes)
 
 rule all:
