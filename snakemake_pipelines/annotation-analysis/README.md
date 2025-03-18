@@ -22,6 +22,7 @@ Refer to the *config.yaml* file where it states the required data for the pipeli
 
 ### Output
 
+It produces the total count of NUMT, PSD, and INV_DUP sites per sample.
 
 ### Reproduction instructions
 
