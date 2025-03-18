@@ -9,3 +9,4 @@ wildcard_constraints:
 rule all:
     input:
         'results/annotated-gts/annotated_gts.vcf'
+        expand('results/annotated-gts/sample-wise-gts/{sample}.counts', sample=t2t_samples)

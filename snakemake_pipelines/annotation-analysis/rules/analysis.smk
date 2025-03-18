@@ -59,6 +59,13 @@ rule extract_subsample_svan:
     conda:
         '../envs/analysis.yml'
     shell:
-        'bcftools view --samples {wildcards.sample} {input} > {output}'
+        'bcftools view --samples {wildcards.sample} {input} | bcftools view --min-ac 1 > {output}'
 
-# get stats for NUMT, PSD each sample
+# get stats for NUMT, PSD, etc each sample
+rule get_sample_statistics:
+    input:
+        'results/annotated-gts/sample-wise-gts/{sample}.vcf'
+    output:
+        'results/annotated-gts/sample-wise-gts/{sample}.counts'
+    shell:
+        'cat {input} | grep -e PSD -e NUMT -e INV | wc -l > {output}'
