@@ -1,0 +1,11 @@
+configfile: 'config.yaml'
+
+include: 'rules/get-sample-list.smk'
+include: 'rules/analysis.smk'
+
+wildcard_constraints:
+    sample='|'.join(cram_sample_list+hgsvc_sample_list_all),
+
+rule all:
+    input:
+        'results/annotated-gts/annotated_gts.vcf'

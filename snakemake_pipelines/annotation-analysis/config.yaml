@@ -1,0 +1,14 @@
+# path to the filtered unphased genotypes which SVAN is based on
+# File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/giggles-genotyping/giggles-genotyping_final-vcf.unphased.vcf.gz
+path_to_gts: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/final-vcf.unphased.vcf.gz'
+
+# path to the SVAN insertion and deletion annotations
+# File can be downladed from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/svan-annotation/
+path_to_svan: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/final-vcf.unphased.SVAN_1.3.vcf.gz'
+
+# path to the SVAN insertion and deletion annotations
+# TODO: add path to this file in the release once the latest release is available
+path_to_svan_ins: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.INS.SVAN_1.3.fixed.vcf'
+path_to_svan_del: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.DEL.SVAN_1.3.fixed.vcf'
+path_to_svan_complex_ins: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.COMPLEX-INS.SVAN_1.3.fixed.vcf'
+path_to_svan_complex_del: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/SVAN/29_11_2024_resubmission/final-vcf.unphased.COMPLEX-DEL.SVAN_1.3.fixed.vcf'

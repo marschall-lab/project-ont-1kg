@@ -1,0 +1,12 @@
+channels:
+  - http://conda.repo.test.hhu.de/conda-forge
+  - http://conda.repo.test.hhu.de/bioconda
+  - http://conda.repo.test.hhu.de/main
+
+dependencies:
+  - samtools
+  - bcftools
+  - bedtools
+  - matplotlib=3.3.1
+  - pandas=1.1.2
+  - pyparsing=3.1.4
