@@ -1,3 +1,7 @@
+# path of the CHM13-T2T CRAMs
+# Files are available here https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/t2t/
+path_to_t2t_cram: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/t2t/'
+
 # path to the filtered unphased genotypes which SVAN is based on
 # File can be downloaded from https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1KG_ONT_VIENNA/release/v1.1/giggles-genotyping/giggles-genotyping_final-vcf.unphased.vcf.gz
 path_to_gts: '/gpfs/project/projects/medbioinf/data/share/globus/hhu-1000g-ont/final-vcf.unphased.vcf.gz'
