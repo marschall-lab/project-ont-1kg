@@ -35,6 +35,6 @@ The main outputs of the pipeline are:
 
 ### Reproduction instructions
 
-Under the directory `chimpanzee-analysis`, the command `snakemake --use-conda -j <number of cores> all` can be used to run the entire pipeline.
+Under the directory `vamos-analysis`, the command `snakemake --use-conda -j <number of cores> all` can be used to run the entire pipeline.
 
 Due to the large requirements of certain jobs, a high performance computing architecture will be needed. For running the pipeline in such an architecture, refer to the snakemake documentation (https://snakemake.readthedocs.io/en/v7.32.4/) for further details.
