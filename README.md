@@ -18,4 +18,4 @@ The following snakemake pipelines are hosted in this repository:
 
 For information about the other scripts, please refer to the "Code Availability" section of the preprint.
 
-Link to preprint: https://www.biorxiv.org/content/10.1101/2024.04.18.590093v1
+Link to publication: https://www.nature.com/articles/s41586-025-09290-7
